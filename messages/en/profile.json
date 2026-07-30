@@ -1,0 +1,25 @@
+{
+  "eyebrow": "Account",
+  "title": "My profile",
+  "loadError": "We couldn't load your profile.",
+  "notFound": "Profile not available.",
+  "details": {
+    "heading": "Profile details",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "language": "Preferred language",
+    "saved": "Your profile has been saved.",
+    "save": "Save changes"
+  },
+  "password": {
+    "heading": "Change password",
+    "notice": "Changing your password will sign you out of all other sessions.",
+    "current": "Current password",
+    "new": "New password",
+    "confirm": "Confirm new password",
+    "submit": "Update password",
+    "mismatch": "The passwords do not match.",
+    "tooWeak": "The password must be at least 8 characters and include a letter and a number."
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "brand": {
+    "gxp": "GXP",
+    "platform": "منصة تجربة الضيوف"
+  },
+  "language": {
+    "switch": "تغيير اللغة",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "actions": {
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ…",
+    "cancel": "إلغاء",
+    "create": "إنشاء",
+    "creating": "جارٍ الإنشاء…",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "deleting": "جارٍ الحذف…",
+    "remove": "إزالة",
+    "confirm": "تأكيد",
+    "close": "إغلاق",
+    "search": "بحث",
+    "add": "إضافة",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "retry": "حاول مرة أخرى",
+    "copy": "نسخ",
+    "copied": "تم النسخ",
+    "viewDetails": "عرض التفاصيل",
+    "submit": "إرسال"
+  },
+  "states": {
+    "loading": "جارٍ التحميل…",
+    "errorTitle": "حدث خطأ ما",
+    "unexpectedError": "حدث خطأ غير متوقع. يُرجى المحاولة مرة أخرى.",
+    "notAvailable": "—"
+  },
+  "pagination": {
+    "summary": "عرض {from}–{to} من {total}",
+    "pageOf": "صفحة {page} من {pages}",
+    "page": "صفحة {page}",
+    "previous": "السابق",
+    "next": "التالي"
+  },
+  "confirm": {
+    "title": "هل أنت متأكد؟",
+    "irreversible": "لا يمكن التراجع عن هذا الإجراء."
+  },
+  "status": {
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "suspended": "موقوف"
+  }
+}

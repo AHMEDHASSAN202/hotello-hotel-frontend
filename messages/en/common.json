@@ -1,0 +1,56 @@
+{
+  "brand": {
+    "gxp": "GXP",
+    "platform": "Guest Experience Platform"
+  },
+  "language": {
+    "switch": "Change language",
+    "english": "English",
+    "arabic": "العربية"
+  },
+  "actions": {
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "create": "Create",
+    "creating": "Creating…",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleting": "Deleting…",
+    "remove": "Remove",
+    "confirm": "Confirm",
+    "close": "Close",
+    "search": "Search",
+    "add": "Add",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "retry": "Try again",
+    "copy": "Copy",
+    "copied": "Copied",
+    "viewDetails": "View details",
+    "submit": "Submit"
+  },
+  "states": {
+    "loading": "Loading…",
+    "errorTitle": "Something went wrong",
+    "unexpectedError": "An unexpected error occurred. Please try again.",
+    "notAvailable": "—"
+  },
+  "pagination": {
+    "summary": "Showing {from}–{to} of {total}",
+    "pageOf": "Page {page} of {pages}",
+    "page": "Page {page}",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "confirm": {
+    "title": "Are you sure?",
+    "irreversible": "This action cannot be undone."
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "suspended": "Suspended"
+  }
+}

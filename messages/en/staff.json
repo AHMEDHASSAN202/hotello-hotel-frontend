@@ -1,0 +1,70 @@
+{
+  "eyebrow": "Team",
+  "title": "Staff",
+  "new": "Invite staff",
+  "loadError": "We couldn't load your staff.",
+  "readOnlyHint": "Your subscription is read-only, so changes are paused.",
+  "noAccess": {
+    "title": "You don't have access to staff",
+    "hint": "Ask an administrator to grant you the staff permission."
+  },
+  "search": {
+    "placeholder": "Search name or email…",
+    "aria": "Search staff"
+  },
+  "filter": {
+    "role": "Filter by role",
+    "allRoles": "All roles",
+    "status": "Filter by status",
+    "allStatuses": "All statuses"
+  },
+  "status": {
+    "pending": "Pending",
+    "active": "Active",
+    "disabled": "Disabled"
+  },
+  "table": {
+    "member": "Member",
+    "role": "Role",
+    "status": "Status",
+    "lastLogin": "Last login",
+    "actions": "Actions"
+  },
+  "lastLogin": {
+    "never": "Never"
+  },
+  "row": {
+    "resendInvite": "Resend invite",
+    "resendIn": "Resend in {seconds}s",
+    "enable": "Enable",
+    "disable": "Disable",
+    "editAria": "Edit {name}"
+  },
+  "form": {
+    "createTitle": "Invite staff member",
+    "editTitle": "Edit staff member",
+    "name": "Full name",
+    "email": "Email address",
+    "role": "Role",
+    "createSubmit": "Send invite",
+    "saveSubmit": "Save changes",
+    "emailImmutable": "Email can't be changed. To use a new address, disable this member and send a new invite.",
+    "ownRoleLocked": "You can't change your own role."
+  },
+  "empty": {
+    "noMatchTitle": "No staff match your filters",
+    "noMatchHint": "Try a different name, role or status.",
+    "emptyTitle": "No staff yet",
+    "emptyHint": "Invite your first team member to get started."
+  },
+  "disable": {
+    "title": "Disable staff member?",
+    "body": "Disabling <strong>{name}</strong> revokes their access immediately and signs them out. Their records are kept.",
+    "confirm": "Disable"
+  },
+  "enable": {
+    "title": "Enable staff member?",
+    "body": "Enabling <strong>{name}</strong> restores their access.",
+    "confirm": "Enable"
+  }
+}

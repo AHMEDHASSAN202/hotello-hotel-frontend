@@ -1,0 +1,42 @@
+{
+  "nav": {
+    "main": "Main",
+    "overview": "Overview",
+    "transportation": "Transportation",
+    "housekeeping": "Housekeeping",
+    "fnb": "Food & Beverage",
+    "branding": "Guest App Branding",
+    "analytics": "Analytics",
+    "staff": "Staff",
+    "profile": "My profile"
+  },
+  "sidebar": {
+    "collapse": "Collapse",
+    "expand": "Expand"
+  },
+  "userMenu": {
+    "signOut": "Sign out",
+    "signingOut": "Signing out…"
+  },
+  "poweredBy": "Powered by GXP",
+  "overview": {
+    "eyebrow": "Dashboard",
+    "welcome": "Welcome back, {name}",
+    "subtitle": "Here's what's happening across your hotel.",
+    "emptyTitle": "Your dashboard is taking shape",
+    "emptyHint": "Once your modules are active and guests start arriving, live activity will appear here.",
+    "planLabel": "Current plan",
+    "noPlan": "No active plan"
+  },
+  "moduleLocked": {
+    "title": "This module isn't part of your plan",
+    "hint": "Upgrade your subscription to unlock this feature for your hotel.",
+    "cta": "View plans"
+  },
+  "wrongTenant": {
+    "title": "You're signed in to a different hotel",
+    "hint": "Your current session belongs to another hotel's dashboard. Head to your own dashboard, or sign in to this hotel with its account.",
+    "goToMine": "Go to my dashboard",
+    "switchAccount": "Sign in to this hotel"
+  }
+}

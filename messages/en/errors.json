@@ -1,0 +1,38 @@
+{
+  "generic": "Something went wrong. Please try again.",
+  "network": "Could not reach the server. Check your connection and try again.",
+  "validation": "Please check the highlighted fields and try again.",
+  "notFoundTitle": "Hotel not found",
+  "notFoundBody": "We couldn't find a hotel at this address. Please check the link and try again.",
+  "byStatus": {
+    "400": "The request could not be completed. Please review your input.",
+    "401": "Your session has expired. Please sign in again.",
+    "403": "You do not have permission to perform this action.",
+    "404": "The requested item could not be found.",
+    "409": "This action conflicts with the current state. Please refresh and try again.",
+    "422": "The request could not be processed. Please review the details.",
+    "500": "A server error occurred. Please try again shortly."
+  },
+  "code": {
+    "INVALID_CREDENTIALS": "Incorrect email or password.",
+    "HOTEL_SUSPENDED": "This hotel is currently unavailable. Please contact the platform administrator.",
+    "SUBSCRIPTION_READ_ONLY": "Your subscription is read-only, so changes are paused. Reactivate your plan to continue making changes.",
+    "MODULE_NOT_ENABLED": "This feature isn't part of your current plan. Upgrade to unlock it.",
+    "HOTEL_NOT_FOUND": "This hotel no longer exists.",
+    "CURRENT_PASSWORD_INCORRECT": "The current password is incorrect.",
+    "SESSION_EXPIRED": "Your session has expired. Please sign in again.",
+    "EMAIL_TAKEN": "A staff member with this email already exists.",
+    "STAFF_LIMIT_REACHED": "You've reached your plan's staff limit. Upgrade your plan to add more.",
+    "INVITE_COOLDOWN": "Please wait a few minutes before resending this invitation.",
+    "CANNOT_EDIT_OWNER": "The owner account can't be edited here.",
+    "CANNOT_CHANGE_OWN_ROLE": "You can't change your own role.",
+    "CANNOT_DISABLE_OWNER": "The owner account can't be disabled.",
+    "CANNOT_DISABLE_SELF": "You can't disable your own account.",
+    "OWNER_ROLE_NOT_ASSIGNABLE": "The Owner role can't be assigned to staff.",
+    "ROLE_NOT_FOUND": "That role no longer exists.",
+    "STAFF_NOT_FOUND": "That staff member no longer exists.",
+    "RESEND_ONLY_PENDING": "Only pending invitations can be resent.",
+    "STAFF_NOT_DISABLED": "That staff member isn't disabled.",
+    "STAFF_ALREADY_DISABLED": "That staff member is already disabled."
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "trial": {
+    "title": "{days, plural, =0 {Your trial ends today} one {# day left in your trial} other {# days left in your trial}}",
+    "body": "Add a payment method to keep every feature after your trial ends.",
+    "cta": "Upgrade now"
+  },
+  "readOnly": {
+    "title": "Your account is read-only",
+    "body": "You can view your data, but changes are paused until your subscription is active again. Reactivate to resume managing your hotel.",
+    "cta": "Reactivate"
+  },
+  "pastDue": {
+    "title": "Payment past due",
+    "body": "We couldn't process your latest payment. Update your billing details to avoid losing access."
+  },
+  "expired": {
+    "title": "Your subscription has expired",
+    "body": "Renew your subscription to restore full access to your dashboard."
+  },
+  "canceled": {
+    "title": "Your subscription is canceled",
+    "body": "Reactivate your subscription to continue managing your hotel."
+  },
+  "locked": {
+    "title": "This hotel is currently unavailable",
+    "body": "Access has been temporarily paused. Please contact the platform administrator for assistance."
+  }
+}
