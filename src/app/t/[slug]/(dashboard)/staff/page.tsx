@@ -1,9 +1,10 @@
 'use client';
 
-import { Pencil, Plus, Search, Send, ShieldAlert } from 'lucide-react';
+import { KeyRound, Pencil, Plus, Search, Send, ShieldAlert } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
-import { InviteStaffModal } from '@/components/staff/invite-staff-modal';
+import { AddStaffModal } from '@/components/staff/add-staff-modal';
+import { CredentialsModal } from '@/components/staff/credentials-modal';
 import { EditStaffModal } from '@/components/staff/edit-staff-modal';
 import { useTenant } from '@/components/tenant-provider';
 import {
@@ -22,6 +23,8 @@ import { useFormatters } from '@/i18n/use-format';
 import type { Locale } from '@/i18n/config';
 import type {
   Paginated,
+  ResetPasswordResponse,
+  StaffCredentials,
   StaffMember,
   StaffStatus,
   TenantRole,
@@ -62,11 +65,17 @@ export default function StaffPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
 
-  const [inviting, setInviting] = useState(false);
+  const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<StaffMember | null>(null);
   const [confirm, setConfirm] = useState<Confirm | null>(null);
   const [confirmBusy, setConfirmBusy] = useState(false);
   const [rowError, setRowError] = useState<string | null>(null);
+
+  // One-time credentials (direct create / reset) + the member being reset.
+  const [credentials, setCredentials] = useState<StaffCredentials | null>(null);
+  const [credentialsName, setCredentialsName] = useState('');
+  const [resetting, setResetting] = useState<StaffMember | null>(null);
+  const [resetBusy, setResetBusy] = useState(false);
 
   // Resend cooldowns: member id → epoch ms when the button re-enables.
   const [resendUntil, setResendUntil] = useState<Record<string, number>>({});
@@ -84,7 +93,7 @@ export default function StaffPage() {
       params.set('pageSize', String(PAGE_SIZE));
       const [staffRes, rolesRes] = await Promise.all([
         api<Paginated<StaffMember>>(`/tenant/staff?${params.toString()}`),
-        api<TenantRole[]>('/tenant/roles'),
+        api<TenantRole[]>('/tenant/roles/options'),
       ]);
       setStaff(staffRes.data);
       setTotal(staffRes.total);
@@ -123,6 +132,25 @@ export default function StaffPage() {
       setRowError(resolveError(err));
     } finally {
       setConfirmBusy(false);
+    }
+  }
+
+  async function handleReset() {
+    if (!resetting) return;
+    setResetBusy(true);
+    setRowError(null);
+    try {
+      const res = await api<ResetPasswordResponse>(
+        `/tenant/staff/${resetting.id}/reset-password`,
+        { method: 'POST' },
+      );
+      setCredentialsName(resetting.name);
+      setCredentials(res.credentials);
+      setResetting(null);
+    } catch (err) {
+      setRowError(resolveError(err));
+    } finally {
+      setResetBusy(false);
     }
   }
 
@@ -178,7 +206,7 @@ export default function StaffPage() {
         </div>
         {canInvite && (
           <Button
-            onClick={() => setInviting(true)}
+            onClick={() => setAdding(true)}
             disabled={readOnly}
             title={readOnly ? t('readOnlyHint') : undefined}
           >
@@ -276,7 +304,7 @@ export default function StaffPage() {
             }
             action={
               canInvite && !(query || roleFilter || statusFilter) ? (
-                <Button onClick={() => setInviting(true)} disabled={readOnly}>
+                <Button onClick={() => setAdding(true)} disabled={readOnly}>
                   {t('new')}
                 </Button>
               ) : undefined
@@ -308,7 +336,10 @@ export default function StaffPage() {
                       <td className="px-4 py-3">
                         <p className="font-medium text-ink">{member.name}</p>
                         <Bdi className="block font-mono text-xs text-ink-soft">
-                          {member.email}
+                          {member.email ??
+                            (member.username
+                              ? `@${member.username}`
+                              : '—')}
                         </Bdi>
                       </td>
                       <td className="px-4 py-3">
@@ -369,6 +400,20 @@ export default function StaffPage() {
                                   {t('row.disable')}
                                 </button>
                               )}
+                            {canUpdate &&
+                              member.status === 'active' &&
+                              !isSelf && (
+                                <button
+                                  onClick={() => setResetting(member)}
+                                  disabled={readOnly}
+                                  aria-label={t('row.resetAria', {
+                                    name: member.name,
+                                  })}
+                                  className="rounded p-1.5 text-ink-soft hover:text-ink disabled:opacity-40"
+                                >
+                                  <KeyRound size={15} />
+                                </button>
+                              )}
                             {canUpdate && (
                               <button
                                 onClick={() => setEditing(member)}
@@ -399,11 +444,16 @@ export default function StaffPage() {
         />
       </div>
 
-      <InviteStaffModal
-        open={inviting}
+      <AddStaffModal
+        open={adding}
         roles={roles}
-        onClose={() => setInviting(false)}
+        onClose={() => setAdding(false)}
         onInvited={load}
+        onCreated={(creds, name) => {
+          setCredentialsName(name);
+          setCredentials(creds);
+          load();
+        }}
       />
       <EditStaffModal
         member={editing}
@@ -411,6 +461,11 @@ export default function StaffPage() {
         isSelf={editing?.id === me?.user.id}
         onClose={() => setEditing(null)}
         onSaved={load}
+      />
+      <CredentialsModal
+        credentials={credentials}
+        staffName={credentialsName}
+        onClose={() => setCredentials(null)}
       />
 
       <Modal
@@ -447,6 +502,29 @@ export default function StaffPage() {
             {confirm?.action === 'disable'
               ? t('disable.confirm')
               : t('enable.confirm')}
+          </Button>
+        </div>
+      </Modal>
+
+      <Modal
+        open={resetting !== null}
+        onClose={() => setResetting(null)}
+        title={t('reset.title')}
+      >
+        {resetting && (
+          <p className="text-sm text-ink-soft">
+            {t.rich('reset.body', {
+              name: resetting.name,
+              strong: (chunks) => <strong className="text-ink">{chunks}</strong>,
+            })}
+          </p>
+        )}
+        <div className="mt-6 flex justify-end gap-2">
+          <Button variant="ghost" onClick={() => setResetting(null)}>
+            {tCommon('actions.cancel')}
+          </Button>
+          <Button loading={resetBusy} onClick={handleReset}>
+            {t('reset.confirm')}
           </Button>
         </div>
       </Modal>

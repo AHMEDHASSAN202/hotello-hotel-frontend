@@ -29,7 +29,8 @@
     "copy": "نسخ",
     "copied": "تم النسخ",
     "viewDetails": "عرض التفاصيل",
-    "submit": "إرسال"
+    "submit": "إرسال",
+    "done": "تم"
   },
   "states": {
     "loading": "جارٍ التحميل…",

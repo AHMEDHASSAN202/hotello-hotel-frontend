@@ -152,7 +152,7 @@ export default function ProfilePage() {
           <Field
             label={t('details.email')}
             type="email"
-            value={me.user.email}
+            value={me.user.email ?? '—'}
             readOnly
             disabled
           />

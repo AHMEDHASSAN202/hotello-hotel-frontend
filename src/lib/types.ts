@@ -40,12 +40,16 @@ export interface TenantRoleRef {
 export interface TenantUser {
   id: string;
   name: string;
-  email: string;
+  /** Null for username-only staff accounts (Epic 09); owners always have one. */
+  email: string | null;
+  username?: string | null;
   role: TenantRoleRef | null;
   /** Flattened from the role — clients gate on this array. */
   permissions: string[];
   preferredLanguage: PreferredLanguage;
   lastLoginAt?: string | null;
+  /** Story 9.7 AC4 — the shell forces the change-password screen when true. */
+  mustChangePassword?: boolean;
 }
 
 export interface TenantLoginResponse {
@@ -127,10 +131,61 @@ export type StaffStatus = 'pending' | 'active' | 'disabled';
 export interface StaffMember {
   id: string;
   name: string;
-  email: string;
+  email: string | null;
+  username: string | null;
   status: StaffStatus;
   lastLoginAt: string | null;
   inviteSentAt: string | null;
   createdAt: string;
   role: TenantRoleRef | null;
 }
+
+/** One-time credentials returned by direct-create (9.7) and manager reset (9.8). */
+export interface StaffCredentials {
+  username: string | null;
+  tempPassword: string;
+  loginUrl: string;
+}
+
+export interface CreateStaffDirectResponse {
+  staff: StaffMember;
+  credentials: StaffCredentials;
+}
+
+export interface ResetPasswordResponse {
+  credentials: StaffCredentials;
+}
+
+/* ------------------------------------------------------------ Roles (Epic 10) */
+
+/** A role in the management list (GET /tenant/roles), with its staff count. */
+export interface TenantRoleSummary extends TenantRoleRef {
+  descriptionEn: string | null;
+  descriptionAr: string | null;
+  permissions: string[];
+  staffCount: number;
+  createdAt: string;
+}
+
+/** A single role's detail (GET /tenant/roles/:id). */
+export type TenantRoleDetail = TenantRoleSummary;
+
+/** One permission in the localized catalog (GET /tenant/roles/permissions/catalog). */
+export interface TenantPermissionDef {
+  key: string;
+  labelEn: string;
+  labelAr: string;
+  descriptionEn: string;
+  descriptionAr: string;
+}
+
+/** A catalog group; `module` (when present) means it is plan-gated. */
+export interface TenantPermissionGroup {
+  group: string;
+  labelEn: string;
+  labelAr: string;
+  module?: string;
+  permissions: TenantPermissionDef[];
+}
+
+export type TenantPermissionCatalog = TenantPermissionGroup[];

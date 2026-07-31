@@ -40,7 +40,7 @@ export default function LoginPage() {
   const t = useTranslations('auth.login');
   const resolveError = useApiError();
 
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -52,7 +52,7 @@ export default function LoginPage() {
     try {
       const res = await api<TenantLoginResponse>('/tenant/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ slug, email, password }),
+        body: JSON.stringify({ slug, identifier, password }),
       });
       tokenStore.set(res.accessToken, res.refreshToken);
       const preferred = res.user.preferredLanguage;
@@ -70,12 +70,12 @@ export default function LoginPage() {
         {error && <AuthError message={error} />}
 
         <Field
-          label={t('email')}
-          type="email"
-          autoComplete="email"
+          label={t('identifier')}
+          type="text"
+          autoComplete="username"
           required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
         />
         <Field
           label={t('password')}

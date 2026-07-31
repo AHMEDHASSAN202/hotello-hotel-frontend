@@ -9,6 +9,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Paintbrush,
+  ShieldCheck,
   Sparkles,
   UserCircle,
   Users,
@@ -48,6 +49,7 @@ const NAV_ITEMS: NavItem[] = [
   { segment: 'branding', labelKey: 'branding', icon: Paintbrush, module: 'guest_app_branding' },
   { segment: 'analytics', labelKey: 'analytics', icon: BarChart3, module: 'analytics' },
   { segment: 'staff', labelKey: 'staff', icon: Users, permission: 'staff.read' },
+  { segment: 'roles', labelKey: 'roles', icon: ShieldCheck, permission: 'roles.read' },
   { segment: 'profile', labelKey: 'profile', icon: UserCircle },
 ];
 

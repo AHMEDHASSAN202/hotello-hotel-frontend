@@ -33,6 +33,18 @@
     "STAFF_NOT_FOUND": "That staff member no longer exists.",
     "RESEND_ONLY_PENDING": "Only pending invitations can be resent.",
     "STAFF_NOT_DISABLED": "That staff member isn't disabled.",
-    "STAFF_ALREADY_DISABLED": "That staff member is already disabled."
+    "STAFF_ALREADY_DISABLED": "That staff member is already disabled.",
+    "USERNAME_TAKEN": "That username is already taken in this hotel.",
+    "PASSWORD_RESET_RATE_LIMIT": "Too many password resets for this user. Please try again later.",
+    "PASSWORD_CHANGE_REQUIRED": "You need to set a new password before continuing.",
+    "CANNOT_RESET_OWNER": "The owner account can't be reset here.",
+    "CANNOT_RESET_SELF": "Change your own password from My Profile.",
+    "STAFF_NOT_ACTIVE": "Only active staff can have their password reset.",
+    "PERMISSION_ESCALATION": "You can only grant permissions you hold yourself.",
+    "ROLE_IN_USE": "This role is still assigned to staff. Reassign them before deleting it.",
+    "ROLE_NAME_TAKEN": "A role with this name already exists.",
+    "INVALID_PERMISSIONS": "One or more selected permissions are not valid.",
+    "WILDCARD_NOT_ASSIGNABLE": "Full access can't be assigned to a custom role.",
+    "SYSTEM_ROLE_READONLY": "System roles can't be edited or deleted."
   }
 }

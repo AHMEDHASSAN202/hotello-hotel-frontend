@@ -1,0 +1,45 @@
+{
+  "eyebrow": "Access",
+  "title": "Roles & permissions",
+  "new": "New role",
+  "loadError": "We couldn't load the roles list.",
+  "empty": {
+    "title": "No roles yet",
+    "hint": "Create a role to grant tailored access to your team."
+  },
+  "card": {
+    "system": "System",
+    "staffCount": "{count, plural, =0 {No staff} one {# staff member} other {# staff members}}",
+    "created": "Created {date}",
+    "fullAccess": "Full access (*)",
+    "noPermissions": "No permissions",
+    "viewAria": "View {name}",
+    "editAria": "Edit {name}",
+    "deleteAria": "Delete {name}"
+  },
+  "detail": {
+    "fullAccess": "This role has full access to everything in the dashboard."
+  },
+  "form": {
+    "createTitle": "New role",
+    "editTitle": "Edit role",
+    "nameEn": "Name (English)",
+    "nameAr": "Name (Arabic)",
+    "descriptionEn": "Description (English)",
+    "descriptionAr": "Description (Arabic)",
+    "permissions": "Permission matrix",
+    "noPermissionsWarning": "This role has no permissions — staff holding it will see an empty dashboard.",
+    "selectAll": "Select all",
+    "clearAll": "Clear all",
+    "lockedHint": "You can't grant a permission you don't hold yourself.",
+    "impact": "{count, plural, one {# staff member holds} other {# staff members hold}} this role — changes apply to them on their next request.",
+    "createSubmit": "Create role",
+    "saveSubmit": "Save changes"
+  },
+  "delete": {
+    "title": "Delete role?",
+    "body": "This permanently deletes the role <strong>{name}</strong>.",
+    "assigned": "It is currently assigned to {count, plural, one {# staff member} other {# staff members}} — reassign them first.",
+    "confirm": "Delete role"
+  }
+}

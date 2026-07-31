@@ -17,7 +17,7 @@ export default function ForgotPasswordPage() {
   const t = useTranslations('auth.forgot');
   const resolveError = useApiError();
 
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
     try {
       await api<MessageResponse>('/tenant/auth/password-reset/request', {
         method: 'POST',
-        body: JSON.stringify({ slug, email }),
+        body: JSON.stringify({ slug, identifier }),
       });
       // Always show the same confirmation regardless of whether the account exists.
       setSent(true);
@@ -68,13 +68,15 @@ export default function ForgotPasswordPage() {
       <form onSubmit={handleSubmit} className="space-y-4">
         {error && <AuthError message={error} />}
         <Field
-          label={t('email')}
-          type="email"
-          autoComplete="email"
+          label={t('identifier')}
+          type="text"
+          autoComplete="username"
           required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
         />
+        {/* Story 8.4 AC5 — username-only accounts can't self-reset by email. */}
+        <p className="text-xs text-ink-soft">{t('usernameHint')}</p>
         <Button type="submit" loading={loading} className="w-full">
           {t('submit')}
         </Button>

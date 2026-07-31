@@ -12,6 +12,7 @@ import {
   useState,
 } from 'react';
 import { Button } from '@/components/ui';
+import { ForcePasswordChange } from '@/components/force-password-change';
 import { api, ApiError } from '@/lib/api';
 import { tokenStore } from '@/lib/auth';
 import { grants } from '@/lib/permissions';
@@ -118,6 +119,16 @@ export function TenantProvider({
 
   if (me && me.hotel.slug !== slug) {
     return <WrongTenant meSlug={me.hotel.slug} urlSlug={slug} />;
+  }
+
+  // Story 9.7 AC4 — a temporary-password holder is forced to change it before
+  // reaching any dashboard screen (the backend blocks the routes too).
+  if (me?.user.mustChangePassword) {
+    return (
+      <TenantContext.Provider value={value}>
+        <ForcePasswordChange />
+      </TenantContext.Provider>
+    );
   }
 
   return (

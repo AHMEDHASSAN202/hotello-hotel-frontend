@@ -2,6 +2,7 @@ import auth from './auth.json';
 import common from './common.json';
 import errors from './errors.json';
 import profile from './profile.json';
+import roles from './roles.json';
 import shell from './shell.json';
 import staff from './staff.json';
 import subscription from './subscription.json';
@@ -15,6 +16,7 @@ const messages = {
   common,
   errors,
   profile,
+  roles,
   shell,
   staff,
   subscription,

@@ -29,7 +29,8 @@
     "copy": "Copy",
     "copied": "Copied",
     "viewDetails": "View details",
-    "submit": "Submit"
+    "submit": "Submit",
+    "done": "Done"
   },
   "states": {
     "loading": "Loading…",

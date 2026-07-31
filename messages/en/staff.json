@@ -1,7 +1,7 @@
 {
   "eyebrow": "Team",
   "title": "Staff",
-  "new": "Invite staff",
+  "new": "Add staff",
   "loadError": "We couldn't load your staff.",
   "readOnlyHint": "Your subscription is read-only, so changes are paused.",
   "noAccess": {
@@ -38,24 +38,62 @@
     "resendIn": "Resend in {seconds}s",
     "enable": "Enable",
     "disable": "Disable",
-    "editAria": "Edit {name}"
+    "editAria": "Edit {name}",
+    "resetAria": "Reset password for {name}"
+  },
+  "add": {
+    "title": "Add staff member",
+    "tabInvite": "Invite by email",
+    "tabDirect": "Create directly",
+    "inviteHint": "They'll get an email to activate their own account and set a password.",
+    "directHint": "For on-ground staff without email. You'll get a username and temporary password to hand over.",
+    "inviteSubmit": "Send invite",
+    "directSubmit": "Create account"
   },
   "form": {
     "createTitle": "Invite staff member",
     "editTitle": "Edit staff member",
     "name": "Full name",
     "email": "Email address",
+    "emailOptional": "Email address (optional)",
+    "username": "Username",
+    "usernameHint": "Lowercase letters, numbers, . _ - (3–30 characters). No spaces or @.",
+    "password": "Temporary password",
+    "passwordHint": "Leave blank to generate one automatically.",
+    "sendWelcome": "Send a welcome email with the login link",
     "role": "Role",
     "createSubmit": "Send invite",
     "saveSubmit": "Save changes",
     "emailImmutable": "Email can't be changed. To use a new address, disable this member and send a new invite.",
     "ownRoleLocked": "You can't change your own role."
   },
+  "credentials": {
+    "title": "Account credentials",
+    "warning": "Save these now — the temporary password is shown only once and can't be retrieved later. Share it with {name} securely.",
+    "username": "Username",
+    "password": "Temporary password",
+    "loginUrl": "Login link"
+  },
+  "reset": {
+    "title": "Reset password?",
+    "body": "This generates a new temporary password for <strong>{name}</strong>, signs them out everywhere, and forces a change on next login.",
+    "confirm": "Reset password"
+  },
+  "forceChange": {
+    "title": "Set a new password",
+    "subtitle": "Your account uses a temporary password. Choose a new one to continue.",
+    "current": "Temporary password",
+    "new": "New password",
+    "confirm": "Confirm new password",
+    "submit": "Set password & continue",
+    "tooWeak": "The password must be at least 8 characters and include a letter and a number.",
+    "mismatch": "The passwords do not match."
+  },
   "empty": {
     "noMatchTitle": "No staff match your filters",
     "noMatchHint": "Try a different name, role or status.",
     "emptyTitle": "No staff yet",
-    "emptyHint": "Invite your first team member to get started."
+    "emptyHint": "Add your first team member to get started."
   },
   "disable": {
     "title": "Disable staff member?",
