@@ -35,6 +35,10 @@ interface TenantContextValue {
   isModuleEnabled: (key: ModuleKey) => boolean;
   /** True when the user's role grants the permission key (or the '*' wildcard). */
   hasPermission: (key: string) => boolean;
+  /** Epic 12 (12.4 AC2) — true when the user already dismissed this hint. */
+  isHintDismissed: (key: string) => boolean;
+  /** Optimistically hides the hint and persists the dismissal server-side. */
+  dismissHint: (key: string) => void;
 }
 
 const TenantContext = createContext<TenantContextValue | null>(null);
@@ -103,6 +107,24 @@ export function TenantProvider({
     reload();
   }, [reload]);
 
+  // Epic 12 (12.4 AC2) — optimistic local hide + fire-and-forget persistence
+  // (same pattern as the preferredLanguage PATCH): a failed call only means
+  // the hint reappears next session.
+  const dismissHint = useCallback((key: string) => {
+    setMeState((prev) => {
+      if (!prev) return prev;
+      const dismissed = prev.user.dismissedHints ?? [];
+      if (dismissed.includes(key)) return prev;
+      return {
+        ...prev,
+        user: { ...prev.user, dismissedHints: [...dismissed, key] },
+      };
+    });
+    api(`/tenant/me/hints/${encodeURIComponent(key)}/dismiss`, {
+      method: 'POST',
+    }).catch(() => {});
+  }, []);
+
   const enabledModules = me?.subscription.enabledModules ?? [];
   const permissions = me?.user.permissions ?? [];
   const value: TenantContextValue = {
@@ -115,6 +137,8 @@ export function TenantProvider({
     enabledModules,
     isModuleEnabled: (key) => enabledModules.includes(key),
     hasPermission: (key) => grants(permissions, key),
+    isHintDismissed: (key) => (me?.user.dismissedHints ?? []).includes(key),
+    dismissHint,
   };
 
   if (me && me.hotel.slug !== slug) {

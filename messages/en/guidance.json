@@ -1,0 +1,11 @@
+{
+  "common": {
+    "infoTip": "More info",
+    "dismiss": "Dismiss",
+    "requiredNote": "Fields marked * are required.",
+    "clearFilters": "Clear filters",
+    "activeFilters": "Active filters: {count}",
+    "noResultsTitle": "No results match these filters",
+    "noResultsHint": "Try removing or changing the filters to see more."
+  }
+}

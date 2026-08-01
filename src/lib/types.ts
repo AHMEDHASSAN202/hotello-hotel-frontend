@@ -50,6 +50,8 @@ export interface TenantUser {
   lastLoginAt?: string | null;
   /** Story 9.7 AC4 — the shell forces the change-password screen when true. */
   mustChangePassword?: boolean;
+  /** Epic 12 (12.4 AC2) — hint keys this user dismissed; HintCards check it. */
+  dismissedHints?: string[];
 }
 
 export interface TenantLoginResponse {
@@ -104,10 +106,21 @@ export interface SubscriptionState {
   planNameAr: string | null;
 }
 
+/**
+ * Epic 12 (12.4 AC3) — getting-started progress derived server-side from
+ * existing data. Rooms/QR steps join this shape with Epic 11.
+ */
+export interface TenantSetupStatus {
+  staffAdded: boolean;
+  roleCreated: boolean;
+  complete: boolean;
+}
+
 export interface TenantMeResponse {
   user: TenantUser & { lastLoginAt: string | null };
   hotel: TenantMeHotel;
   subscription: SubscriptionState;
+  setup: TenantSetupStatus;
 }
 
 /* ------------------------------------------------------------- Staff (Epic 09) */

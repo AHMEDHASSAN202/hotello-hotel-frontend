@@ -1,6 +1,7 @@
 import auth from './auth.json';
 import common from './common.json';
 import errors from './errors.json';
+import guidance from './guidance.json';
 import profile from './profile.json';
 import roles from './roles.json';
 import shell from './shell.json';
@@ -12,6 +13,7 @@ const messages = {
   auth,
   common,
   errors,
+  guidance,
   profile,
   roles,
   shell,
