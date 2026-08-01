@@ -3,6 +3,13 @@
 import { KeyRound, Pencil, Plus, Search, Send, ShieldAlert } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
+import {
+  ConfirmModal,
+  ConsequenceNote,
+  HintCard,
+  InfoTip,
+  PageIntro,
+} from '@/components/guidance';
 import { AddStaffModal } from '@/components/staff/add-staff-modal';
 import { CredentialsModal } from '@/components/staff/credentials-modal';
 import { EditStaffModal } from '@/components/staff/edit-staff-modal';
@@ -13,7 +20,6 @@ import {
   Button,
   EmptyState,
   ErrorState,
-  Modal,
   Pagination,
   selectClass,
 } from '@/components/ui';
@@ -42,6 +48,8 @@ type Confirm = { member: StaffMember; action: 'disable' | 'enable' };
 export default function StaffPage() {
   const t = useTranslations('staff');
   const tCommon = useTranslations('common');
+  const tG = useTranslations('guidance.staff');
+  const tGc = useTranslations('guidance.common');
   const resolveError = useApiError();
   const locale = useLocale() as Locale;
   const { formatRelativeTime } = useFormatters();
@@ -193,6 +201,18 @@ export default function StaffPage() {
   const cooldownLeft = (id: string) =>
     Math.max(0, Math.ceil(((resendUntil[id] ?? 0) - nowTs) / 1000));
 
+  // 12.3 AC2/AC3 — filtered-to-zero and truly-empty are different screens.
+  const hasFilters = Boolean(query || roleFilter || statusFilter);
+  const activeFilterCount =
+    (query ? 1 : 0) + (roleFilter ? 1 : 0) + (statusFilter ? 1 : 0);
+  const clearFilters = () => {
+    setSearch('');
+    setQuery('');
+    setRoleFilter('');
+    setStatusFilter('');
+    setPage(1);
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -203,6 +223,7 @@ export default function StaffPage() {
           <h1 className="mt-1 font-display text-2xl font-semibold text-ink">
             {t('title')}
           </h1>
+          <PageIntro>{tG('intro')}</PageIntro>
         </div>
         {canInvite && (
           <Button
@@ -214,6 +235,16 @@ export default function StaffPage() {
           </Button>
         )}
       </div>
+
+      {/* 12.4 AC2 — first-run explainer of the two add paths, shown to users
+          who can actually add staff; dismissed per user, server-side. */}
+      {canInvite && (
+        <div className="mt-6">
+          <HintCard hintKey="staff.firstRun" title={tG('firstRunTitle')}>
+            {tG('firstRunBody')}
+          </HintCard>
+        </div>
+      )}
 
       {/* Filters */}
       <div className="mt-6 flex flex-wrap items-center gap-2">
@@ -276,6 +307,20 @@ export default function StaffPage() {
         </select>
       </div>
 
+      {/* 12.3 AC2 — always-visible summary + one-tap clear while filtering. */}
+      {hasFilters && (
+        <div className="mt-3 flex items-center gap-3 text-sm text-ink-soft">
+          <span>{tGc('activeFilters', { count: activeFilterCount })}</span>
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="font-medium text-ink underline-offset-2 hover:underline"
+          >
+            {tGc('clearFilters')}
+          </button>
+        </div>
+      )}
+
       {rowError && (
         <div
           role="alert"
@@ -291,19 +336,17 @@ export default function StaffPage() {
         ) : error ? (
           <ErrorState message={error} onRetry={load} />
         ) : !staff || staff.length === 0 ? (
+          // 12.3 AC3 — filtered-to-zero offers a clear action; the true empty
+          // state explains the section and gates its CTA on permission.
           <EmptyState
-            title={
-              query || roleFilter || statusFilter
-                ? t('empty.noMatchTitle')
-                : t('empty.emptyTitle')
-            }
-            hint={
-              query || roleFilter || statusFilter
-                ? t('empty.noMatchHint')
-                : t('empty.emptyHint')
-            }
+            title={hasFilters ? t('empty.noMatchTitle') : t('empty.emptyTitle')}
+            hint={hasFilters ? t('empty.noMatchHint') : t('empty.emptyHint')}
             action={
-              canInvite && !(query || roleFilter || statusFilter) ? (
+              hasFilters ? (
+                <Button variant="ghost" onClick={clearFilters}>
+                  {tGc('clearFilters')}
+                </Button>
+              ) : canInvite ? (
                 <Button onClick={() => setAdding(true)} disabled={readOnly}>
                   {t('new')}
                 </Button>
@@ -319,7 +362,11 @@ export default function StaffPage() {
                   <th className="px-4 py-3 font-medium">{t('table.role')}</th>
                   <th className="px-4 py-3 font-medium">{t('table.status')}</th>
                   <th className="px-4 py-3 font-medium">
-                    {t('table.lastLogin')}
+                    <span className="inline-flex items-center gap-1">
+                      {t('table.lastLogin')}
+                      {/* 12.3 AC4 — non-obvious column explained in place. */}
+                      <InfoTip>{tG('lastLoginTip')}</InfoTip>
+                    </span>
                   </th>
                   <th className="px-4 py-3 font-medium">
                     <span className="sr-only">{t('table.actions')}</span>
@@ -348,9 +395,15 @@ export default function StaffPage() {
                         </Badge>
                       </td>
                       <td className="px-4 py-3">
-                        <Badge tone={STATUS_TONE[member.status]}>
-                          {t(`status.${member.status}`)}
-                        </Badge>
+                        <span className="inline-flex items-center gap-1">
+                          <Badge tone={STATUS_TONE[member.status]}>
+                            {t(`status.${member.status}`)}
+                          </Badge>
+                          {/* 12.3 AC1 — every status explains itself. */}
+                          <InfoTip label={t(`status.${member.status}`)}>
+                            {tG(`status.${member.status}`)}
+                          </InfoTip>
+                        </span>
                       </td>
                       <td className="px-4 py-3 text-ink-soft">
                         {member.lastLoginAt
@@ -395,7 +448,9 @@ export default function StaffPage() {
                                     setConfirm({ member, action: 'disable' })
                                   }
                                   disabled={readOnly}
-                                  className="rounded px-2 py-1 text-xs text-ink-soft hover:text-danger disabled:opacity-40"
+                                  // 12.5 AC3 — disabling is reversible, so it
+                                  // doesn't wear destructive styling.
+                                  className="rounded px-2 py-1 text-xs text-ink-soft hover:text-ink disabled:opacity-40"
                                 >
                                   {t('row.disable')}
                                 </button>
@@ -468,7 +523,9 @@ export default function StaffPage() {
         onClose={() => setCredentials(null)}
       />
 
-      <Modal
+      {/* 12.5 AC1/AC3 — standardized consequence copy; disable is reversible,
+          so neither dialog uses destructive styling. */}
+      <ConfirmModal
         open={confirm !== null}
         onClose={() => setConfirm(null)}
         title={
@@ -476,9 +533,16 @@ export default function StaffPage() {
             ? t('disable.title')
             : t('enable.title')
         }
+        confirmLabel={
+          confirm?.action === 'disable'
+            ? t('disable.confirm')
+            : t('enable.confirm')
+        }
+        onConfirm={handleConfirm}
+        loading={confirmBusy}
       >
         {confirm && (
-          <p className="text-sm text-ink-soft">
+          <ConsequenceNote>
             {t.rich(
               confirm.action === 'disable' ? 'disable.body' : 'enable.body',
               {
@@ -488,46 +552,27 @@ export default function StaffPage() {
                 ),
               },
             )}
-          </p>
+          </ConsequenceNote>
         )}
-        <div className="mt-6 flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => setConfirm(null)}>
-            {tCommon('actions.cancel')}
-          </Button>
-          <Button
-            variant={confirm?.action === 'disable' ? 'danger' : 'primary'}
-            loading={confirmBusy}
-            onClick={handleConfirm}
-          >
-            {confirm?.action === 'disable'
-              ? t('disable.confirm')
-              : t('enable.confirm')}
-          </Button>
-        </div>
-      </Modal>
+      </ConfirmModal>
 
-      <Modal
+      <ConfirmModal
         open={resetting !== null}
         onClose={() => setResetting(null)}
         title={t('reset.title')}
+        confirmLabel={t('reset.confirm')}
+        onConfirm={handleReset}
+        loading={resetBusy}
       >
         {resetting && (
-          <p className="text-sm text-ink-soft">
+          <ConsequenceNote>
             {t.rich('reset.body', {
               name: resetting.name,
               strong: (chunks) => <strong className="text-ink">{chunks}</strong>,
             })}
-          </p>
+          </ConsequenceNote>
         )}
-        <div className="mt-6 flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => setResetting(null)}>
-            {tCommon('actions.cancel')}
-          </Button>
-          <Button loading={resetBusy} onClick={handleReset}>
-            {t('reset.confirm')}
-          </Button>
-        </div>
-      </Modal>
+      </ConfirmModal>
     </div>
   );
 }

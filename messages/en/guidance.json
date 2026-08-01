@@ -7,5 +7,52 @@
     "activeFilters": "Active filters: {count}",
     "noResultsTitle": "No results match these filters",
     "noResultsHint": "Try removing or changing the filters to see more."
+  },
+  "auth": {
+    "identifierHelp": "Use the email — or the username — your hotel gave you.",
+    "identifierPlaceholder": "ahmed@sunrise-hotel.com",
+    "setupDetailsNote": "Your name and hotel come from your invitation — you can update your name later from My Profile."
+  },
+  "profile": {
+    "intro": "Your personal details and sign-in settings. Changes here affect only your own account.",
+    "languageHelp": "Controls the dashboard language for you, and the language of emails we send you.",
+    "emailHelp": "The email you sign in with — it can't be changed from here.",
+    "roleTip": "Your role decides which pages and actions are available to you. Roles are managed from the Roles page by the hotel administrator."
+  },
+  "staff": {
+    "intro": "Everyone who can sign in to this dashboard. Invite staff by email, or create accounts directly for team members without one.",
+    "firstRunTitle": "Two ways to add staff",
+    "firstRunBody": "Invite by email lets the person activate their own account and choose a password. Create directly gives you a username and a temporary password to hand over — best for on-ground staff without email.",
+    "status": {
+      "pending": "An invitation was sent but the account hasn't been activated yet. You can resend the invite from this row.",
+      "active": "The account is activated and this member can sign in.",
+      "disabled": "Access is switched off. The member's data and history are kept — you can re-enable them here at any time."
+    },
+    "lastLoginTip": "When this member last signed in. \"Never\" means they haven't signed in yet.",
+    "form": {
+      "namePlaceholder": "Ahmed Hassan",
+      "emailPlaceholder": "ahmed@sunrise-hotel.com",
+      "usernamePlaceholder": "ahmed.h",
+      "roleHelp": "Decides which pages and actions this member can use. You can change it later, or manage roles from the Roles page."
+    }
+  },
+  "roles": {
+    "intro": "Roles decide what each staff member can see and do. Create a role per job — reception, housekeeping — then assign it when adding staff.",
+    "firstRunTitle": "How roles work",
+    "firstRunBody": "Each staff member holds one role, and the role's permissions decide which pages and actions they get. Editing a role applies to everyone holding it immediately.",
+    "systemTip": "Created automatically with the hotel. It can't be edited, deleted or assigned to staff — and it always keeps full access.",
+    "nameHelp": "Staff see the role name in their own language, so fill in both.",
+    "descriptionHelp": "Optional — one sentence to remind you what this role is for.",
+    "permissionsHelp": "Pick what this role can see and do. You can change it later — changes reach everyone holding the role immediately."
+  },
+  "home": {
+    "setupTitle": "Get your dashboard ready",
+    "setupSubtitle": "A few steps to set up your hotel — each one takes a minute. Steps check off automatically as you complete them.",
+    "stepAddStaff": "Add your first staff member",
+    "stepAddStaffHint": "Invite your team by email, or create accounts with a username for staff without one.",
+    "stepCreateRole": "Create a role for your team",
+    "stepCreateRoleHint": "Roles decide what each staff member can see and do.",
+    "stepDone": "Done",
+    "openPage": "Open"
   }
 }

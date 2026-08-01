@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { useParams, useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
+import { InfoTip, PageIntro, RequiredNote } from '@/components/guidance';
 import { PasswordStrength } from '@/components/password-meter';
 import { isPasswordValid } from '@/components/password-strength';
 import { useTenant } from '@/components/tenant-provider';
@@ -16,6 +17,8 @@ import type { PreferredLanguage, TenantMeResponse } from '@/lib/types';
 
 export default function ProfilePage() {
   const t = useTranslations('profile');
+  const tG = useTranslations('guidance.profile');
+  const tPw = useTranslations('auth.password');
   const resolveError = useApiError();
   const router = useRouter();
   const params = useParams<{ slug: string }>();
@@ -115,6 +118,7 @@ export default function ProfilePage() {
       <h1 className="mt-1 font-display text-2xl font-semibold text-ink">
         {t('title')}
       </h1>
+      <PageIntro>{tG('intro')}</PageIntro>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Profile details */}
@@ -152,6 +156,7 @@ export default function ProfilePage() {
           <Field
             label={t('details.email')}
             type="email"
+            hint={tG('emailHelp')}
             value={me.user.email ?? '—'}
             readOnly
             disabled
@@ -174,11 +179,15 @@ export default function ProfilePage() {
                 </option>
               ))}
             </select>
+            <span className="mt-1 block text-xs text-ink-soft">
+              {tG('languageHelp')}
+            </span>
           </label>
 
           <div className="border-t border-line pt-4">
-            <p className="mb-2 text-sm font-medium text-ink">
+            <p className="mb-2 flex items-center gap-1 text-sm font-medium text-ink">
               {t('details.role')}
+              <InfoTip>{tG('roleTip')}</InfoTip>
             </p>
             {me.user.role && (
               <Badge tone="gold">
@@ -187,6 +196,7 @@ export default function ProfilePage() {
             )}
           </div>
 
+          <RequiredNote />
           <div className="flex justify-end">
             <Button type="submit" loading={savingProfile}>
               {t('details.save')}
@@ -227,6 +237,7 @@ export default function ProfilePage() {
               type="password"
               autoComplete="new-password"
               required
+              hint={tPw('policy')}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />
@@ -241,8 +252,11 @@ export default function ProfilePage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
 
+          <RequiredNote />
           <div className="flex justify-end">
-            <Button type="submit" variant="danger" loading={savingPassword}>
+            {/* 12.5 AC3 — changing your own password is reversible, not
+                destructive; red styling is reserved for irreversible actions. */}
+            <Button type="submit" loading={savingPassword}>
               {t('password.submit')}
             </Button>
           </div>

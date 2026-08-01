@@ -104,7 +104,17 @@ export function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-sm font-medium text-ink">{label}</span>
+      <span className="mb-1 block text-sm font-medium text-ink">
+        {label}
+        {/* Epic 12 (12.2 AC2) — required fields are visibly marked; forms
+            explain the pattern once via <RequiredNote/>. */}
+        {rest.required && (
+          <span aria-hidden className="text-danger">
+            {' '}
+            *
+          </span>
+        )}
+      </span>
       <input
         className="w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-soft/50 disabled:bg-paper disabled:text-ink-soft"
         {...rest}

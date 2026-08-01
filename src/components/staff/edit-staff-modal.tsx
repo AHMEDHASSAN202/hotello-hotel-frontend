@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { FormEvent, useEffect, useState } from 'react';
+import { RequiredNote } from '@/components/guidance';
 import { Button, Field, Modal } from '@/components/ui';
 import { api } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
@@ -29,6 +30,7 @@ export function EditStaffModal({
 }) {
   const t = useTranslations('staff');
   const tCommon = useTranslations('common');
+  const tG = useTranslations('guidance.staff.form');
   const resolveError = useApiError();
   const locale = useLocale() as Locale;
 
@@ -107,12 +109,11 @@ export function EditStaffModal({
               </option>
             ))}
           </select>
-          {isSelf && (
-            <span className="mt-1 block text-xs text-ink-soft">
-              {t('form.ownRoleLocked')}
-            </span>
-          )}
+          <span className="mt-1 block text-xs text-ink-soft">
+            {isSelf ? t('form.ownRoleLocked') : tG('roleHelp')}
+          </span>
         </label>
+        <RequiredNote />
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="ghost" onClick={onClose}>
             {tCommon('actions.cancel')}

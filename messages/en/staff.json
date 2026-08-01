@@ -97,12 +97,12 @@
   },
   "disable": {
     "title": "Disable staff member?",
-    "body": "Disabling <strong>{name}</strong> revokes their access immediately and signs them out. Their records are kept.",
+    "body": "Disabling <strong>{name}</strong> revokes their access immediately and signs them out. Their records and history are kept, and you can re-enable them from this same list at any time.",
     "confirm": "Disable"
   },
   "enable": {
     "title": "Enable staff member?",
-    "body": "Enabling <strong>{name}</strong> restores their access.",
+    "body": "Enabling <strong>{name}</strong> restores their access immediately — they can sign in again with their existing credentials.",
     "confirm": "Enable"
   }
 }

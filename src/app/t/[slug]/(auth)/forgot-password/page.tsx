@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FormEvent, useState } from 'react';
 import { AuthError, AuthShell } from '@/components/auth-shell';
+import { RequiredNote } from '@/components/guidance';
 import { Button, Field } from '@/components/ui';
 import { api, ApiError } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
@@ -15,6 +16,7 @@ export default function ForgotPasswordPage() {
   const params = useParams<{ slug: string }>();
   const slug = params.slug;
   const t = useTranslations('auth.forgot');
+  const tG = useTranslations('guidance.auth');
   const resolveError = useApiError();
 
   const [identifier, setIdentifier] = useState('');
@@ -72,11 +74,14 @@ export default function ForgotPasswordPage() {
           type="text"
           autoComplete="username"
           required
+          placeholder={tG('identifierPlaceholder')}
+          dir="ltr"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
         />
         {/* Story 8.4 AC5 — username-only accounts can't self-reset by email. */}
         <p className="text-xs text-ink-soft">{t('usernameHint')}</p>
+        <RequiredNote />
         <Button type="submit" loading={loading} className="w-full">
           {t('submit')}
         </Button>

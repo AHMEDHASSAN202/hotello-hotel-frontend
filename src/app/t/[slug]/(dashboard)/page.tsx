@@ -2,6 +2,7 @@
 
 import { LayoutDashboard } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+import { SetupSteps } from '@/components/setup-steps';
 import { EmptyState, ErrorState, Skeleton } from '@/components/ui';
 import { useTenant } from '@/components/tenant-provider';
 import { useApiError } from '@/lib/errors';
@@ -45,6 +46,11 @@ export default function OverviewPage() {
         {t('welcome', { name: me.user.name })}
       </h1>
       <p className="mt-1 text-sm text-ink-soft">{t('subtitle')}</p>
+
+      {/* 12.4 AC3 — the fresh-hotel checklist; hides itself when complete. */}
+      <div className="mt-6">
+        <SetupSteps />
+      </div>
 
       <div className="mt-6 rounded-xl border border-line bg-white p-5">
         <p className="text-xs uppercase tracking-widest text-ink-soft">

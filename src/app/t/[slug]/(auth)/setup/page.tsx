@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { AuthError, AuthShell } from '@/components/auth-shell';
+import { RequiredNote } from '@/components/guidance';
 import { isPasswordValid } from '@/components/password-strength';
 import { PasswordStrength } from '@/components/password-meter';
 import { Button, Field } from '@/components/ui';
@@ -22,6 +23,7 @@ export default function SetupPage() {
   const token = search.get('token') ?? '';
   const locale = useLocale() as Locale;
   const t = useTranslations('auth.setup');
+  const tG = useTranslations('guidance.auth');
   const tPw = useTranslations('auth.password');
   const resolveError = useApiError();
 
@@ -102,6 +104,8 @@ export default function SetupPage() {
 
           <Field label={t('name')} value={preview.name} readOnly disabled />
           <Field label={t('hotel')} value={hotelName ?? ''} readOnly disabled />
+          {/* 12.2 AC1 — read-only fields explain where their values come from. */}
+          <p className="text-xs text-ink-soft">{tG('setupDetailsNote')}</p>
 
           <div>
             <Field
@@ -123,6 +127,7 @@ export default function SetupPage() {
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
           />
+          <RequiredNote />
 
           <Button type="submit" loading={submitting} className="w-full">
             {t('submit')}

@@ -6,6 +6,7 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FormEvent, useState } from 'react';
 import { AuthError, AuthShell } from '@/components/auth-shell';
+import { RequiredNote } from '@/components/guidance';
 import { isPasswordValid } from '@/components/password-strength';
 import { PasswordStrength } from '@/components/password-meter';
 import { Button, Field } from '@/components/ui';
@@ -109,6 +110,7 @@ export default function ResetPasswordPage() {
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
         />
+        <RequiredNote />
         <Button type="submit" loading={submitting} className="w-full">
           {t('submit')}
         </Button>

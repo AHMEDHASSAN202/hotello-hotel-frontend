@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { FormEvent, useState } from 'react';
 import { AuthError, AuthShell } from '@/components/auth-shell';
+import { RequiredNote } from '@/components/guidance';
 import { Button, Field } from '@/components/ui';
 import { api, ApiError } from '@/lib/api';
 import { tokenStore } from '@/lib/auth';
@@ -38,6 +39,7 @@ export default function LoginPage() {
   const search = useSearchParams();
   const slug = params.slug;
   const t = useTranslations('auth.login');
+  const tG = useTranslations('guidance.auth');
   const resolveError = useApiError();
 
   const [identifier, setIdentifier] = useState('');
@@ -74,6 +76,9 @@ export default function LoginPage() {
           type="text"
           autoComplete="username"
           required
+          placeholder={tG('identifierPlaceholder')}
+          hint={tG('identifierHelp')}
+          dir="ltr"
           value={identifier}
           onChange={(e) => setIdentifier(e.target.value)}
         />
@@ -85,6 +90,7 @@ export default function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        <RequiredNote />
 
         <div className="flex justify-end">
           <Link

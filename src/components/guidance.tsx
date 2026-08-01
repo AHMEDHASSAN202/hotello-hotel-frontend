@@ -23,6 +23,17 @@ export function PageIntro({ children }: { children: ReactNode }) {
   return <p className="mt-1 max-w-2xl text-sm text-ink-soft">{children}</p>;
 }
 
+/* ------------------------------------------------------------ RequiredNote */
+
+/**
+ * The once-per-form explanation of the required-field marker (12.2 AC2) —
+ * Field renders the * itself whenever `required` is set.
+ */
+export function RequiredNote() {
+  const t = useTranslations('guidance.common');
+  return <p className="text-xs text-ink-soft">{t('requiredNote')}</p>;
+}
+
 /* ---------------------------------------------------------------- InfoTip */
 
 /**

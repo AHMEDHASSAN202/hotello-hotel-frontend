@@ -3,6 +3,14 @@
 import { Eye, Lock, Pencil, Plus, Trash2, Users } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ConfirmModal,
+  ConsequenceNote,
+  HintCard,
+  InfoTip,
+  PageIntro,
+  RequiredNote,
+} from '@/components/guidance';
 import { useTenant } from '@/components/tenant-provider';
 import {
   Badge,
@@ -42,6 +50,7 @@ const EMPTY_FORM: RoleFormState = {
 export default function RolesPage() {
   const t = useTranslations('roles');
   const tCommon = useTranslations('common');
+  const tG = useTranslations('guidance.roles');
   const resolveError = useApiError();
   const locale = useLocale() as Locale;
   const { formatDate } = useFormatters();
@@ -208,6 +217,7 @@ export default function RolesPage() {
           <h1 className="mt-1 font-display text-2xl font-semibold text-ink">
             {t('title')}
           </h1>
+          <PageIntro>{tG('intro')}</PageIntro>
         </div>
         {canCreate && (
           <Button onClick={openCreate} disabled={readOnly}>
@@ -215,6 +225,15 @@ export default function RolesPage() {
           </Button>
         )}
       </div>
+
+      {/* 12.4 AC2 — first-run explainer; dismissed per user, server-side. */}
+      {canCreate && (
+        <div className="mt-6">
+          <HintCard hintKey="roles.firstRun" title={tG('firstRunTitle')}>
+            {tG('firstRunBody')}
+          </HintCard>
+        </div>
+      )}
 
       <div className="mt-6">
         {loading ? (
@@ -247,10 +266,16 @@ export default function RolesPage() {
                         <Bdi>{localName(role)}</Bdi>
                       </p>
                       {role.isSystem && (
-                        <Badge tone="gold">
-                          <Lock size={11} className="me-1" aria-hidden />
-                          {t('card.system')}
-                        </Badge>
+                        <span className="inline-flex items-center gap-1">
+                          <Badge tone="gold">
+                            <Lock size={11} className="me-1" aria-hidden />
+                            {t('card.system')}
+                          </Badge>
+                          {/* 12.3 AC1 — the system badge explains itself. */}
+                          <InfoTip label={t('card.system')}>
+                            {tG('systemTip')}
+                          </InfoTip>
+                        </span>
                       )}
                     </div>
                     <p className="mt-1 flex items-center gap-3 text-xs text-ink-soft">
@@ -390,6 +415,7 @@ export default function RolesPage() {
             <Field
               label={t('form.nameEn')}
               required
+              hint={tG('nameHelp')}
               value={form.nameEn}
               onChange={(e) => setForm({ ...form, nameEn: e.target.value })}
             />
@@ -402,6 +428,7 @@ export default function RolesPage() {
             />
             <Field
               label={t('form.descriptionEn')}
+              hint={tG('descriptionHelp')}
               value={form.descriptionEn}
               onChange={(e) => setForm({ ...form, descriptionEn: e.target.value })}
             />
@@ -414,9 +441,12 @@ export default function RolesPage() {
           </div>
 
           <fieldset>
-            <legend className="mb-2 text-sm font-medium text-ink">
+            <legend className="mb-1 text-sm font-medium text-ink">
               {t('form.permissions')}
             </legend>
+            <p className="mb-2 text-xs text-ink-soft">
+              {tG('permissionsHelp')}
+            </p>
             {form.permissions.length === 0 && (
               <p className="mb-3 text-xs text-amber-700">
                 {t('form.noPermissionsWarning')}
@@ -481,6 +511,7 @@ export default function RolesPage() {
             </div>
           </fieldset>
 
+          <RequiredNote />
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="ghost" onClick={() => setEditing(null)}>
               {tCommon('actions.cancel')}
@@ -492,22 +523,20 @@ export default function RolesPage() {
         </form>
       </Modal>
 
-      {/* Delete confirm modal */}
-      <Modal
+      {/* 12.5 AC1/AC2/AC3 — deletion is permanent, so it keeps destructive
+          styling; the note states the impact count when staff are assigned. */}
+      <ConfirmModal
         open={deleting !== null}
         onClose={() => setDeleting(null)}
         title={t('delete.title')}
+        confirmLabel={t('delete.confirm')}
+        onConfirm={handleDelete}
+        destructive
+        loading={saving}
+        error={formError}
       >
-        {formError && (
-          <div
-            role="alert"
-            className="mb-4 rounded-lg border border-danger/30 bg-danger/5 px-4 py-3 text-sm text-danger"
-          >
-            {formError}
-          </div>
-        )}
         {deleting && (
-          <p className="text-sm text-ink-soft">
+          <ConsequenceNote tone="danger">
             {t.rich('delete.body', {
               name: localName(deleting),
               strong: (chunks) => <strong className="text-ink">{chunks}</strong>,
@@ -515,17 +544,9 @@ export default function RolesPage() {
             {deleting.staffCount > 0 && (
               <> {t('delete.assigned', { count: deleting.staffCount })}</>
             )}
-          </p>
+          </ConsequenceNote>
         )}
-        <div className="mt-6 flex justify-end gap-2">
-          <Button variant="ghost" onClick={() => setDeleting(null)}>
-            {tCommon('actions.cancel')}
-          </Button>
-          <Button variant="danger" loading={saving} onClick={handleDelete}>
-            {t('delete.confirm')}
-          </Button>
-        </div>
-      </Modal>
+      </ConfirmModal>
     </div>
   );
 }

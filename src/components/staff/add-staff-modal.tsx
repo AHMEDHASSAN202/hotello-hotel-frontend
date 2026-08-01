@@ -2,6 +2,7 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { FormEvent, useEffect, useState } from 'react';
+import { RequiredNote } from '@/components/guidance';
 import { Button, Field, Modal } from '@/components/ui';
 import { api, ApiError } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
@@ -44,6 +45,7 @@ export function AddStaffModal({
 }) {
   const t = useTranslations('staff');
   const tCommon = useTranslations('common');
+  const tG = useTranslations('guidance.staff.form');
   const resolveError = useApiError();
   const locale = useLocale() as Locale;
 
@@ -151,6 +153,7 @@ export function AddStaffModal({
         <Field
           label={t('form.name')}
           required
+          placeholder={tG('namePlaceholder')}
           value={form.name}
           onChange={(e) => set('name', e.target.value)}
         />
@@ -159,8 +162,10 @@ export function AddStaffModal({
           <Field
             label={t('form.username')}
             required
+            placeholder={tG('usernamePlaceholder')}
             hint={t('form.usernameHint')}
             error={fieldErrors.username}
+            dir="ltr"
             value={form.username}
             onChange={(e) => set('username', e.target.value)}
           />
@@ -170,7 +175,9 @@ export function AddStaffModal({
           label={mode === 'invite' ? t('form.email') : t('form.emailOptional')}
           type="email"
           required={mode === 'invite'}
+          placeholder={tG('emailPlaceholder')}
           error={fieldErrors.email}
+          dir="ltr"
           value={form.email}
           onChange={(e) => set('email', e.target.value)}
         />
@@ -191,6 +198,9 @@ export function AddStaffModal({
               </option>
             ))}
           </select>
+          <span className="mt-1 block text-xs text-ink-soft">
+            {tG('roleHelp')}
+          </span>
         </label>
 
         {mode === 'direct' && (
@@ -217,6 +227,7 @@ export function AddStaffModal({
           </>
         )}
 
+        <RequiredNote />
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="ghost" onClick={onClose}>
             {tCommon('actions.cancel')}
