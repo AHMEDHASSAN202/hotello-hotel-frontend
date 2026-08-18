@@ -1,0 +1,198 @@
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
+import { describe, expect, it, vi, beforeEach } from 'vitest';
+import en from '../../../messages/en';
+
+/**
+ * Epic 11, Story 11.2 (rooms list) + Story 11.6 AC4 (onboarding empty state).
+ * Mirrors the staff-page harness (staff-empty-states.test.tsx): mocked tenant
+ * context + api, real English messages, no jest-dom matchers.
+ */
+
+const tenant = vi.hoisted(() => ({
+  me: { user: { id: 'u1' } },
+  hasPermission: vi.fn(() => true),
+  readOnly: false,
+  isHintDismissed: vi.fn(() => true), // hide the first-run HintCard here
+  dismissHint: vi.fn(),
+}));
+
+vi.mock('@/components/tenant-provider', () => ({
+  useTenant: () => tenant,
+}));
+
+vi.mock('next/navigation', () => ({
+  useParams: () => ({ slug: 'sunrise' }),
+}));
+
+const apiMock = vi.hoisted(() => ({ api: vi.fn() }));
+
+vi.mock('@/lib/api', () => ({
+  api: apiMock.api,
+  ApiError: class ApiError extends Error {
+    constructor(
+      public readonly status: number,
+      message: string,
+      public readonly details?: unknown,
+      public readonly code?: string,
+    ) {
+      super(message);
+    }
+  },
+}));
+
+import RoomsPage from '../../app/t/[slug]/(dashboard)/rooms/page';
+
+const ROOM_TYPE = { id: 't1', nameEn: 'Deluxe', nameAr: 'ديلوكس' };
+
+function mockRoomsResponse(overrides: Partial<Record<string, unknown>> = {}) {
+  return {
+    data: [],
+    total: 0,
+    page: 1,
+    pageSize: 50,
+    usage: { used: 0, max: null },
+    ...overrides,
+  };
+}
+
+function renderPage() {
+  return render(
+    <NextIntlClientProvider locale="en" messages={en} timeZone="Africa/Cairo">
+      <RoomsPage />
+    </NextIntlClientProvider>,
+  );
+}
+
+beforeEach(() => {
+  tenant.hasPermission.mockReset();
+  tenant.hasPermission.mockReturnValue(true);
+  tenant.readOnly = false;
+  apiMock.api.mockReset();
+});
+
+describe('RoomsPage (11.2)', () => {
+  it('AC1 — without rooms.read renders the noAccess EmptyState and calls no API', async () => {
+    tenant.hasPermission.mockReturnValue(false);
+    renderPage();
+
+    expect(
+      await screen.findByText("You don't have access to rooms"),
+    ).toBeTruthy();
+    expect(apiMock.api).not.toHaveBeenCalled();
+  });
+
+  it('AC2 — renders table rows with room number, floor, localized type, status Badge + InfoTip', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [ROOM_TYPE] };
+      return mockRoomsResponse({
+        data: [
+          {
+            id: 'r1',
+            roomNumber: '101',
+            floor: 3,
+            status: 'out_of_service',
+            roomType: ROOM_TYPE,
+          },
+        ],
+        total: 1,
+      });
+    });
+    const { container } = renderPage();
+
+    await screen.findByText('101');
+    const code = container.querySelector('code');
+    expect(code?.textContent).toBe('101');
+    expect(code?.getAttribute('dir')).toBe('ltr');
+
+    const row = screen.getByText('101').closest('tr');
+    expect(row).toBeTruthy();
+    expect(within(row as HTMLElement).getByText('3')).toBeTruthy();
+    expect(within(row as HTMLElement).getByText('Deluxe')).toBeTruthy();
+    expect(within(row as HTMLElement).getByText('Out of service')).toBeTruthy();
+
+    const tip = screen.getByRole('button', { name: 'Out of service' });
+    fireEvent.click(tip);
+    expect(
+      screen.getByText(
+        "Temporarily unavailable to guests — use this for rooms under maintenance. Still counts toward your plan's room limit.",
+      ),
+    ).toBeTruthy();
+  });
+
+  it('AC3 — usage header shows "84 / 100" and turns amber at >80%', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [] };
+      return mockRoomsResponse({ usage: { used: 84, max: 100 } });
+    });
+    renderPage();
+
+    const usage = await screen.findByText('84 / 100 rooms');
+    expect(usage.className).toMatch(/amber/);
+  });
+
+  it('AC4(11.6) — zero rooms + no filters shows onboarding EmptyState with Add-rooms action', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [] };
+      return mockRoomsResponse();
+    });
+    renderPage();
+
+    expect(await screen.findByText('No rooms yet')).toBeTruthy();
+    expect(
+      screen.getByText('Add your rooms to activate guest services.'),
+    ).toBeTruthy();
+    // Header button + the empty state's own CTA.
+    expect(
+      screen.getAllByRole('button', { name: 'Add room' }).length,
+    ).toBeGreaterThanOrEqual(2);
+  });
+
+  it('filtered to zero shows the noMatch EmptyState with a clear-filters action', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [] };
+      return mockRoomsResponse();
+    });
+    renderPage();
+    await screen.findByText('No rooms yet');
+
+    fireEvent.change(screen.getByLabelText('Filter by status'), {
+      target: { value: 'active' },
+    });
+
+    expect(
+      await screen.findByText('No rooms match your filters'),
+    ).toBeTruthy();
+    expect(screen.queryByText('No rooms yet')).toBeNull();
+
+    const clearButtons = screen.getAllByRole('button', {
+      name: 'Clear filters',
+    });
+    expect(clearButtons.length).toBeGreaterThanOrEqual(1);
+    fireEvent.click(clearButtons[0]);
+    expect(await screen.findByText('No rooms yet')).toBeTruthy();
+  });
+
+  it('readOnly disables the Add rooms button', async () => {
+    tenant.readOnly = true;
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [ROOM_TYPE] };
+      return mockRoomsResponse({
+        data: [
+          {
+            id: 'r1',
+            roomNumber: '101',
+            floor: null,
+            status: 'active',
+            roomType: ROOM_TYPE,
+          },
+        ],
+        total: 1,
+      });
+    });
+    renderPage();
+
+    const button = await screen.findByRole('button', { name: 'Add room' });
+    expect(button.hasAttribute('disabled')).toBe(true);
+  });
+});
