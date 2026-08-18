@@ -55,11 +55,16 @@
     "title": "Room types",
     "new": "New room type",
     "loadError": "We couldn't load your room types.",
+    "noAccess": {
+      "title": "You don't have access to room types",
+      "hint": "Ask an administrator to grant you the rooms permission."
+    },
     "empty": {
       "title": "No room types yet",
       "hint": "Create a room type before adding rooms — for example, Standard, Deluxe, or Suite."
     },
     "card": {
+      "active": "Active",
       "inactive": "Inactive",
       "roomsCount": "{count, plural, =0 {No rooms} one {# room} other {# rooms}}",
       "editAria": "Edit {name}",
