@@ -113,6 +113,10 @@ export interface SubscriptionState {
 export interface TenantSetupStatus {
   staffAdded: boolean;
   roleCreated: boolean;
+  /** Epic 11 (Task 12) — at least one room exists. */
+  roomsAdded: boolean;
+  /** Epic 11 (Task 12) — the room-cards/QR poster PDF has been generated at least once. */
+  qrGenerated: boolean;
   complete: boolean;
 }
 
@@ -202,3 +206,64 @@ export interface TenantPermissionGroup {
 }
 
 export type TenantPermissionCatalog = TenantPermissionGroup[];
+
+/* ---- Rooms (Epic 11) ---- */
+
+export type RoomStatus = 'active' | 'out_of_service' | 'inactive';
+
+/** A room type (GET /tenant/room-types); `roomsCount` drives the "in use" delete guard. */
+export interface RoomType {
+  id: string;
+  nameEn: string;
+  nameAr: string;
+  descriptionEn: string | null;
+  descriptionAr: string | null;
+  isActive: boolean;
+  roomsCount: number;
+}
+
+/** A row in the rooms list (GET /tenant/rooms). */
+export interface Room {
+  id: string;
+  roomNumber: string;
+  floor: number | null;
+  status: RoomStatus;
+  roomType: { id: string; nameEn: string; nameAr: string };
+}
+
+/** GET /tenant/rooms/:id — adds the guest-facing URL for this room's QR. */
+export interface RoomDetail extends Room {
+  guestUrl: string;
+}
+
+/** GET /tenant/rooms — `usage` reflects the plan's room-count limit (active + out_of_service only). */
+export interface RoomsListResponse extends Paginated<Room> {
+  usage: { used: number; max: number | null };
+}
+
+/** One bulk-create/import row problem, keyed to the field that failed. */
+export interface RowIssue {
+  row: number;
+  field: 'roomNumber' | 'floor' | 'roomTypeId' | 'status';
+  code: string;
+}
+
+/** One previewed row from a bulk range or Excel import, before confirm. */
+export interface PreviewRow {
+  row: number;
+  roomNumber: string;
+  floor: number | null;
+  roomTypeId: string | null;
+  status: RoomStatus;
+  duplicate: boolean;
+  issues: RowIssue[];
+}
+
+/** POST /tenant/rooms/bulk/preview and the Excel import preview — `remaining` is plan seats left, null when unlimited. */
+export interface BulkPreview {
+  rows: PreviewRow[];
+  validCount: number;
+  duplicateCount: number;
+  invalidCount: number;
+  remaining: number | null;
+}

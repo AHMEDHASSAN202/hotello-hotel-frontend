@@ -2,6 +2,7 @@
 
 import {
   BarChart3,
+  BedDouble,
   Car,
   LayoutDashboard,
   LogOut,
@@ -50,6 +51,7 @@ const NAV_ITEMS: NavItem[] = [
   { segment: 'analytics', labelKey: 'analytics', icon: BarChart3, module: 'analytics' },
   { segment: 'staff', labelKey: 'staff', icon: Users, permission: 'staff.read' },
   { segment: 'roles', labelKey: 'roles', icon: ShieldCheck, permission: 'roles.read' },
+  { segment: 'rooms', labelKey: 'rooms', icon: BedDouble, permission: 'rooms.read' },
   { segment: 'profile', labelKey: 'profile', icon: UserCircle },
 ];
 

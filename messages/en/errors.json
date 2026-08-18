@@ -45,6 +45,18 @@
     "ROLE_NAME_TAKEN": "A role with this name already exists.",
     "INVALID_PERMISSIONS": "One or more selected permissions are not valid.",
     "WILDCARD_NOT_ASSIGNABLE": "Full access can't be assigned to a custom role.",
-    "SYSTEM_ROLE_READONLY": "System roles can't be edited or deleted."
+    "SYSTEM_ROLE_READONLY": "System roles can't be edited or deleted.",
+    "ROOM_NUMBER_TAKEN": "That room number is already in use. Choose a different one.",
+    "ROOM_LIMIT_REACHED": "You've reached your plan's room limit. Upgrade your plan to add more rooms.",
+    "ROOM_TYPE_IN_USE": "This room type is still assigned to rooms. Reassign or deactivate them first.",
+    "ROOM_TYPE_NAME_TAKEN": "A room type with this name already exists.",
+    "ROOM_NOT_FOUND": "That room no longer exists.",
+    "ROOM_TYPE_NOT_FOUND": "That room type no longer exists.",
+    "BULK_RANGE_TOO_LARGE": "That range has too many rooms. Split it into smaller ranges and try again.",
+    "BULK_RANGE_INVALID": "The starting number must come before the ending number.",
+    "BULK_ROWS_INVALID": "Some rows in this range aren't valid. Review the preview and try again.",
+    "IMPORT_FILE_INVALID": "This file doesn't match the expected format. Download the template and try again.",
+    "IMPORT_TOO_MANY_ROWS": "This file has too many rows. Split it into smaller files and try again.",
+    "NO_ROOMS_IN_SCOPE": "No rooms match this selection. Adjust it and try again."
   }
 }

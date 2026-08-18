@@ -1,0 +1,187 @@
+{
+  "eyebrow": "الإعداد",
+  "title": "الغرف",
+  "intro": "أدر غرف فندقك، وأنواعها، ورموز QR القابلة للطباعة التي يستخدمها الضيوف للوصول إلى خدماتك.",
+  "readOnlyHint": "اشتراكك في وضع القراءة فقط، لذا تم إيقاف التعديلات.",
+  "list": {
+    "header": {
+      "roomsTab": "الغرف",
+      "typesTab": "أنواع الغرف",
+      "new": "إضافة غرفة",
+      "bulkAdd": "إضافة نطاق",
+      "import": "استيراد من إكسل",
+      "export": "تصدير إلى إكسل",
+      "printQr": "طباعة رموز QR"
+    },
+    "usageOf": "{used} / {max} غرفة",
+    "usageUnlimited": "{used} غرفة (خطة غير محدودة)",
+    "search": {
+      "placeholder": "ابحث برقم الغرفة…",
+      "aria": "بحث عن غرفة"
+    },
+    "filters": {
+      "status": "تصفية حسب الحالة",
+      "allStatuses": "كل الحالات",
+      "roomType": "تصفية حسب نوع الغرفة",
+      "allRoomTypes": "كل أنواع الغرف",
+      "floor": "تصفية حسب الطابق",
+      "allFloors": "كل الطوابق"
+    },
+    "table": {
+      "roomNumber": "رقم الغرفة",
+      "floor": "الطابق",
+      "roomType": "نوع الغرفة",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "noFloor": "—",
+    "row": {
+      "editAria": "تعديل الغرفة {roomNumber}",
+      "viewQrAria": "عرض رمز QR للغرفة {roomNumber}"
+    },
+    "empty": {
+      "noMatchTitle": "لا توجد غرف مطابقة للتصفية",
+      "noMatchHint": "جرّب بحثًا أو حالة أو نوع غرفة مختلفًا.",
+      "emptyTitle": "لا توجد غرف بعد",
+      "emptyHint": "أضف غرف فندقك لتفعيل خدمات الضيوف."
+    }
+  },
+  "status": {
+    "active": "نشطة",
+    "out_of_service": "غير صالحة للخدمة",
+    "inactive": "غير نشطة"
+  },
+  "types": {
+    "eyebrow": "الإعداد",
+    "title": "أنواع الغرف",
+    "new": "نوع غرفة جديد",
+    "loadError": "تعذّر تحميل أنواع الغرف.",
+    "empty": {
+      "title": "لا توجد أنواع غرف بعد",
+      "hint": "أنشئ نوع غرفة قبل إضافة الغرف — مثلًا: عادية، ديلوكس، أو جناح."
+    },
+    "card": {
+      "inactive": "غير نشط",
+      "roomsCount": "{count, plural, =0 {لا توجد غرف} one {غرفة واحدة} other {# غرف}}",
+      "editAria": "تعديل {name}",
+      "deactivateAria": "تعطيل {name}",
+      "activateAria": "تفعيل {name}"
+    },
+    "form": {
+      "createTitle": "نوع غرفة جديد",
+      "editTitle": "تعديل نوع الغرفة",
+      "nameEn": "الاسم (بالإنجليزية)",
+      "nameAr": "الاسم (بالعربية)",
+      "descriptionEn": "الوصف (بالإنجليزية)",
+      "descriptionAr": "الوصف (بالعربية)",
+      "descriptionOptional": "اختياري — يساعد الموظفين على التفريق بين الأنواع المتشابهة.",
+      "createSubmit": "إنشاء نوع الغرفة",
+      "saveSubmit": "حفظ التغييرات"
+    },
+    "deactivate": {
+      "title": "تعطيل نوع الغرفة؟",
+      "body": "تعطيل <strong>{name}</strong> يخفيه من نموذج إضافة الغرف. الغرف التي تستخدمه بالفعل تحتفظ به دون تغيير.",
+      "inUse": "لا يزال هذا النوع مُسنَدًا إلى {count, plural, one {غرفة واحدة} other {# غرف}}.",
+      "confirm": "تعطيل"
+    },
+    "activate": {
+      "title": "تفعيل نوع الغرفة؟",
+      "body": "تفعيل <strong>{name}</strong> يجعله متاحًا مجددًا عند إضافة أو تعديل الغرف.",
+      "confirm": "تفعيل"
+    }
+  },
+  "form": {
+    "createTitle": "إضافة غرفة",
+    "editTitle": "تعديل الغرفة",
+    "tabSingle": "غرفة واحدة",
+    "tabBulk": "نطاق غرف",
+    "singleHint": "أضف غرفة واحدة في كل مرة.",
+    "bulkHint": "أضف نطاقًا من الغرف المرقّمة تباعًا دفعة واحدة — مثلًا من 101 إلى 120.",
+    "roomNumber": "رقم الغرفة",
+    "roomNumberHint": "حروف وأرقام وشرطات، من 1 إلى 20 حرفًا. الأصفار في بداية الرقم تبقى كما كُتبت.",
+    "roomNumberPlaceholder": "101",
+    "floor": "الطابق",
+    "floorOptional": "الطابق (اختياري)",
+    "floorPlaceholder": "1",
+    "roomType": "نوع الغرفة",
+    "status": "الحالة",
+    "rangeFrom": "من",
+    "rangeTo": "إلى",
+    "rangeFromPlaceholder": "101",
+    "rangeToPlaceholder": "120",
+    "rangeHint": "نطاقات رقمية فقط — يتم إنشاء النطاق كأرقام متتالية.",
+    "prefix": "البادئة",
+    "prefixOptional": "البادئة (اختياري)",
+    "prefixPlaceholder": "B-",
+    "prefixHint": "تُضاف قبل كل رقم، مثلًا B-101.",
+    "createSubmit": "إضافة غرفة",
+    "saveSubmit": "حفظ التغييرات",
+    "preview": {
+      "title": "معاينة",
+      "willCreate": "هيتم إنشاء {count, plural, one {أوضة واحدة} other {# أوضة}}.",
+      "validCount": "{count, plural, one {صف صالح واحد} other {# صفوف صالحة}}",
+      "duplicateCount": "{count, plural, one {تكرار واحد} other {# تكرارات}}",
+      "invalidCount": "{count, plural, one {صف غير صالح واحد} other {# صفوف غير صالحة}}",
+      "remaining": "{count, plural, one {مكان واحد متبقٍ} other {# أماكن متبقية}} في خطتك",
+      "unlimited": "عدد غرف غير محدود في خطتك",
+      "overLimit": "هذا النطاق يتجاوز عدد الغرف المتبقي في خطتك.",
+      "rowNumber": "الصف {row}",
+      "duplicateBadge": "مكرر",
+      "confirm": "إنشاء الغرف",
+      "confirming": "جارٍ الإنشاء…"
+    }
+  },
+  "edit": {
+    "renumberWarning": "تغيير رقم الغرفة يُبطل أي بطاقات مطبوعة بالرقم القديم — أعد طباعتها ليمسح الضيوف الغرفة الصحيحة.",
+    "guestUrl": "رابط الضيف",
+    "copyGuestUrl": "نسخ الرابط",
+    "copied": "تم النسخ"
+  },
+  "qr": {
+    "eyebrow": "وصول الضيوف",
+    "title": "رموز QR",
+    "poster": {
+      "title": "ملصق QR العام",
+      "hint": "رمز QR واحد يمسحه الضيوف للوصول إلى تطبيق الضيوف، دون تحديد غرفة معيّنة.",
+      "download": "تنزيل الملصق"
+    },
+    "cards": {
+      "title": "بطاقات QR للغرف",
+      "hint": "بطاقة قابلة للطباعة لكل غرفة، جاهزة لوضعها على كل باب.",
+      "scope": "النطاق",
+      "scopeAll": "كل الغرف",
+      "scopeFloors": "طوابق محددة",
+      "scopeRooms": "غرف محددة",
+      "floorsLabel": "الطوابق",
+      "floorsPlaceholder": "1, 2, 3",
+      "roomsLabel": "الغرف",
+      "roomsPlaceholder": "ابحث واختر الغرف…",
+      "download": "تنزيل البطاقات (PDF)",
+      "generating": "جارٍ الإنشاء…"
+    },
+    "copyLink": "نسخ الرابط",
+    "copied": "تم النسخ",
+    "downloadPng": "تنزيل PNG",
+    "downloadSvg": "تنزيل SVG"
+  },
+  "excel": {
+    "export": "تصدير إلى إكسل",
+    "exporting": "جارٍ التصدير…",
+    "template": "تنزيل القالب",
+    "import": {
+      "title": "استيراد غرف من إكسل",
+      "hint": "ارفع ملفًا مطابقًا للقالب — ستظهر لك معاينة قبل إنشاء أي شيء.",
+      "dropzone": "اسحب ملفًا هنا، أو اضغط للاستعراض",
+      "chosenFile": "الملف المختار: {name}",
+      "uploading": "جارٍ الرفع…",
+      "confirm": "إنشاء الغرف",
+      "confirming": "جارٍ الإنشاء…",
+      "rowError": {
+        "roomNumber": "رقم الغرفة: {message}",
+        "floor": "الطابق: {message}",
+        "roomTypeId": "نوع الغرفة: {message}",
+        "status": "الحالة: {message}"
+      }
+    }
+  }
+}

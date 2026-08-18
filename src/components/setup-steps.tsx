@@ -43,6 +43,22 @@ export function SetupSteps() {
       title: t('stepCreateRole'),
       hint: t('stepCreateRoleHint'),
     },
+    {
+      key: 'addRooms',
+      done: setup.roomsAdded,
+      href: `/t/${params.slug}/rooms`,
+      allowed: hasPermission('rooms.create'),
+      title: t('stepAddRooms'),
+      hint: t('stepAddRoomsHint'),
+    },
+    {
+      key: 'printQr',
+      done: setup.qrGenerated,
+      href: `/t/${params.slug}/rooms/qr`,
+      allowed: hasPermission('rooms.read'),
+      title: t('stepPrintQr'),
+      hint: t('stepPrintQrHint'),
+    },
   ].filter((s) => s.allowed);
 
   if (steps.length === 0) return null;

@@ -167,36 +167,79 @@ describe('SetupSteps (12.4 AC3)', () => {
   const meWith = (setup: {
     staffAdded: boolean;
     roleCreated: boolean;
+    roomsAdded: boolean;
+    qrGenerated: boolean;
     complete: boolean;
   }) => ({ setup });
 
+  const allSteps = {
+    staffAdded: true,
+    roleCreated: true,
+    roomsAdded: true,
+    qrGenerated: true,
+    complete: true,
+  };
+
   it('renders derivable steps with auto-checked completion', () => {
-    tenant.me = meWith({ staffAdded: true, roleCreated: false, complete: false });
+    tenant.me = meWith({
+      staffAdded: true,
+      roleCreated: false,
+      roomsAdded: true,
+      qrGenerated: true,
+      complete: false,
+    });
     wrap(<SetupSteps />);
     expect(screen.getByText('Add your first staff member')).toBeTruthy();
-    expect(screen.getByText('Done')).toBeTruthy(); // staff step checked off
+    expect(screen.getAllByText('Done').length).toBeGreaterThan(0); // staff/rooms/qr steps checked off
     expect(screen.getByRole('link', { name: 'Open' }).getAttribute('href')).toBe(
       '/t/sunrise/roles',
     );
   });
 
   it('hides entirely when every step is complete', () => {
-    tenant.me = meWith({ staffAdded: true, roleCreated: true, complete: true });
+    tenant.me = meWith(allSteps);
     wrap(<SetupSteps />);
     expect(screen.queryByText('Get your dashboard ready')).toBeNull();
   });
 
   it('hides when dismissed, and dismissal persists via the hint key', () => {
-    tenant.me = meWith({ staffAdded: false, roleCreated: false, complete: false });
+    tenant.me = meWith({ ...allSteps, staffAdded: false, roleCreated: false, complete: false });
     wrap(<SetupSteps />);
     fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
     expect(tenant.dismissHint).toHaveBeenCalledWith('home.setupSteps');
   });
 
   it('AC1 — shows no dead-end steps the user lacks permission for', () => {
-    tenant.me = meWith({ staffAdded: false, roleCreated: false, complete: false });
+    tenant.me = meWith({ ...allSteps, staffAdded: false, roleCreated: false, complete: false });
     tenant.hasPermission.mockReturnValue(false);
     wrap(<SetupSteps />);
     expect(screen.queryByText('Get your dashboard ready')).toBeNull();
+  });
+
+  it('Epic 11 — the addRooms step renders unchecked with roomsAdded false, linking to the rooms page', () => {
+    tenant.me = meWith({ ...allSteps, roomsAdded: false, complete: false });
+    wrap(<SetupSteps />);
+    expect(screen.getByText('Add your rooms')).toBeTruthy();
+    expect(
+      screen.getByRole('link', { name: 'Open' }).getAttribute('href'),
+    ).toBe('/t/sunrise/rooms');
+  });
+
+  it('Epic 11 — the addRooms step is hidden without rooms.create permission', () => {
+    tenant.me = meWith({ ...allSteps, roomsAdded: false, qrGenerated: false, complete: false });
+    tenant.hasPermission.mockImplementation((p: string) => p !== 'rooms.create');
+    wrap(<SetupSteps />);
+    expect(screen.queryByText('Add your rooms')).toBeNull();
+    // printQr only needs rooms.read, which is still granted.
+    expect(screen.getByText('Print your room QR codes')).toBeTruthy();
+  });
+
+  it('Epic 11 — the printQr step renders unchecked with qrGenerated false, linking to the QR page', () => {
+    tenant.me = meWith({ ...allSteps, qrGenerated: false, complete: false });
+    wrap(<SetupSteps />);
+    expect(screen.getByText('Print your room QR codes')).toBeTruthy();
+    expect(
+      screen.getAllByRole('link', { name: 'Open' }).at(-1)?.getAttribute('href'),
+    ).toBe('/t/sunrise/rooms/qr');
   });
 });

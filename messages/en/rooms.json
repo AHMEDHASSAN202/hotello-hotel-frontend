@@ -1,0 +1,187 @@
+{
+  "eyebrow": "Setup",
+  "title": "Rooms",
+  "intro": "Manage your rooms, room types, and the printable QR codes guests use to reach your services.",
+  "readOnlyHint": "Your subscription is read-only, so changes are paused.",
+  "list": {
+    "header": {
+      "roomsTab": "Rooms",
+      "typesTab": "Room types",
+      "new": "Add room",
+      "bulkAdd": "Add a range",
+      "import": "Import from Excel",
+      "export": "Export to Excel",
+      "printQr": "Print QR codes"
+    },
+    "usageOf": "{used} / {max} rooms",
+    "usageUnlimited": "{used} rooms (unlimited plan)",
+    "search": {
+      "placeholder": "Search room number…",
+      "aria": "Search rooms"
+    },
+    "filters": {
+      "status": "Filter by status",
+      "allStatuses": "All statuses",
+      "roomType": "Filter by room type",
+      "allRoomTypes": "All room types",
+      "floor": "Filter by floor",
+      "allFloors": "All floors"
+    },
+    "table": {
+      "roomNumber": "Room number",
+      "floor": "Floor",
+      "roomType": "Room type",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "noFloor": "—",
+    "row": {
+      "editAria": "Edit room {roomNumber}",
+      "viewQrAria": "View QR code for room {roomNumber}"
+    },
+    "empty": {
+      "noMatchTitle": "No rooms match your filters",
+      "noMatchHint": "Try a different search, status, or room type.",
+      "emptyTitle": "No rooms yet",
+      "emptyHint": "Add your rooms to activate guest services."
+    }
+  },
+  "status": {
+    "active": "Active",
+    "out_of_service": "Out of service",
+    "inactive": "Inactive"
+  },
+  "types": {
+    "eyebrow": "Setup",
+    "title": "Room types",
+    "new": "New room type",
+    "loadError": "We couldn't load your room types.",
+    "empty": {
+      "title": "No room types yet",
+      "hint": "Create a room type before adding rooms — for example, Standard, Deluxe, or Suite."
+    },
+    "card": {
+      "inactive": "Inactive",
+      "roomsCount": "{count, plural, =0 {No rooms} one {# room} other {# rooms}}",
+      "editAria": "Edit {name}",
+      "deactivateAria": "Deactivate {name}",
+      "activateAria": "Activate {name}"
+    },
+    "form": {
+      "createTitle": "New room type",
+      "editTitle": "Edit room type",
+      "nameEn": "Name (English)",
+      "nameAr": "Name (Arabic)",
+      "descriptionEn": "Description (English)",
+      "descriptionAr": "Description (Arabic)",
+      "descriptionOptional": "Optional — helps staff tell similar types apart.",
+      "createSubmit": "Create room type",
+      "saveSubmit": "Save changes"
+    },
+    "deactivate": {
+      "title": "Deactivate room type?",
+      "body": "Deactivating <strong>{name}</strong> hides it from the room form. Rooms already using it keep it unchanged.",
+      "inUse": "This room type is still assigned to {count, plural, one {# room} other {# rooms}}.",
+      "confirm": "Deactivate"
+    },
+    "activate": {
+      "title": "Activate room type?",
+      "body": "Activating <strong>{name}</strong> makes it available again when adding or editing rooms.",
+      "confirm": "Activate"
+    }
+  },
+  "form": {
+    "createTitle": "Add room",
+    "editTitle": "Edit room",
+    "tabSingle": "Single room",
+    "tabBulk": "Range of rooms",
+    "singleHint": "Add one room at a time.",
+    "bulkHint": "Add a range of consecutively numbered rooms at once — for example, 101 to 120.",
+    "roomNumber": "Room number",
+    "roomNumberHint": "Letters, digits, and hyphens, 1–20 characters. Leading zeros are kept as typed.",
+    "roomNumberPlaceholder": "101",
+    "floor": "Floor",
+    "floorOptional": "Floor (optional)",
+    "floorPlaceholder": "1",
+    "roomType": "Room type",
+    "status": "Status",
+    "rangeFrom": "From",
+    "rangeTo": "To",
+    "rangeFromPlaceholder": "101",
+    "rangeToPlaceholder": "120",
+    "rangeHint": "Numeric ranges only — the range is generated as consecutive numbers.",
+    "prefix": "Prefix",
+    "prefixOptional": "Prefix (optional)",
+    "prefixPlaceholder": "B-",
+    "prefixHint": "Added before each number, for example B-101.",
+    "createSubmit": "Add room",
+    "saveSubmit": "Save changes",
+    "preview": {
+      "title": "Preview",
+      "willCreate": "This will create {count, plural, one {# room} other {# rooms}}.",
+      "validCount": "{count, plural, one {# valid row} other {# valid rows}}",
+      "duplicateCount": "{count, plural, one {# duplicate} other {# duplicates}}",
+      "invalidCount": "{count, plural, one {# invalid row} other {# invalid rows}}",
+      "remaining": "{count, plural, one {# spot} other {# spots}} left on your plan",
+      "unlimited": "Unlimited rooms on your plan",
+      "overLimit": "This range exceeds your plan's remaining room limit.",
+      "rowNumber": "Row {row}",
+      "duplicateBadge": "Duplicate",
+      "confirm": "Create rooms",
+      "confirming": "Creating…"
+    }
+  },
+  "edit": {
+    "renumberWarning": "Changing the room number invalidates any cards already printed with the old number — reprint them so guests scan the right room.",
+    "guestUrl": "Guest link",
+    "copyGuestUrl": "Copy link",
+    "copied": "Copied"
+  },
+  "qr": {
+    "eyebrow": "Guest access",
+    "title": "QR codes",
+    "poster": {
+      "title": "General QR poster",
+      "hint": "One QR code guests scan to reach your guest app, without a specific room.",
+      "download": "Download poster"
+    },
+    "cards": {
+      "title": "Room QR cards",
+      "hint": "One printable card per room, ready to place at each door.",
+      "scope": "Scope",
+      "scopeAll": "All rooms",
+      "scopeFloors": "Specific floors",
+      "scopeRooms": "Specific rooms",
+      "floorsLabel": "Floors",
+      "floorsPlaceholder": "1, 2, 3",
+      "roomsLabel": "Rooms",
+      "roomsPlaceholder": "Search and select rooms…",
+      "download": "Download cards (PDF)",
+      "generating": "Generating…"
+    },
+    "copyLink": "Copy link",
+    "copied": "Copied",
+    "downloadPng": "Download PNG",
+    "downloadSvg": "Download SVG"
+  },
+  "excel": {
+    "export": "Export to Excel",
+    "exporting": "Exporting…",
+    "template": "Download template",
+    "import": {
+      "title": "Import rooms from Excel",
+      "hint": "Upload a file matching the template — you'll see a preview before anything is created.",
+      "dropzone": "Drag a file here, or click to browse",
+      "chosenFile": "Selected file: {name}",
+      "uploading": "Uploading…",
+      "confirm": "Create rooms",
+      "confirming": "Creating…",
+      "rowError": {
+        "roomNumber": "Room number: {message}",
+        "floor": "Floor: {message}",
+        "roomTypeId": "Room type: {message}",
+        "status": "Status: {message}"
+      }
+    }
+  }
+}

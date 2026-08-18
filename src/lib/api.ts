@@ -109,24 +109,20 @@ async function parseError(
 }
 
 /**
- * The only way to talk to the backend. Adds the bearer header, parses JSON
- * errors, and retries ONCE after a silent token refresh on 401 — then hard
- * logout. Never call raw fetch from screens.
+ * Shared core of every request helper below: fires `doFetch` with the current
+ * access token, retries ONCE after a silent refresh on 401 (single-flight,
+ * same as `tryRefresh()`), hard-logs-out if the refresh fails, and otherwise
+ * parses JSON errors into `ApiError`. `api()`, `apiUpload()` and `apiBlob()`
+ * differ only in how the request is built and how a 2xx body is read.
  */
-export async function api<T>(
+async function request<T>(
   path: string,
-  init: RequestInit = {},
-  allowRetry = true,
+  allowRetry: boolean,
+  doFetch: (token: string | null) => Promise<Response>,
+  parseSuccess: (res: Response) => Promise<T>,
 ): Promise<T> {
   const token = tokenStore.access();
-  const res = await fetch(`${BASE_URL}${path}`, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...init.headers,
-    },
-  });
+  const res = await doFetch(token);
 
   if (
     res.status === 401 &&
@@ -135,7 +131,7 @@ export async function api<T>(
     tokenStore.refresh()
   ) {
     if (await tryRefresh()) {
-      return api<T>(path, init, false);
+      return request<T>(path, false, doFetch, parseSuccess);
     }
     hardLogout();
     throw new ApiError(401, 'Session expired', undefined, 'SESSION_EXPIRED');
@@ -145,8 +141,38 @@ export async function api<T>(
     const { message, details, code } = await parseError(res);
     throw new ApiError(res.status, message, details, code);
   }
+  return parseSuccess(res);
+}
+
+async function parseJsonBody<T>(res: Response): Promise<T> {
   if (res.status === 204) return undefined as T;
   return res.json();
+}
+
+/**
+ * The only way to talk to the backend. Adds the bearer header, parses JSON
+ * errors, and retries ONCE after a silent token refresh on 401 — then hard
+ * logout. Never call raw fetch from screens.
+ */
+export async function api<T>(
+  path: string,
+  init: RequestInit = {},
+  allowRetry = true,
+): Promise<T> {
+  return request<T>(
+    path,
+    allowRetry,
+    (token) =>
+      fetch(`${BASE_URL}${path}`, {
+        ...init,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...init.headers,
+        },
+      }),
+    parseJsonBody,
+  );
 }
 
 /**
@@ -158,25 +184,55 @@ export async function apiUpload<T>(
   body: FormData,
   allowRetry = true,
 ): Promise<T> {
-  const token = tokenStore.access();
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method: 'POST',
-    body,
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-  });
+  return request<T>(
+    path,
+    allowRetry,
+    (token) =>
+      fetch(`${BASE_URL}${path}`, {
+        method: 'POST',
+        body,
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      }),
+    parseJsonBody,
+  );
+}
 
-  if (res.status === 401 && allowRetry && tokenStore.refresh()) {
-    if (await tryRefresh()) {
-      return apiUpload<T>(path, body, false);
-    }
-    hardLogout();
-    throw new ApiError(401, 'Session expired', undefined, 'SESSION_EXPIRED');
-  }
+/**
+ * Binary-download variant of api<T>() — same auth/refresh/error handling,
+ * but reads the body as a `Blob` and surfaces the server-suggested filename
+ * from `Content-Disposition` (room cards PDF, QR poster, Excel export/template).
+ */
+export async function apiBlob(
+  path: string,
+  init: RequestInit = {},
+  allowRetry = true,
+): Promise<{ blob: Blob; filename: string | null }> {
+  return request(
+    path,
+    allowRetry,
+    (token) =>
+      fetch(`${BASE_URL}${path}`, {
+        ...init,
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          ...init.headers,
+        },
+      }),
+    async (res) => {
+      const blob = await res.blob();
+      const disposition = res.headers.get('Content-Disposition');
+      const match = disposition?.match(/filename="?([^";]+)"?/);
+      return { blob, filename: match ? match[1] : null };
+    },
+  );
+}
 
-  if (!res.ok) {
-    const { message, details, code } = await parseError(res);
-    throw new ApiError(res.status, message, details, code);
-  }
-  if (res.status === 204) return undefined as T;
-  return res.json();
+/** Triggers a browser save-as for a blob fetched via `apiBlob()`. */
+export function saveBlob(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }

@@ -4,6 +4,7 @@ import errors from './errors.json';
 import guidance from './guidance.json';
 import profile from './profile.json';
 import roles from './roles.json';
+import rooms from './rooms.json';
 import shell from './shell.json';
 import staff from './staff.json';
 import subscription from './subscription.json';
@@ -16,6 +17,7 @@ const messages = {
   guidance,
   profile,
   roles,
+  rooms,
   shell,
   staff,
   subscription,

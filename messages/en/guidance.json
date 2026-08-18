@@ -52,7 +52,25 @@
     "stepAddStaffHint": "Invite your team by email, or create accounts with a username for staff without one.",
     "stepCreateRole": "Create a role for your team",
     "stepCreateRoleHint": "Roles decide what each staff member can see and do.",
+    "stepAddRooms": "Add your rooms",
+    "stepAddRoomsHint": "Rooms are what guests scan to reach your services — add them one at a time, in a number range, or import from Excel.",
+    "stepPrintQr": "Print your room QR codes",
+    "stepPrintQrHint": "Generate a printable PDF of QR cards for your rooms — one per door.",
     "stepDone": "Done",
     "openPage": "Open"
+  },
+  "rooms": {
+    "intro": "Rooms are what guests scan to reach your services. Add them one at a time, in a number range, or import from Excel — each active room gets its own QR code linking straight to your guest app.",
+    "firstRunTitle": "How rooms work",
+    "firstRunBody": "Every room needs a room type and a status. Active and out-of-service rooms count toward your plan's room limit; inactive rooms don't. Print QR codes any time from the QR page.",
+    "status": {
+      "active": "Guests can scan this room's QR code and reach your services. Counts toward your plan's room limit.",
+      "out_of_service": "Temporarily unavailable to guests — use this for rooms under maintenance. Still counts toward your plan's room limit.",
+      "inactive": "Hidden from guests and doesn't count toward your plan's room limit. Use this for rooms removed from service long-term."
+    },
+    "renumber": "Changing this room's number invalidates any cards already printed with the old number — reprint them so guests scan the right room.",
+    "bulkPreviewNote": "Review every row before confirming — rows with errors are skipped, and numbers that already exist are flagged as duplicates.",
+    "importNote": "Upload an Excel file matching the template. You'll see a preview with any row errors before anything is created.",
+    "emptyOnboarding": "Add your rooms to activate guest services."
   }
 }
