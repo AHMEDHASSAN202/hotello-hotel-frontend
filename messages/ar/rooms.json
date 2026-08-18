@@ -119,6 +119,10 @@
     "rangeFromPlaceholder": "101",
     "rangeToPlaceholder": "120",
     "rangeHint": "نطاقات رقمية فقط — يتم إنشاء النطاق كأرقام متتالية.",
+    "exclusions": "استبعد هذه الأرقام",
+    "exclusionsOptional": "استبعد هذه الأرقام (اختياري)",
+    "exclusionsPlaceholder": "313, 413",
+    "exclusionsHint": "أرقام مفصولة بفواصل يتم استبعادها من النطاق.",
     "prefix": "البادئة",
     "prefixOptional": "البادئة (اختياري)",
     "prefixPlaceholder": "B-",
@@ -137,6 +141,7 @@
       "rowNumber": "الصف {row}",
       "duplicateBadge": "مكرر",
       "confirm": "إنشاء الغرف",
+      "confirmCount": "{count, plural, one {إنشاء غرفة واحدة} other {إنشاء # غرف}}",
       "confirming": "جارٍ الإنشاء…"
     }
   },

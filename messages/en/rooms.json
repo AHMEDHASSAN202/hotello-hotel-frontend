@@ -119,6 +119,10 @@
     "rangeFromPlaceholder": "101",
     "rangeToPlaceholder": "120",
     "rangeHint": "Numeric ranges only — the range is generated as consecutive numbers.",
+    "exclusions": "Skip these numbers",
+    "exclusionsOptional": "Skip these numbers (optional)",
+    "exclusionsPlaceholder": "313, 413",
+    "exclusionsHint": "Comma-separated numbers to leave out of the range.",
     "prefix": "Prefix",
     "prefixOptional": "Prefix (optional)",
     "prefixPlaceholder": "B-",
@@ -137,6 +141,7 @@
       "rowNumber": "Row {row}",
       "duplicateBadge": "Duplicate",
       "confirm": "Create rooms",
+      "confirmCount": "{count, plural, one {Create # room} other {Create # rooms}}",
       "confirming": "Creating…"
     }
   },

@@ -42,13 +42,17 @@ export function Bdi({
 export function Code({
   children,
   className = '',
+  title,
 }: {
   children: ReactNode;
   className?: string;
+  /** Native tooltip — e.g. explaining why a bulk-preview number is flagged. */
+  title?: string;
 }) {
   return (
     <code
       dir="ltr"
+      title={title}
       className={`inline-block font-mono [unicode-bidi:isolate] ${className}`}
     >
       {children}

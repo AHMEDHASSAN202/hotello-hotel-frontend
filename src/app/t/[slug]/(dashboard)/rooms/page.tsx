@@ -6,6 +6,8 @@ import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { HintCard, InfoTip, PageIntro } from '@/components/guidance';
+import { AddRoomsModal } from '@/components/rooms/add-rooms-modal';
+import { EditRoomModal } from '@/components/rooms/edit-room-modal';
 import { useTenant } from '@/components/tenant-provider';
 import {
   Badge,
@@ -69,8 +71,7 @@ export default function RoomsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
 
-  // Row/toolbar actions wired here; the modals themselves land in Task 15
-  // (add/edit) and Task 16 (QR). Nothing renders from these yet.
+  // Row/toolbar actions wired here; the QR modal lands in Task 16.
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<Room | null>(null);
   const [qrRoom, setQrRoom] = useState<Room | null>(null);
@@ -173,8 +174,6 @@ export default function RoomsPage() {
           </Button>
         )}
       </div>
-      {/* AddRoomsModal mounts here (Task 15) */}
-
       {canCreate && (
         <div className="mt-6">
           <HintCard hintKey="rooms.firstRun" title={tG('firstRunTitle')}>
@@ -373,8 +372,18 @@ export default function RoomsPage() {
         />
       </div>
 
-      {/* AddRoomsModal mounts here (Task 15), driven by `adding` */}
-      {/* EditRoomModal mounts here (Task 15), driven by `editing` */}
+      <AddRoomsModal
+        open={adding}
+        types={types}
+        onClose={() => setAdding(false)}
+        onCreated={load}
+      />
+      <EditRoomModal
+        room={editing}
+        types={types}
+        onClose={() => setEditing(null)}
+        onSaved={load}
+      />
       {/* RoomQrModal mounts here (Task 16), driven by `qrRoom` */}
     </div>
   );
