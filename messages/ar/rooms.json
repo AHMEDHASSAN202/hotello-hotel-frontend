@@ -1,7 +1,6 @@
 {
   "eyebrow": "الإعداد",
   "title": "الغرف",
-  "intro": "أدر غرف فندقك، وأنواعها، ورموز QR القابلة للطباعة التي يستخدمها الضيوف للوصول إلى خدماتك.",
   "readOnlyHint": "اشتراكك في وضع القراءة فقط، لذا تم إيقاف التعديلات.",
   "list": {
     "header": {
@@ -118,7 +117,7 @@
     "saveSubmit": "حفظ التغييرات",
     "preview": {
       "title": "معاينة",
-      "willCreate": "هيتم إنشاء {count, plural, one {أوضة واحدة} other {# أوضة}}.",
+      "willCreate": "سيتم إنشاء {count, plural, one {غرفة واحدة} other {# غرف}}.",
       "validCount": "{count, plural, one {صف صالح واحد} other {# صفوف صالحة}}",
       "duplicateCount": "{count, plural, one {تكرار واحد} other {# تكرارات}}",
       "invalidCount": "{count, plural, one {صف غير صالح واحد} other {# صفوف غير صالحة}}",

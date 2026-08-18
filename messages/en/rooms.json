@@ -1,7 +1,6 @@
 {
   "eyebrow": "Setup",
   "title": "Rooms",
-  "intro": "Manage your rooms, room types, and the printable QR codes guests use to reach your services.",
   "readOnlyHint": "Your subscription is read-only, so changes are paused.",
   "list": {
     "header": {
