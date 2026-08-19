@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { HintCard, InfoTip, PageIntro } from '@/components/guidance';
 import { AddRoomsModal } from '@/components/rooms/add-rooms-modal';
 import { EditRoomModal } from '@/components/rooms/edit-room-modal';
+import { RoomQrModal } from '@/components/rooms/room-qr-modal';
 import { useTenant } from '@/components/tenant-provider';
 import {
   Badge,
@@ -71,7 +72,6 @@ export default function RoomsPage() {
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
 
-  // Row/toolbar actions wired here; the QR modal lands in Task 16.
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<Room | null>(null);
   const [qrRoom, setQrRoom] = useState<Room | null>(null);
@@ -384,7 +384,7 @@ export default function RoomsPage() {
         onClose={() => setEditing(null)}
         onSaved={load}
       />
-      {/* RoomQrModal mounts here (Task 16), driven by `qrRoom` */}
+      <RoomQrModal room={qrRoom} onClose={() => setQrRoom(null)} />
     </div>
   );
 }

@@ -9,6 +9,20 @@ export function assetUrl(path: string): string {
   return `${BASE_URL}${clean}`;
 }
 
+/**
+ * The hotel-wide guest URL a scanned general QR resolves to — same contract
+ * the backend uses to build every QR (`GUEST_APP_BASE_URL/{slug}`, Epic 11
+ * global constraint). Computed client-side purely for display + copy on the
+ * QR print page; the backend remains the source of truth for what's actually
+ * embedded in the QR image it renders.
+ */
+export function guestUrlForSlug(slug: string): string {
+  const base = (
+    process.env.NEXT_PUBLIC_GUEST_APP_BASE_URL ?? 'https://guest.gxp.example'
+  ).replace(/\/$/, '');
+  return `${base}/${slug}`;
+}
+
 export class ApiError extends Error {
   constructor(
     public readonly status: number,

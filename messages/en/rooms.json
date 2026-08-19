@@ -154,10 +154,26 @@
   "qr": {
     "eyebrow": "Guest access",
     "title": "QR codes",
+    "noAccess": {
+      "title": "You don't have access to QR codes",
+      "hint": "Ask an administrator to grant you the rooms permission."
+    },
+    "roomsLoadError": "We couldn't load your rooms.",
+    "modal": {
+      "title": "QR code — Room {roomNumber}",
+      "imgAlt": "QR code for room {roomNumber}",
+      "loadError": "We couldn't load this QR code.",
+      "downloadError": "We couldn't download this file. Please try again.",
+      "guestUrlLabel": "Guest link"
+    },
     "poster": {
       "title": "General QR poster",
       "hint": "One QR code guests scan to reach your guest app, without a specific room.",
-      "download": "Download poster"
+      "sizeLabel": "Paper size",
+      "download": "Download poster",
+      "generating": "Generating…",
+      "downloadError": "We couldn't generate this PDF. Please try again.",
+      "qrLoadError": "We couldn't load the general QR code."
     },
     "cards": {
       "title": "Room QR cards",
@@ -170,8 +186,14 @@
       "floorsPlaceholder": "1, 2, 3",
       "roomsLabel": "Rooms",
       "roomsPlaceholder": "Search and select rooms…",
+      "searchAria": "Search rooms to select",
+      "searchEmpty": "No rooms match your search.",
+      "selectedCount": "{count, plural, =0 {No rooms selected} one {# room selected} other {# rooms selected}}",
+      "capHint": "You can select up to 100 rooms per PDF.",
+      "noRooms": "Add rooms first — there's nothing to print yet.",
       "download": "Download cards (PDF)",
-      "generating": "Generating…"
+      "generating": "Generating…",
+      "downloadError": "We couldn't generate this PDF. Please try again."
     },
     "copyLink": "Copy link",
     "copied": "Copied",
