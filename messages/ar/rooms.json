@@ -4,12 +4,9 @@
   "readOnlyHint": "اشتراكك في وضع القراءة فقط، لذا تم إيقاف التعديلات.",
   "list": {
     "header": {
-      "roomsTab": "الغرف",
       "typesTab": "أنواع الغرف",
       "new": "إضافة غرفة",
-      "bulkAdd": "إضافة نطاق",
       "import": "استيراد من إكسل",
-      "export": "تصدير إلى إكسل",
       "printQr": "طباعة رموز QR"
     },
     "noAccess": {
@@ -28,8 +25,7 @@
       "allStatuses": "كل الحالات",
       "roomType": "تصفية حسب نوع الغرفة",
       "allRoomTypes": "كل أنواع الغرف",
-      "floor": "تصفية حسب الطابق",
-      "allFloors": "كل الطوابق"
+      "floor": "تصفية حسب الطابق"
     },
     "table": {
       "roomNumber": "رقم الغرفة",
@@ -46,8 +42,7 @@
     "empty": {
       "noMatchTitle": "لا توجد غرف مطابقة للتصفية",
       "noMatchHint": "جرّب بحثًا أو حالة أو نوع غرفة مختلفًا.",
-      "emptyTitle": "لا توجد غرف بعد",
-      "emptyHint": "أضف غرف فندقك لتفعيل خدمات الضيوف."
+      "emptyTitle": "لا توجد غرف بعد"
     }
   },
   "status": {
@@ -71,7 +66,7 @@
     "card": {
       "active": "نشط",
       "inactive": "غير نشط",
-      "roomsCount": "{count, plural, =0 {لا توجد غرف} one {غرفة واحدة} other {# غرف}}",
+      "roomsCount": "{count, plural, =0 {لا توجد غرف} zero {لا توجد غرف} one {غرفة واحدة} two {غرفتان} few {# غرف} many {# غرفة} other {# غرفة}}",
       "editAria": "تعديل {name}",
       "deactivateAria": "تعطيل {name}",
       "activateAria": "تفعيل {name}"
@@ -90,7 +85,7 @@
     "deactivate": {
       "title": "تعطيل نوع الغرفة؟",
       "body": "تعطيل <strong>{name}</strong> يخفيه من نموذج إضافة الغرف. الغرف التي تستخدمه بالفعل تحتفظ به دون تغيير.",
-      "inUse": "لا يزال هذا النوع مُسنَدًا إلى {count, plural, one {غرفة واحدة} other {# غرف}}.",
+      "inUse": "لا يزال هذا النوع مُسنَدًا إلى {count, plural, zero {أي غرفة} one {غرفة واحدة} two {غرفتين} few {# غرف} many {# غرفة} other {# غرفة}}.",
       "confirm": "تعطيل"
     },
     "activate": {
@@ -109,9 +104,9 @@
     "roomNumber": "رقم الغرفة",
     "roomNumberHint": "حروف وأرقام وشرطات، من 1 إلى 20 حرفًا. الأصفار في بداية الرقم تبقى كما كُتبت.",
     "roomNumberPlaceholder": "101",
-    "floor": "الطابق",
     "floorOptional": "الطابق (اختياري)",
     "floorPlaceholder": "1",
+    "floorHint": "من -10 (طوابق تحت الأرض) إلى 200.",
     "roomType": "نوع الغرفة",
     "status": "الحالة",
     "rangeFrom": "من",
@@ -119,37 +114,23 @@
     "rangeFromPlaceholder": "101",
     "rangeToPlaceholder": "120",
     "rangeHint": "نطاقات رقمية فقط — يتم إنشاء النطاق كأرقام متتالية.",
-    "exclusions": "استبعد هذه الأرقام",
     "exclusionsOptional": "استبعد هذه الأرقام (اختياري)",
     "exclusionsPlaceholder": "313, 413",
     "exclusionsHint": "أرقام مفصولة بفواصل يتم استبعادها من النطاق.",
-    "prefix": "البادئة",
-    "prefixOptional": "البادئة (اختياري)",
-    "prefixPlaceholder": "B-",
-    "prefixHint": "تُضاف قبل كل رقم، مثلًا B-101.",
     "createSubmit": "إضافة غرفة",
     "saveSubmit": "حفظ التغييرات",
     "preview": {
       "title": "معاينة",
-      "willCreate": "سيتم إنشاء {count, plural, one {غرفة واحدة} other {# غرف}}.",
-      "validCount": "{count, plural, one {صف صالح واحد} other {# صفوف صالحة}}",
-      "duplicateCount": "{count, plural, one {تكرار واحد} other {# تكرارات}}",
-      "invalidCount": "{count, plural, one {صف غير صالح واحد} other {# صفوف غير صالحة}}",
-      "remaining": "{count, plural, one {مكان واحد متبقٍ} other {# أماكن متبقية}} في خطتك",
+      "willCreate": "{count, plural, zero {لن يتم إنشاء أي غرفة} one {سيتم إنشاء غرفة واحدة} two {سيتم إنشاء غرفتين} few {سيتم إنشاء # غرف} many {سيتم إنشاء # غرفة} other {سيتم إنشاء # غرفة}}.",
+      "validCount": "{count, plural, zero {لا يوجد أي صف صالح} one {صف صالح واحد} two {صفان صالحان} few {# صفوف صالحة} many {# صفًا صالحًا} other {# صفًا صالحًا}}",
+      "duplicateCount": "{count, plural, zero {لا يوجد أي تكرار} one {تكرار واحد} two {تكراران} few {# تكرارات} many {# تكرارًا} other {# تكرارًا}}",
+      "invalidCount": "{count, plural, zero {لا يوجد أي صف غير صالح} one {صف غير صالح واحد} two {صفان غير صالحان} few {# صفوف غير صالحة} many {# صفًا غير صالح} other {# صفًا غير صالح}}",
+      "remaining": "{count, plural, zero {لا يوجد أي مكان متبقٍ} one {مكان واحد متبقٍ} two {مكانان متبقيان} few {# أماكن متبقية} many {# مكانًا متبقيًا} other {# مكانًا متبقيًا}} في خطتك",
       "unlimited": "عدد غرف غير محدود في خطتك",
-      "overLimit": "هذا النطاق يتجاوز عدد الغرف المتبقي في خطتك.",
       "rowNumber": "الصف {row}",
       "duplicateBadge": "مكرر",
-      "confirm": "إنشاء الغرف",
-      "confirmCount": "{count, plural, one {إنشاء غرفة واحدة} other {إنشاء # غرف}}",
-      "confirming": "جارٍ الإنشاء…"
+      "confirmCount": "{count, plural, zero {لا توجد أي غرفة لإنشائها} one {إنشاء غرفة واحدة} two {إنشاء غرفتين} few {إنشاء # غرف} many {إنشاء # غرفة} other {إنشاء # غرفة}}"
     }
-  },
-  "edit": {
-    "renumberWarning": "تغيير رقم الغرفة يُبطل أي بطاقات مطبوعة بالرقم القديم — أعد طباعتها ليمسح الضيوف الغرفة الصحيحة.",
-    "guestUrl": "رابط الضيف",
-    "copyGuestUrl": "نسخ الرابط",
-    "copied": "تم النسخ"
   },
   "qr": {
     "eyebrow": "وصول الضيوف",
@@ -190,13 +171,14 @@
       "searchEmpty": "لا توجد غرف مطابقة لبحثك.",
       "selectedCount": "{count, plural, =0 {لم يتم اختيار أي غرفة} one {تم اختيار غرفة واحدة} two {تم اختيار غرفتين} few {تم اختيار # غرف} many {تم اختيار # غرفة} other {تم اختيار # غرفة}}",
       "capHint": "يمكنك اختيار حتى 100 غرفة لكل ملف PDF.",
+      "truncatedNote": "يتم عرض أول 200 غرفة فقط — استخدم نطاق الطوابق للغرف المتبقية.",
       "noRooms": "أضف غرفًا أولًا — لا يوجد ما يمكن طباعته بعد.",
+      "noRoomsTitle": "لا توجد غرف لطباعتها بعد",
+      "addRooms": "إضافة غرف",
       "download": "تنزيل البطاقات (PDF)",
       "generating": "جارٍ الإنشاء…",
       "downloadError": "تعذّر إنشاء هذا الملف. يرجى المحاولة مرة أخرى."
     },
-    "copyLink": "نسخ الرابط",
-    "copied": "تم النسخ",
     "downloadPng": "تنزيل PNG",
     "downloadSvg": "تنزيل SVG"
   },
@@ -209,14 +191,13 @@
     "templateError": "تعذّر تنزيل القالب. يرجى المحاولة مرة أخرى.",
     "import": {
       "title": "استيراد غرف من إكسل",
-      "hint": "ارفع ملفًا مطابقًا للقالب — ستظهر لك معاينة قبل إنشاء أي شيء.",
       "dropzone": "اسحب ملفًا هنا، أو اضغط للاستعراض",
       "chosenFile": "الملف المختار: {name}",
       "uploading": "جارٍ الرفع…",
-      "confirm": "{count, plural, one {تجاوز الصفوف غير الصالحة واستيراد غرفة واحدة} other {تجاوز الصفوف غير الصالحة واستيراد # غرف}}",
+      "confirm": "{count, plural, zero {تجاوز الصفوف غير الصالحة} one {تجاوز الصفوف غير الصالحة واستيراد غرفة واحدة} two {تجاوز الصفوف غير الصالحة واستيراد غرفتين} few {تجاوز الصفوف غير الصالحة واستيراد # غرف} many {تجاوز الصفوف غير الصالحة واستيراد # غرفة} other {تجاوز الصفوف غير الصالحة واستيراد # غرفة}}",
       "confirming": "جارٍ الإنشاء…",
       "rowLine": "الصف {row} · {detail}",
-      "success": "{created, plural, one {تم إنشاء غرفة واحدة} other {تم إنشاء # غرف}}؛ وتم تجاوز {skipped, plural, one {صف واحد} other {# صفوف}}.",
+      "success": "{created, plural, zero {لم يتم إنشاء أي غرفة} one {تم إنشاء غرفة واحدة} two {تم إنشاء غرفتين} few {تم إنشاء # غرف} many {تم إنشاء # غرفة} other {تم إنشاء # غرفة}}؛ وتم تجاوز {skipped, plural, zero {أي صف} one {صف واحد} two {صفين} few {# صفوف} many {# صفًا} other {# صفًا}}.",
       "rowError": {
         "roomNumber": "رقم الغرفة: {message}",
         "floor": "الطابق: {message}",

@@ -1,11 +1,12 @@
 'use client';
 
 import { Printer, Search, ShieldAlert } from 'lucide-react';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CopyButton } from '@/components/copy-button';
-import { PageIntro } from '@/components/guidance';
+import { InfoTip, PageIntro } from '@/components/guidance';
 import { useTenant } from '@/components/tenant-provider';
 import {
   Button,
@@ -37,6 +38,11 @@ const toggleClass = (active: boolean) =>
       : 'border-line bg-white text-ink-soft hover:text-ink'
   }`;
 
+/** Link styled like the primary <Button/> — for the empty-state "Add rooms"
+ * action, which navigates rather than performing an in-page action. */
+const primaryLinkClass =
+  'inline-flex items-center justify-center gap-2 rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-ink-deep';
+
 /** Comma-separated integers ("1, 2, 3" → [1, 2, 3]) — mirrors the bulk-add
  * exclusions parser (add-rooms-modal.tsx): blanks/non-numeric are dropped
  * silently rather than rejected. */
@@ -66,6 +72,7 @@ export default function RoomsQrPage() {
   const canRead = hasPermission('rooms.read');
 
   const [rooms, setRooms] = useState<Room[] | null>(null);
+  const [roomsTotal, setRoomsTotal] = useState<number | null>(null);
   const [roomsLoading, setRoomsLoading] = useState(true);
   const [roomsError, setRoomsError] = useState<string | null>(null);
 
@@ -77,6 +84,7 @@ export default function RoomsQrPage() {
         `/tenant/rooms?pageSize=${ROOMS_LOAD_PAGE_SIZE}`,
       );
       setRooms(res.data);
+      setRoomsTotal(res.total);
     } catch (err) {
       setRoomsError(
         err instanceof ApiError ? resolveError(err) : t('roomsLoadError'),
@@ -116,11 +124,14 @@ export default function RoomsQrPage() {
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
         <PosterCard slug={params.slug} onGenerated={reload} />
         <CardsCard
+          slug={params.slug}
           rooms={rooms}
+          roomsTotal={roomsTotal}
           roomsLoading={roomsLoading}
           roomsError={roomsError}
           onRetryRooms={loadRooms}
           disabled={hasNoRooms}
+          canCreateRooms={hasPermission('rooms.create')}
           onGenerated={reload}
         />
       </div>
@@ -140,6 +151,7 @@ function PosterCard({
 }) {
   const t = useTranslations('rooms.qr');
   const tCommon = useTranslations('common');
+  const tG = useTranslations('guidance.rooms');
   const resolveError = useApiError();
 
   const [size, setSize] = useState<PosterSize>('a4');
@@ -203,8 +215,9 @@ function PosterCard({
 
   return (
     <div className="rounded-xl border border-line bg-white p-5">
-      <h2 className="font-display font-semibold text-ink">
+      <h2 className="flex items-center gap-1.5 font-display font-semibold text-ink">
         {t('poster.title')}
+        <InfoTip label={t('poster.title')}>{tG('qrStable')}</InfoTip>
       </h2>
       <p className="mt-1 text-sm text-ink-soft">{t('poster.hint')}</p>
 
@@ -243,6 +256,7 @@ function PosterCard({
             <button
               key={s}
               type="button"
+              aria-pressed={size === s}
               onClick={() => setSize(s)}
               className={toggleClass(size === s)}
             >
@@ -280,21 +294,28 @@ const SCOPE_LABEL_KEY: Record<CardsScope, string> = {
 /** Room QR cards: one card per room, scoped to all rooms / specific floors /
  * a hand-picked selection (capped at 100 — mirrors the backend's own cap). */
 function CardsCard({
+  slug,
   rooms,
+  roomsTotal,
   roomsLoading,
   roomsError,
   onRetryRooms,
   disabled,
+  canCreateRooms,
   onGenerated,
 }: {
+  slug: string;
   rooms: Room[] | null;
+  roomsTotal: number | null;
   roomsLoading: boolean;
   roomsError: string | null;
   onRetryRooms: () => void;
   disabled: boolean;
+  canCreateRooms: boolean;
   onGenerated: () => void;
 }) {
   const t = useTranslations('rooms.qr');
+  const tG = useTranslations('guidance.rooms');
   const resolveError = useApiError();
 
   const [scope, setScope] = useState<CardsScope>('all');
@@ -362,13 +383,24 @@ function CardsCard({
 
   return (
     <div className="rounded-xl border border-line bg-white p-5">
-      <h2 className="font-display font-semibold text-ink">
+      <h2 className="flex items-center gap-1.5 font-display font-semibold text-ink">
         {t('cards.title')}
+        <InfoTip label={t('cards.title')}>{tG('qrStable')}</InfoTip>
       </h2>
       <p className="mt-1 text-sm text-ink-soft">{t('cards.hint')}</p>
 
       {disabled ? (
-        <p className="mt-4 text-sm text-ink-soft">{t('cards.noRooms')}</p>
+        <EmptyState
+          title={t('cards.noRoomsTitle')}
+          hint={t('cards.noRooms')}
+          action={
+            canCreateRooms ? (
+              <Link href={`/t/${slug}/rooms`} className={primaryLinkClass}>
+                {t('cards.addRooms')}
+              </Link>
+            ) : undefined
+          }
+        />
       ) : (
         <>
           <div className="mt-4">
@@ -380,6 +412,7 @@ function CardsCard({
                 <button
                   key={s}
                   type="button"
+                  aria-pressed={scope === s}
                   onClick={() => setScope(s)}
                   className={toggleClass(scope === s)}
                 >
@@ -429,9 +462,16 @@ function CardsCard({
                   </div>
                   <div className="mt-2 max-h-56 overflow-y-auto rounded-lg border border-line">
                     {filteredRooms.length === 0 ? (
-                      <p className="p-3 text-center text-xs text-ink-soft">
-                        {t('cards.searchEmpty')}
-                      </p>
+                      <div className="flex flex-col items-center gap-1.5 py-8 text-center">
+                        <Search
+                          size={20}
+                          className="text-ink-soft/50"
+                          aria-hidden
+                        />
+                        <p className="text-xs text-ink-soft">
+                          {t('cards.searchEmpty')}
+                        </p>
+                      </div>
                     ) : (
                       filteredRooms.map((r) => {
                         const checked = selectedIds.has(r.id);
@@ -467,6 +507,11 @@ function CardsCard({
                     {t('cards.selectedCount', { count: selectedIds.size })} ·{' '}
                     {t('cards.capHint')}
                   </p>
+                  {roomsTotal !== null && roomsTotal > ROOMS_LOAD_PAGE_SIZE && (
+                    <p className="mt-1 text-xs text-ink-soft">
+                      {t('cards.truncatedNote')}
+                    </p>
+                  )}
                 </>
               )}
             </div>

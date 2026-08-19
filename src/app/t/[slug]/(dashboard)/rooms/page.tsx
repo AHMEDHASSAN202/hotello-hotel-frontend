@@ -385,7 +385,11 @@ export default function RoomsPage() {
                   {tGc('clearFilters')}
                 </Button>
               ) : canCreate ? (
-                <Button onClick={() => setAdding(true)} disabled={readOnly}>
+                <Button
+                  onClick={() => setAdding(true)}
+                  disabled={readOnly}
+                  title={readOnly ? tRooms('readOnlyHint') : undefined}
+                >
                   {t('header.new')}
                 </Button>
               ) : undefined
@@ -441,6 +445,9 @@ export default function RoomsPage() {
                             aria-label={t('row.editAria', {
                               roomNumber: room.roomNumber,
                             })}
+                            title={
+                              readOnly ? tRooms('readOnlyHint') : undefined
+                            }
                             className="rounded p-1.5 text-ink-soft hover:text-ink disabled:opacity-40"
                           >
                             <Pencil size={15} />

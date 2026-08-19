@@ -173,6 +173,7 @@ export function EditRoomModal({
           label={t('form.floorOptional')}
           type="number"
           placeholder={t('form.floorPlaceholder')}
+          hint={t('form.floorHint')}
           value={form.floor}
           onChange={(e) => set('floor', e.target.value)}
         />
@@ -208,6 +209,7 @@ export function EditRoomModal({
               <span key={s} className="inline-flex items-center gap-1">
                 <button
                   type="button"
+                  aria-pressed={form.status === s}
                   onClick={() => set('status', s)}
                   className={statusToggleClass(form.status === s)}
                 >

@@ -287,6 +287,7 @@ export function AddRoomsModal({
       <div className="mb-4 flex gap-2 rounded-lg border border-line p-1">
         <button
           type="button"
+          aria-pressed={tab === 'single'}
           className={tabClass('single')}
           onClick={() => setTab('single')}
         >
@@ -294,6 +295,7 @@ export function AddRoomsModal({
         </button>
         <button
           type="button"
+          aria-pressed={tab === 'bulk'}
           className={tabClass('bulk')}
           onClick={() => setTab('bulk')}
         >
@@ -336,6 +338,7 @@ export function AddRoomsModal({
             label={t('form.floorOptional')}
             type="number"
             placeholder={t('form.floorPlaceholder')}
+            hint={t('form.floorHint')}
             value={singleForm.floor}
             onChange={(e) => setSingle('floor', e.target.value)}
           />
@@ -414,6 +417,7 @@ export function AddRoomsModal({
             label={t('form.floorOptional')}
             type="number"
             placeholder={t('form.floorPlaceholder')}
+            hint={t('form.floorHint')}
             value={bulkForm.floor}
             onChange={(e) => setBulk('floor', e.target.value)}
           />

@@ -4,12 +4,9 @@
   "readOnlyHint": "Your subscription is read-only, so changes are paused.",
   "list": {
     "header": {
-      "roomsTab": "Rooms",
       "typesTab": "Room types",
       "new": "Add room",
-      "bulkAdd": "Add a range",
       "import": "Import from Excel",
-      "export": "Export to Excel",
       "printQr": "Print QR codes"
     },
     "noAccess": {
@@ -28,8 +25,7 @@
       "allStatuses": "All statuses",
       "roomType": "Filter by room type",
       "allRoomTypes": "All room types",
-      "floor": "Filter by floor",
-      "allFloors": "All floors"
+      "floor": "Filter by floor"
     },
     "table": {
       "roomNumber": "Room number",
@@ -46,8 +42,7 @@
     "empty": {
       "noMatchTitle": "No rooms match your filters",
       "noMatchHint": "Try a different search, status, or room type.",
-      "emptyTitle": "No rooms yet",
-      "emptyHint": "Add your rooms to activate guest services."
+      "emptyTitle": "No rooms yet"
     }
   },
   "status": {
@@ -109,9 +104,9 @@
     "roomNumber": "Room number",
     "roomNumberHint": "Letters, digits, and hyphens, 1–20 characters. Leading zeros are kept as typed.",
     "roomNumberPlaceholder": "101",
-    "floor": "Floor",
     "floorOptional": "Floor (optional)",
     "floorPlaceholder": "1",
+    "floorHint": "From -10 (basement levels) to 200.",
     "roomType": "Room type",
     "status": "Status",
     "rangeFrom": "From",
@@ -119,14 +114,9 @@
     "rangeFromPlaceholder": "101",
     "rangeToPlaceholder": "120",
     "rangeHint": "Numeric ranges only — the range is generated as consecutive numbers.",
-    "exclusions": "Skip these numbers",
     "exclusionsOptional": "Skip these numbers (optional)",
     "exclusionsPlaceholder": "313, 413",
     "exclusionsHint": "Comma-separated numbers to leave out of the range.",
-    "prefix": "Prefix",
-    "prefixOptional": "Prefix (optional)",
-    "prefixPlaceholder": "B-",
-    "prefixHint": "Added before each number, for example B-101.",
     "createSubmit": "Add room",
     "saveSubmit": "Save changes",
     "preview": {
@@ -137,19 +127,10 @@
       "invalidCount": "{count, plural, one {# invalid row} other {# invalid rows}}",
       "remaining": "{count, plural, one {# spot} other {# spots}} left on your plan",
       "unlimited": "Unlimited rooms on your plan",
-      "overLimit": "This range exceeds your plan's remaining room limit.",
       "rowNumber": "Row {row}",
       "duplicateBadge": "Duplicate",
-      "confirm": "Create rooms",
-      "confirmCount": "{count, plural, one {Create # room} other {Create # rooms}}",
-      "confirming": "Creating…"
+      "confirmCount": "{count, plural, one {Create # room} other {Create # rooms}}"
     }
-  },
-  "edit": {
-    "renumberWarning": "Changing the room number invalidates any cards already printed with the old number — reprint them so guests scan the right room.",
-    "guestUrl": "Guest link",
-    "copyGuestUrl": "Copy link",
-    "copied": "Copied"
   },
   "qr": {
     "eyebrow": "Guest access",
@@ -190,13 +171,14 @@
       "searchEmpty": "No rooms match your search.",
       "selectedCount": "{count, plural, =0 {No rooms selected} one {# room selected} other {# rooms selected}}",
       "capHint": "You can select up to 100 rooms per PDF.",
+      "truncatedNote": "Showing the first 200 rooms — use the floor scope for the rest.",
       "noRooms": "Add rooms first — there's nothing to print yet.",
+      "noRoomsTitle": "No rooms to print yet",
+      "addRooms": "Add rooms",
       "download": "Download cards (PDF)",
       "generating": "Generating…",
       "downloadError": "We couldn't generate this PDF. Please try again."
     },
-    "copyLink": "Copy link",
-    "copied": "Copied",
     "downloadPng": "Download PNG",
     "downloadSvg": "Download SVG"
   },
@@ -209,7 +191,6 @@
     "templateError": "We couldn't download the template. Please try again.",
     "import": {
       "title": "Import rooms from Excel",
-      "hint": "Upload a file matching the template — you'll see a preview before anything is created.",
       "dropzone": "Drag a file here, or click to browse",
       "chosenFile": "Selected file: {name}",
       "uploading": "Uploading…",
