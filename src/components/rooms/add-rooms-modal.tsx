@@ -7,6 +7,7 @@ import { Button, Code, Field, Modal, selectClass } from '@/components/ui';
 import type { Locale } from '@/i18n/config';
 import { api, ApiError } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
+import { roomIssueMessage } from '@/lib/room-issues';
 import type { BulkPreview, RoomStatus, RoomType } from '@/lib/types';
 
 type Tab = 'single' | 'bulk';
@@ -492,9 +493,7 @@ export function AddRoomsModal({
                       <li key={`${r.row}-${issue.field}-${i}`}>
                         {t('form.preview.rowNumber', { row: r.row })}
                         {': '}
-                        {t(`excel.import.rowError.${issue.field}`, {
-                          message: issue.code,
-                        })}
+                        {roomIssueMessage(t, issue)}
                       </li>
                     )),
                   )}

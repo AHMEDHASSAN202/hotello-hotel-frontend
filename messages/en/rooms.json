@@ -203,20 +203,33 @@
   "excel": {
     "export": "Export to Excel",
     "exporting": "Exporting…",
+    "exportError": "We couldn't export your rooms. Please try again.",
     "template": "Download template",
+    "templateDownloading": "Downloading…",
+    "templateError": "We couldn't download the template. Please try again.",
     "import": {
       "title": "Import rooms from Excel",
       "hint": "Upload a file matching the template — you'll see a preview before anything is created.",
       "dropzone": "Drag a file here, or click to browse",
       "chosenFile": "Selected file: {name}",
       "uploading": "Uploading…",
-      "confirm": "Create rooms",
+      "confirm": "{count, plural, one {Skip invalid rows and import # room} other {Skip invalid rows and import # rooms}}",
       "confirming": "Creating…",
+      "rowLine": "Row {row} · {detail}",
+      "success": "Created {created, plural, one {# room} other {# rooms}}; skipped {skipped, plural, one {# row} other {# rows}}.",
       "rowError": {
         "roomNumber": "Room number: {message}",
         "floor": "Floor: {message}",
         "roomTypeId": "Room type: {message}",
         "status": "Status: {message}"
+      },
+      "issue": {
+        "REQUIRED": "This field is required.",
+        "INVALID_FORMAT": "This value doesn't match the expected format.",
+        "DUPLICATE_IN_HOTEL": "This room number already exists in your hotel.",
+        "DUPLICATE_IN_FILE": "This room number appears more than once in the file.",
+        "UNKNOWN_TYPE": "This room type doesn't match any of your room types.",
+        "INVALID_STATUS": "This status isn't valid — use active or out of service."
       }
     }
   }

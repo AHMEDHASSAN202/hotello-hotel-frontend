@@ -267,3 +267,11 @@ export interface BulkPreview {
   invalidCount: number;
   remaining: number | null;
 }
+
+/** POST /tenant/rooms/bulk response — fields are read defensively (fallbacks
+ * computed client-side from the request) since the exact shape is "created,
+ * skipped-ish" per the contract. */
+export interface BulkCreateResponse {
+  created?: number;
+  skipped?: number;
+}

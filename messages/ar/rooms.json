@@ -203,20 +203,33 @@
   "excel": {
     "export": "تصدير إلى إكسل",
     "exporting": "جارٍ التصدير…",
+    "exportError": "تعذّر تصدير الغرف. يرجى المحاولة مرة أخرى.",
     "template": "تنزيل القالب",
+    "templateDownloading": "جارٍ التنزيل…",
+    "templateError": "تعذّر تنزيل القالب. يرجى المحاولة مرة أخرى.",
     "import": {
       "title": "استيراد غرف من إكسل",
       "hint": "ارفع ملفًا مطابقًا للقالب — ستظهر لك معاينة قبل إنشاء أي شيء.",
       "dropzone": "اسحب ملفًا هنا، أو اضغط للاستعراض",
       "chosenFile": "الملف المختار: {name}",
       "uploading": "جارٍ الرفع…",
-      "confirm": "إنشاء الغرف",
+      "confirm": "{count, plural, one {تجاوز الصفوف غير الصالحة واستيراد غرفة واحدة} other {تجاوز الصفوف غير الصالحة واستيراد # غرف}}",
       "confirming": "جارٍ الإنشاء…",
+      "rowLine": "الصف {row} · {detail}",
+      "success": "{created, plural, one {تم إنشاء غرفة واحدة} other {تم إنشاء # غرف}}؛ وتم تجاوز {skipped, plural, one {صف واحد} other {# صفوف}}.",
       "rowError": {
         "roomNumber": "رقم الغرفة: {message}",
         "floor": "الطابق: {message}",
         "roomTypeId": "نوع الغرفة: {message}",
         "status": "الحالة: {message}"
+      },
+      "issue": {
+        "REQUIRED": "هذا الحقل مطلوب.",
+        "INVALID_FORMAT": "هذه القيمة لا تطابق الصيغة المطلوبة.",
+        "DUPLICATE_IN_HOTEL": "رقم الغرفة هذا موجود بالفعل في فندقك.",
+        "DUPLICATE_IN_FILE": "رقم الغرفة هذا مكرر أكثر من مرة في الملف.",
+        "UNKNOWN_TYPE": "نوع الغرفة هذا لا يطابق أيًا من أنواع غرفك.",
+        "INVALID_STATUS": "هذه الحالة غير صالحة — استخدم نشطة أو غير صالحة للخدمة."
       }
     }
   }

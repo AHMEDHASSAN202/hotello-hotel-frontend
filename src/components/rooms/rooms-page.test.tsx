@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import en from '../../../messages/en';
@@ -25,10 +25,18 @@ vi.mock('next/navigation', () => ({
   useParams: () => ({ slug: 'sunrise' }),
 }));
 
-const apiMock = vi.hoisted(() => ({ api: vi.fn() }));
+const apiMock = vi.hoisted(() => ({
+  api: vi.fn(),
+  apiUpload: vi.fn(),
+  apiBlob: vi.fn(),
+  saveBlob: vi.fn(),
+}));
 
 vi.mock('@/lib/api', () => ({
   api: apiMock.api,
+  apiUpload: apiMock.apiUpload,
+  apiBlob: apiMock.apiBlob,
+  saveBlob: apiMock.saveBlob,
   ApiError: class ApiError extends Error {
     constructor(
       public readonly status: number,
@@ -69,6 +77,9 @@ beforeEach(() => {
   tenant.hasPermission.mockReturnValue(true);
   tenant.readOnly = false;
   apiMock.api.mockReset();
+  apiMock.apiUpload.mockReset();
+  apiMock.apiBlob.mockReset();
+  apiMock.saveBlob.mockReset();
 });
 
 describe('RoomsPage (11.2)', () => {
@@ -194,5 +205,51 @@ describe('RoomsPage (11.2)', () => {
 
     const button = await screen.findByRole('button', { name: 'Add room' });
     expect(button.hasAttribute('disabled')).toBe(true);
+  });
+
+  it('11.7 AC1 — Export passes the active filters, not pagination, and stays enabled under readOnly', async () => {
+    tenant.readOnly = true;
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [ROOM_TYPE] };
+      return mockRoomsResponse();
+    });
+    renderPage();
+    await screen.findByText('No rooms yet');
+
+    fireEvent.change(screen.getByLabelText('Filter by status'), {
+      target: { value: 'active' },
+    });
+    await screen.findByText('No rooms match your filters');
+
+    const exportButton = screen.getByRole('button', { name: 'Export to Excel' });
+    expect(exportButton.hasAttribute('disabled')).toBe(false);
+
+    apiMock.apiBlob.mockResolvedValueOnce({
+      blob: new Blob(['x']),
+      filename: 'rooms.xlsx',
+    });
+    fireEvent.click(exportButton);
+
+    await waitFor(() => expect(apiMock.apiBlob).toHaveBeenCalled());
+    const [path] = apiMock.apiBlob.mock.calls[0];
+    expect(path).toBe('/tenant/rooms/export?status=active');
+    expect(apiMock.saveBlob).toHaveBeenCalled();
+  });
+
+  it('11.7 — Import and Download-template buttons are disabled under readOnly', async () => {
+    tenant.readOnly = true;
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [ROOM_TYPE] };
+      return mockRoomsResponse();
+    });
+    renderPage();
+    await screen.findByText('No rooms yet');
+
+    expect(
+      screen.getByRole('button', { name: 'Import from Excel' }).hasAttribute('disabled'),
+    ).toBe(true);
+    expect(
+      screen.getByRole('button', { name: 'Download template' }).hasAttribute('disabled'),
+    ).toBe(true);
   });
 });

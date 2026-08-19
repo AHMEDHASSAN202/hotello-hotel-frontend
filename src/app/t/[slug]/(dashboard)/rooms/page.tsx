@@ -1,6 +1,15 @@
 'use client';
 
-import { Pencil, Plus, QrCode, Search, ShieldAlert } from 'lucide-react';
+import {
+  Download,
+  FileSpreadsheet,
+  Pencil,
+  Plus,
+  QrCode,
+  Search,
+  ShieldAlert,
+  Upload,
+} from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -8,6 +17,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { HintCard, InfoTip, PageIntro } from '@/components/guidance';
 import { AddRoomsModal } from '@/components/rooms/add-rooms-modal';
 import { EditRoomModal } from '@/components/rooms/edit-room-modal';
+import { ImportRoomsModal } from '@/components/rooms/import-rooms-modal';
 import { RoomQrModal } from '@/components/rooms/room-qr-modal';
 import { useTenant } from '@/components/tenant-provider';
 import {
@@ -20,7 +30,7 @@ import {
   selectClass,
 } from '@/components/ui';
 import type { Locale } from '@/i18n/config';
-import { api, ApiError } from '@/lib/api';
+import { api, apiBlob, ApiError, saveBlob } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
 import type { Room, RoomsListResponse, RoomStatus, RoomType } from '@/lib/types';
 
@@ -73,18 +83,32 @@ export default function RoomsPage() {
   const [page, setPage] = useState(1);
 
   const [adding, setAdding] = useState(false);
+  const [importing, setImporting] = useState(false);
   const [editing, setEditing] = useState<Room | null>(null);
   const [qrRoom, setQrRoom] = useState<Room | null>(null);
+
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+  const [templateDownloading, setTemplateDownloading] = useState(false);
+  const [templateError, setTemplateError] = useState<string | null>(null);
+
+  /** The active list filters (search/floor/type/status) — shared by the
+   * paginated list request and the Export button, which always exports the
+   * CURRENT filtered set, not pagination (11.7 AC1). */
+  const activeFilterParams = useCallback(() => {
+    const qs = new URLSearchParams();
+    if (query) qs.set('search', query);
+    if (floor) qs.set('floor', floor);
+    if (typeFilter) qs.set('typeId', typeFilter);
+    if (statusFilter) qs.set('status', statusFilter);
+    return qs;
+  }, [query, floor, typeFilter, statusFilter]);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const qs = new URLSearchParams();
-      if (query) qs.set('search', query);
-      if (floor) qs.set('floor', floor);
-      if (typeFilter) qs.set('typeId', typeFilter);
-      if (statusFilter) qs.set('status', statusFilter);
+      const qs = activeFilterParams();
       qs.set('page', String(page));
       qs.set('pageSize', String(PAGE_SIZE));
       const [roomsRes, typesRes] = await Promise.all([
@@ -100,7 +124,39 @@ export default function RoomsPage() {
     } finally {
       setLoading(false);
     }
-  }, [query, floor, typeFilter, statusFilter, page, resolveError, t]);
+  }, [activeFilterParams, page, resolveError, t]);
+
+  async function handleExport() {
+    setExporting(true);
+    setExportError(null);
+    try {
+      const { blob, filename } = await apiBlob(
+        `/tenant/rooms/export?${activeFilterParams().toString()}`,
+      );
+      saveBlob(blob, filename ?? 'rooms.xlsx');
+    } catch (err) {
+      setExportError(
+        err instanceof ApiError ? resolveError(err) : tRooms('excel.exportError'),
+      );
+    } finally {
+      setExporting(false);
+    }
+  }
+
+  async function handleDownloadTemplate() {
+    setTemplateDownloading(true);
+    setTemplateError(null);
+    try {
+      const { blob, filename } = await apiBlob('/tenant/rooms/import/template');
+      saveBlob(blob, filename ?? 'room-import-template.xlsx');
+    } catch (err) {
+      setTemplateError(
+        err instanceof ApiError ? resolveError(err) : tRooms('excel.templateError'),
+      );
+    } finally {
+      setTemplateDownloading(false);
+    }
+  }
 
   useEffect(() => {
     if (canRead) load();
@@ -164,16 +220,59 @@ export default function RoomsPage() {
             {t('header.printQr')}
           </Link>
         </div>
-        {canCreate && (
+        <div className="flex flex-wrap items-center gap-2">
+          {/* 11.7 AC1 — Export is a read, so it stays enabled under a
+              read-only (expired-trial) subscription; only mutations
+              (Import, Add room) disable there. */}
           <Button
-            onClick={() => setAdding(true)}
-            disabled={readOnly}
-            title={readOnly ? tRooms('readOnlyHint') : undefined}
+            variant="ghost"
+            onClick={handleExport}
+            loading={exporting}
           >
-            <Plus size={16} aria-hidden /> {t('header.new')}
+            <Download size={15} aria-hidden />{' '}
+            {exporting ? tRooms('excel.exporting') : tRooms('excel.export')}
           </Button>
-        )}
+          {canCreate && (
+            <>
+              <Button
+                variant="ghost"
+                onClick={handleDownloadTemplate}
+                loading={templateDownloading}
+                disabled={readOnly}
+                title={readOnly ? tRooms('readOnlyHint') : undefined}
+              >
+                <FileSpreadsheet size={15} aria-hidden />{' '}
+                {templateDownloading
+                  ? tRooms('excel.templateDownloading')
+                  : tRooms('excel.template')}
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setImporting(true)}
+                disabled={readOnly}
+                title={readOnly ? tRooms('readOnlyHint') : undefined}
+              >
+                <Upload size={15} aria-hidden /> {t('header.import')}
+              </Button>
+              <Button
+                onClick={() => setAdding(true)}
+                disabled={readOnly}
+                title={readOnly ? tRooms('readOnlyHint') : undefined}
+              >
+                <Plus size={16} aria-hidden /> {t('header.new')}
+              </Button>
+            </>
+          )}
+        </div>
       </div>
+      {(exportError || templateError) && (
+        <div
+          role="alert"
+          className="mt-3 rounded-lg border border-danger/30 bg-danger/5 px-4 py-3 text-sm text-danger"
+        >
+          {exportError ?? templateError}
+        </div>
+      )}
       {canCreate && (
         <div className="mt-6">
           <HintCard hintKey="rooms.firstRun" title={tG('firstRunTitle')}>
@@ -377,6 +476,11 @@ export default function RoomsPage() {
         types={types}
         onClose={() => setAdding(false)}
         onCreated={load}
+      />
+      <ImportRoomsModal
+        open={importing}
+        onClose={() => setImporting(false)}
+        onImported={load}
       />
       <EditRoomModal
         room={editing}
