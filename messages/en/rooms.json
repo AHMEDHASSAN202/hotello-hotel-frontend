@@ -229,7 +229,7 @@
         "DUPLICATE_IN_HOTEL": "This room number already exists in your hotel.",
         "DUPLICATE_IN_FILE": "This room number appears more than once in the file.",
         "UNKNOWN_TYPE": "This room type doesn't match any of your room types.",
-        "INVALID_STATUS": "This status isn't valid — use active or out of service."
+        "INVALID_STATUS": "This status isn't valid — use active or out_of_service."
       }
     }
   }

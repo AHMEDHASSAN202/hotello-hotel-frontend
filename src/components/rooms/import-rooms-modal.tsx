@@ -1,6 +1,6 @@
 'use client';
 
-import { Download } from 'lucide-react';
+import { FileSpreadsheet } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { Button, Modal } from '@/components/ui';
@@ -237,7 +237,7 @@ export function ImportRoomsModal({
               onClick={handleDownloadTemplate}
               loading={templateDownloading}
             >
-              <Download size={15} aria-hidden />{' '}
+              <FileSpreadsheet size={15} aria-hidden />{' '}
               {templateDownloading
                 ? t('excel.templateDownloading')
                 : t('excel.template')}
