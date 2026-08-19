@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { CopyButton } from '@/components/copy-button';
 import { InfoTip } from '@/components/guidance';
 import { Button, Code, ErrorState, Modal, Skeleton } from '@/components/ui';
@@ -36,6 +36,13 @@ export function RoomQrModal({
   const [downloading, setDownloading] = useState<'png' | 'svg' | null>(null);
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
+  // The room a user most recently asked for. `rooms/page.tsx` sets `qrRoom`
+  // directly from each row's icon, so the modal can swap target rooms
+  // without ever closing — a slower first request must not be allowed to
+  // overwrite a faster second request's state after the fact (stale-response
+  // guard, checked before every state commit in `load()`).
+  const latestRoomIdRef = useRef<string | null>(null);
+
   const revokeImg = useCallback(() => {
     setImgUrl((prev) => {
       if (prev) URL.revokeObjectURL(prev);
@@ -53,25 +60,40 @@ export function RoomQrModal({
           api<RoomDetail>(`/tenant/rooms/${roomId}`),
           apiBlob(`/tenant/rooms/${roomId}/qr?format=png`),
         ]);
+        // Stale-response guard: bail before committing anything if the user
+        // has since switched to a different room's QR. We deliberately never
+        // create an object URL for a discarded response (`URL.createObjectURL`
+        // below is skipped), so there's nothing to revoke for the blob this
+        // call fetched — only the previously-committed room's URL is ever
+        // revoked, and only once a genuinely current response replaces it.
+        if (latestRoomIdRef.current !== roomId) return;
         setDetail(detailRes);
         setPngBlob(qrRes.blob);
         setPngFilename(qrRes.filename);
         revokeImg();
         setImgUrl(URL.createObjectURL(qrRes.blob));
       } catch (err) {
+        if (latestRoomIdRef.current !== roomId) return;
         setLoadError(
           err instanceof ApiError ? resolveError(err) : t('modal.loadError'),
         );
       } finally {
-        setLoading(false);
+        if (latestRoomIdRef.current === roomId) {
+          setLoading(false);
+        }
       }
     },
     [resolveError, t, revokeImg],
   );
 
   // Load on open / room change; reset + revoke the object URL when the modal
-  // closes (room becomes null) so nothing lingers between rooms.
+  // closes (room becomes null) so nothing lingers between rooms. Updating the
+  // ref here — synchronously, before `load()` ever awaits anything — is what
+  // makes the guard inside `load()` correct: by the time any in-flight
+  // request's await resolves, the ref already reflects whichever room is
+  // actually current.
   useEffect(() => {
+    latestRoomIdRef.current = room?.id ?? null;
     if (room) {
       load(room.id);
     } else {
