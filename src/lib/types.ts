@@ -266,6 +266,9 @@ export interface BulkPreview {
   duplicateCount: number;
   invalidCount: number;
   remaining: number | null;
+  /** Import previews only — rows skipped because the room number keeps the
+   * template's leading `#` example marker. */
+  skippedExampleRows?: number;
 }
 
 /** POST /tenant/rooms/bulk response — fields are read defensively (fallbacks

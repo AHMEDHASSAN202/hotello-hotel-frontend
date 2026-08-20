@@ -290,6 +290,13 @@ export function ImportRoomsModal({
                 })}
               </p>
             )}
+            {(preview.skippedExampleRows ?? 0) > 0 && (
+              <p className="mt-1">
+                {t('excel.import.exampleRowsSkipped', {
+                  count: preview.skippedExampleRows,
+                })}
+              </p>
+            )}
           </div>
 
           {hasIssues && (

@@ -211,7 +211,8 @@
         "DUPLICATE_IN_FILE": "This room number appears more than once in the file.",
         "UNKNOWN_TYPE": "This room type doesn't match any of your room types.",
         "INVALID_STATUS": "This status isn't valid — use active or out_of_service."
-      }
+      },
+      "exampleRowsSkipped": "{count, plural, one {1 row was skipped because its room number starts with “#” — the template’s example-row marker} other {# rows were skipped because their room numbers start with “#” — the template’s example-row marker}}. Remove the “#” to import them."
     }
   }
 }
