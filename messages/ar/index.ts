@@ -7,6 +7,7 @@ import roles from './roles.json';
 import rooms from './rooms.json';
 import shell from './shell.json';
 import staff from './staff.json';
+import stays from './stays.json';
 import subscription from './subscription.json';
 
 /** Arabic message bundle — must expose the same key set as `en`. */
@@ -20,6 +21,7 @@ const messages = {
   rooms,
   shell,
   staff,
+  stays,
   subscription,
 };
 

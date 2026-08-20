@@ -78,5 +78,23 @@
       "intro": "Room types group similar rooms — Standard, Deluxe, Suite — so you can assign one when adding rooms and keep guest-facing details consistent.",
       "nameHelp": "Staff and guests see the room type name in their own language, so fill in both."
     }
+  },
+  "stays": {
+    "intro": "Check guests in, hand them their stay code, and manage everything about their stay — extensions, room moves, and checkout — from here.",
+    "firstRunTitle": "How stays work",
+    "firstRunBody": "Checking a guest in creates a 6-digit stay code — their key to the guest app. Each room holds one active stay; checkout (by you, or automatic at your checkout hour) ends the guest's app access instantly.",
+    "emptyOnboarding": "Check in your first guest to hand them their app access code.",
+    "status": {
+      "active": "The guest is currently checked in and their stay code opens the guest app.",
+      "checked_out": "The stay has ended and its code no longer works. Past stays are kept as a permanent record and can't be changed."
+    },
+    "checkoutType": {
+      "manual": "The front desk ended this stay.",
+      "automatic": "The stay ended automatically after its check-out date passed your hotel's checkout hour."
+    },
+    "nightsColumn": "Nights until the check-out date, counted in your hotel's local time.",
+    "codeNote": "Codes are stored securely and can't be viewed after check-in — if a guest forgets theirs, generate a new one.",
+    "settingsIntro": "The daily hour when overdue stays end automatically.",
+    "occupancyVacant": "No active stay — this room is free for check-in."
   }
 }

@@ -1,0 +1,178 @@
+{
+  "list": {
+    "eyebrow": "Front desk",
+    "title": "Stays",
+    "checkIn": "Check in guest",
+    "tabs": {
+      "active": "Current guests",
+      "history": "History"
+    },
+    "searchPlaceholder": "Search by guest or room…",
+    "searchAria": "Search stays",
+    "floorAria": "Filter by floor",
+    "floorPlaceholder": "Floor",
+    "columns": {
+      "room": "Room",
+      "guest": "Guest",
+      "dates": "Dates",
+      "nights": "Nights left",
+      "language": "Language",
+      "status": "Status",
+      "checkedOutAt": "Checked out",
+      "type": "Checkout type"
+    },
+    "nights": "{count, plural, =0 {Leaves today} one {# night} two {# nights} few {# nights} many {# nights} other {# nights}}",
+    "status": {
+      "active": "Active",
+      "checked_out": "Checked out"
+    },
+    "checkoutType": {
+      "manual": "Manual",
+      "automatic": "Automatic"
+    },
+    "empty": {
+      "emptyTitle": "No guests are checked in right now",
+      "historyEmptyTitle": "No past stays yet",
+      "historyEmptyHint": "Once guests check out, their stays are kept here as a permanent record.",
+      "noMatchTitle": "No stays match these filters",
+      "noMatchHint": "Try clearing the search or filters."
+    },
+    "loadError": "We couldn't load your stays. Please try again.",
+    "readOnlyHint": "Your subscription is read-only, so changes are paused.",
+    "noAccess": {
+      "title": "You don't have access to stays",
+      "hint": "Ask your manager for the \"View stays\" permission if you need this page."
+    },
+    "view": "View"
+  },
+  "languages": {
+    "ar": "Arabic",
+    "en": "English",
+    "ru": "Russian",
+    "fr": "French",
+    "it": "Italian",
+    "es": "Spanish",
+    "de": "German"
+  },
+  "checkin": {
+    "title": "Check in a guest",
+    "guestName": {
+      "label": "Guest name",
+      "placeholder": "e.g. Ahmed Mahmoud",
+      "hint": "As you'd greet them — shown in the guest app and on their requests."
+    },
+    "room": {
+      "label": "Room",
+      "hint": "Only vacant, active rooms appear here.",
+      "searchPlaceholder": "Search room number…",
+      "searchAria": "Search available rooms",
+      "empty": "No available rooms match your search.",
+      "noRooms": "All rooms are currently occupied or unavailable.",
+      "floor": "Floor {floor}",
+      "noFloor": "No floor set",
+      "loadError": "We couldn't load available rooms."
+    },
+    "checkInDate": {
+      "label": "Check-in date"
+    },
+    "checkOutDate": {
+      "label": "Check-out date",
+      "hint": "The stay code stops working after checkout — you can extend the stay anytime."
+    },
+    "language": {
+      "label": "Guest language",
+      "hint": "The guest app and notifications reach the guest in this language."
+    },
+    "email": {
+      "label": "Email (optional)",
+      "placeholder": "guest@example.com",
+      "hint": "If filled, we email the guest their stay code and app link."
+    },
+    "phone": {
+      "label": "Phone (optional)",
+      "placeholder": "+20 100 123 4567"
+    },
+    "guestsCount": {
+      "label": "Number of guests (optional)",
+      "placeholder": "2"
+    },
+    "note": {
+      "label": "Note (optional)",
+      "placeholder": "e.g. Late arrival — keep the key at the desk",
+      "hint": "Visible to your team only — never to the guest."
+    },
+    "submit": "Check in",
+    "submitting": "Checking in…",
+    "success": {
+      "title": "{name} is checked in",
+      "codeLabel": "Stay code",
+      "instruction": "Hand this code to the guest with the room card — it's their key to the guest app.",
+      "notShownAgain": "For security, this code won't be shown again. If it's lost, open the stay and generate a new one.",
+      "emailSent": "We've also emailed the code to {email}.",
+      "copy": "Copy code",
+      "copied": "Copied",
+      "done": "Done"
+    }
+  },
+  "detail": {
+    "title": "Stay details",
+    "room": "Room",
+    "dates": "Dates",
+    "language": "Language",
+    "email": "Email",
+    "phone": "Phone",
+    "guestsCount": "Guests",
+    "note": "Note",
+    "codeLabel": "Stay code",
+    "checkedOutAt": "Checked out",
+    "notSet": "—",
+    "loadError": "We couldn't load this stay.",
+    "actions": {
+      "edit": "Edit details",
+      "extend": "Change dates",
+      "changeRoom": "Change room",
+      "regenerate": "New code",
+      "checkout": "Check out"
+    }
+  },
+  "edit": {
+    "title": "Edit guest details",
+    "save": "Save changes",
+    "saving": "Saving…"
+  },
+  "extend": {
+    "title": "Change check-out date",
+    "label": "New check-out date",
+    "hint": "Must be after check-in and not in the past.",
+    "note": "The guest's code and app keep working — nothing is needed from them.",
+    "save": "Update date"
+  },
+  "changeRoom": {
+    "title": "Move to another room",
+    "current": "Current room: {room}",
+    "note": "The guest's code and app keep working — they won't notice anything except the new room.",
+    "save": "Move guest"
+  },
+  "regenerate": {
+    "title": "Generate a new stay code",
+    "note": "The old code stops working immediately. Devices already signed in stay signed in — only new sign-ins need the new code.",
+    "confirm": "Generate new code",
+    "successTitle": "New code for {name}"
+  },
+  "checkout": {
+    "title": "Check out {name}",
+    "note": "This ends the stay and signs the guest out of the app on all their devices immediately. The room becomes available right away. This can't be undone — if the guest returns, check them in again with a new code.",
+    "confirm": "Check out"
+  },
+  "settings": {
+    "title": "Stay settings",
+    "checkoutTime": {
+      "label": "Checkout time",
+      "hint": "Stays past their check-out date end automatically at this hour, in your hotel's local time."
+    },
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Checkout time saved.",
+    "loadError": "We couldn't load stay settings."
+  }
+}

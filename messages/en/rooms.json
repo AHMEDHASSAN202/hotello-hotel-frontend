@@ -214,5 +214,10 @@
       },
       "exampleRowsSkipped": "{count, plural, one {1 row was skipped because its room number starts with “#” — the template’s example-row marker} other {# rows were skipped because their room numbers start with “#” — the template’s example-row marker}}. Remove the “#” to import them."
     }
+  },
+  "occupancy": {
+    "occupied": "Occupied",
+    "vacant": "Vacant",
+    "tip": "{guest} — checks out {date}"
   }
 }

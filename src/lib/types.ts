@@ -229,6 +229,18 @@ export interface Room {
   floor: number | null;
   status: RoomStatus;
   roomType: { id: string; nameEn: string; nameAr: string };
+  /**
+   * Epic 13 (13.2 AC3) — the room's active stay. `undefined` when the actor
+   * lacks `stays.read` (field absent), `null` when vacant.
+   */
+  currentStay?: RoomOccupancy | null;
+}
+
+/** The occupancy chip on the rooms list/detail (Epic 13). */
+export interface RoomOccupancy {
+  id: string;
+  guestName: string;
+  checkOutDate: string;
 }
 
 /** GET /tenant/rooms/:id — adds the guest-facing URL for this room's QR. */
@@ -277,4 +289,71 @@ export interface BulkPreview {
 export interface BulkCreateResponse {
   created?: number;
   skipped?: number;
+}
+
+/* ---- Stays (Epic 13) ---- */
+
+/** The 7 guest languages — mirrors the backend GUEST_LANGUAGES constant. */
+export const GUEST_LANGUAGES = [
+  'ar',
+  'en',
+  'ru',
+  'fr',
+  'it',
+  'es',
+  'de',
+] as const;
+export type GuestLanguage = (typeof GUEST_LANGUAGES)[number];
+
+export type StayStatus = 'active' | 'checked_out';
+export type CheckoutType = 'manual' | 'automatic';
+
+/** A stay row (GET /tenant/stays, GET /tenant/stays/:id) — never the code. */
+export interface Stay {
+  id: string;
+  roomId: string;
+  roomNumber: string;
+  floor: number | null;
+  guestName: string;
+  email: string | null;
+  phone: string | null;
+  language: GuestLanguage;
+  guestsCount: number | null;
+  note: string | null;
+  checkInDate: string;
+  checkOutDate: string;
+  /** Active stays only (hotel-local); null once checked out. */
+  nightsRemaining: number | null;
+  status: StayStatus;
+  checkoutType: CheckoutType | null;
+  checkedOutAt: string | null;
+  createdAt: string;
+}
+
+/** GET /tenant/stays?view=active — the whole board, room natural order. */
+export interface ActiveStaysResponse {
+  data: Stay[];
+  total: number;
+}
+
+/** GET /tenant/stays?view=history — paginated, newest checkout first. */
+export type StaysHistoryResponse = Paginated<Stay>;
+
+/** POST /tenant/stays and POST /tenant/stays/:id/regenerate-code — the code
+ * is returned exactly once; it is never retrievable again (hash-only). */
+export interface StayWithCode {
+  stay: Stay;
+  code: string;
+}
+
+/** GET /tenant/stays/available-rooms — active rooms with no active stay. */
+export interface AvailableRoom {
+  id: string;
+  roomNumber: string;
+  floor: number | null;
+}
+
+/** GET/PATCH /tenant/stays/settings (13.4 AC2). */
+export interface StaySettings {
+  checkoutTime: string;
 }

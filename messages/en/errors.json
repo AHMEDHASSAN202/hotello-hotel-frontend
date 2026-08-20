@@ -57,6 +57,12 @@
     "BULK_ROWS_INVALID": "Some rows in this range aren't valid. Review the preview and try again.",
     "IMPORT_FILE_INVALID": "This file doesn't match the expected format. Download the template and try again.",
     "IMPORT_TOO_MANY_ROWS": "This file has too many rows. Split it into smaller files and try again.",
-    "NO_ROOMS_IN_SCOPE": "No rooms match this selection. Adjust it and try again."
+    "NO_ROOMS_IN_SCOPE": "No rooms match this selection. Adjust it and try again.",
+    "ROOM_OCCUPIED": "That room already has an active stay. Choose another room, or check the current guest out first.",
+    "ROOM_NOT_AVAILABLE": "That room isn't available for stays right now — it's out of service or inactive.",
+    "STAY_NOT_FOUND": "That stay no longer exists.",
+    "STAY_NOT_ACTIVE": "This stay has ended and can no longer be changed.",
+    "INVALID_STAY_DATES": "The check-out date must be after check-in and not in the past.",
+    "ROOM_HAS_STAY_HISTORY": "This room has hosted stays, so its number can no longer be changed."
   }
 }
