@@ -90,7 +90,10 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`flex h-screen flex-col bg-ink-deep text-white transition-[width] duration-200 ${
+      // sticky + h-screen: the shell (`min-h-screen`) grows with the page and
+      // the *body* scrolls, so a non-sticky sidebar ends after the first
+      // viewport and scrolling reveals a blank gutter below it.
+      className={`sticky top-0 flex h-screen flex-col bg-ink-deep text-white transition-[width] duration-200 ${
         collapsed ? 'w-16' : 'w-60'
       }`}
     >
@@ -119,7 +122,10 @@ export function Sidebar() {
         )}
       </div>
 
-      <nav className="flex-1 space-y-1 px-2" aria-label={t('nav.main')}>
+      <nav
+        className="flex-1 space-y-1 overflow-y-auto px-2"
+        aria-label={t('nav.main')}
+      >
         {visibleItems.map(({ segment, labelKey, icon: Icon }) => {
           const href = segment ? `${base}/${segment}` : base;
           const active =
