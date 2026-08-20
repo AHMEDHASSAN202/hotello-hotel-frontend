@@ -236,6 +236,69 @@ describe('RoomsPage (11.2)', () => {
     expect(apiMock.saveBlob).toHaveBeenCalled();
   });
 
+  it('13.2 AC3 — an occupied room shows the badge and the guest InfoTip', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [ROOM_TYPE] };
+      return mockRoomsResponse({
+        data: [
+          {
+            id: 'r1',
+            roomNumber: '101',
+            floor: 1,
+            status: 'active',
+            roomType: ROOM_TYPE,
+            currentStay: {
+              id: 's1',
+              guestName: 'Ahmed Ali',
+              checkOutDate: '2026-08-25',
+            },
+          },
+          {
+            id: 'r2',
+            roomNumber: '102',
+            floor: 1,
+            status: 'active',
+            roomType: ROOM_TYPE,
+            currentStay: null,
+          },
+        ],
+        total: 2,
+      });
+    });
+    renderPage();
+
+    await screen.findByText('Occupied');
+    expect(screen.getByText('Vacant')).toBeTruthy();
+
+    // The InfoTip carries guest name + checkout date (13.2 AC3).
+    fireEvent.click(screen.getByRole('button', { name: 'Occupied' }));
+    expect(screen.getByText(/Ahmed Ali — checks out/)).toBeTruthy();
+  });
+
+  it('13.2 AC3 — without stays.read (field absent) no occupancy badge renders', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [ROOM_TYPE] };
+      return mockRoomsResponse({
+        data: [
+          {
+            id: 'r1',
+            roomNumber: '101',
+            floor: 1,
+            status: 'active',
+            roomType: ROOM_TYPE,
+            // no currentStay field — the API omits it for this actor
+          },
+        ],
+        total: 1,
+      });
+    });
+    renderPage();
+
+    await screen.findByText('101');
+    expect(screen.queryByText('Occupied')).toBeNull();
+    expect(screen.queryByText('Vacant')).toBeNull();
+  });
+
   it('11.7 — Import and Download-template buttons are disabled under readOnly', async () => {
     tenant.readOnly = true;
     apiMock.api.mockImplementation(async (path: string) => {

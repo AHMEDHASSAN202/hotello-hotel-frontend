@@ -4,8 +4,16 @@ import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CopyButton } from '@/components/copy-button';
 import { InfoTip } from '@/components/guidance';
-import { Button, Code, ErrorState, Modal, Skeleton } from '@/components/ui';
+import {
+  Badge,
+  Button,
+  Code,
+  ErrorState,
+  Modal,
+  Skeleton,
+} from '@/components/ui';
 import { api, ApiError, apiBlob, saveBlob } from '@/lib/api';
+import { useFormatters } from '@/i18n/use-format';
 import { useApiError } from '@/lib/errors';
 import type { Room, RoomDetail } from '@/lib/types';
 
@@ -24,8 +32,10 @@ export function RoomQrModal({
   onClose: () => void;
 }) {
   const t = useTranslations('rooms.qr');
+  const tRooms = useTranslations('rooms');
   const tG = useTranslations('guidance.rooms');
   const resolveError = useApiError();
+  const { formatDate } = useFormatters();
 
   const [detail, setDetail] = useState<RoomDetail | null>(null);
   const [imgUrl, setImgUrl] = useState<string | null>(null);
@@ -177,6 +187,28 @@ export function RoomQrModal({
                 {detail && <CopyButton value={detail.guestUrl} />}
               </div>
             </div>
+
+            {/* 13.2 AC3 / note 6 — the room's current stay, present only
+                when the viewer holds stays.read (API omits it otherwise). */}
+            {detail?.currentStay !== undefined && (
+              <div className="flex items-center gap-2 text-sm">
+                <Badge tone={detail?.currentStay ? 'gold' : 'neutral'}>
+                  {tRooms(
+                    detail?.currentStay
+                      ? 'occupancy.occupied'
+                      : 'occupancy.vacant',
+                  )}
+                </Badge>
+                {detail?.currentStay && (
+                  <span className="text-ink-soft">
+                    {tRooms('occupancy.tip', {
+                      guest: detail.currentStay.guestName,
+                      date: formatDate(detail.currentStay.checkOutDate),
+                    })}
+                  </span>
+                )}
+              </div>
+            )}
 
             {downloadError && (
               <div

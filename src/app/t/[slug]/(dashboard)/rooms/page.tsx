@@ -30,6 +30,7 @@ import {
   selectClass,
 } from '@/components/ui';
 import type { Locale } from '@/i18n/config';
+import { useFormatters } from '@/i18n/use-format';
 import { api, apiBlob, ApiError, saveBlob } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
 import type { Room, RoomsListResponse, RoomStatus, RoomType } from '@/lib/types';
@@ -52,8 +53,10 @@ export default function RoomsPage() {
   const tRooms = useTranslations('rooms');
   const tCommon = useTranslations('common');
   const tG = useTranslations('guidance.rooms');
+  const tGStays = useTranslations('guidance.stays');
   const tGc = useTranslations('guidance.common');
   const resolveError = useApiError();
+  const { formatDate } = useFormatters();
   const locale = useLocale() as Locale;
   const params = useParams<{ slug: string }>();
   const { hasPermission, readOnly } = useTenant();
@@ -426,7 +429,6 @@ export default function RoomsPage() {
                       {typeName(room.roomType)}
                     </td>
                     <td className="px-4 py-3">
-                      {/* Epic 12 drops an occupancy badge here */}
                       <span className="flex items-center gap-2">
                         <Badge tone={STATUS_TONE[room.status]}>
                           {tRooms(`status.${room.status}`)}
@@ -434,6 +436,37 @@ export default function RoomsPage() {
                         <InfoTip label={tRooms(`status.${room.status}`)}>
                           {tG(`status.${room.status}`)}
                         </InfoTip>
+                        {/* 13.2 AC3 — occupancy rides in only for stays.read
+                            holders (the API omits currentStay otherwise). */}
+                        {room.currentStay !== undefined && (
+                          <span className="flex items-center gap-1">
+                            <Badge
+                              tone={room.currentStay ? 'gold' : 'neutral'}
+                            >
+                              {tRooms(
+                                room.currentStay
+                                  ? 'occupancy.occupied'
+                                  : 'occupancy.vacant',
+                              )}
+                            </Badge>
+                            <InfoTip
+                              label={tRooms(
+                                room.currentStay
+                                  ? 'occupancy.occupied'
+                                  : 'occupancy.vacant',
+                              )}
+                            >
+                              {room.currentStay
+                                ? tRooms('occupancy.tip', {
+                                    guest: room.currentStay.guestName,
+                                    date: formatDate(
+                                      room.currentStay.checkOutDate,
+                                    ),
+                                  })
+                                : tGStays('occupancyVacant')}
+                            </InfoTip>
+                          </span>
+                        )}
                       </span>
                     </td>
                     <td className="px-4 py-3">
