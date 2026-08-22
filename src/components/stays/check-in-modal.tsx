@@ -12,9 +12,11 @@ import { useApiError } from '@/lib/errors';
 import type {
   AvailableRoom,
   GuestLanguage,
+  StaySettings,
+  StayType,
   StayWithCode,
 } from '@/lib/types';
-import { GUEST_LANGUAGES } from '@/lib/types';
+import { GUEST_LANGUAGES, STAY_TYPES } from '@/lib/types';
 
 /** Local calendar date as YYYY-MM-DD (the desk's clock ≈ hotel time). */
 const localDate = (offsetDays = 0): string => {
@@ -28,6 +30,8 @@ interface FormState {
   checkInDate: string;
   checkOutDate: string;
   language: GuestLanguage;
+  /** 16.1 AC2 — pre-selected from the hotel's default stay type. */
+  stayType: StayType;
   email: string;
   phone: string;
   guestsCount: string;
@@ -50,6 +54,7 @@ export function CheckInModal({
 }) {
   const t = useTranslations('stays.checkin');
   const tLangs = useTranslations('stays.languages');
+  const tStayTypes = useTranslations('stays.stayTypes');
   const tCommon = useTranslations('common');
   const resolveError = useApiError();
   const { me } = useTenant();
@@ -70,6 +75,7 @@ export function CheckInModal({
       checkInDate: localDate(),
       checkOutDate: localDate(1),
       language: defaultLanguage,
+      stayType: 'room_only',
       email: '',
       phone: '',
       guestsCount: '',
@@ -107,6 +113,15 @@ export function CheckInModal({
     setFieldErrors({});
     setRooms(null);
     loadRooms();
+    // 16.1 AC2 — the hotel default pre-selects the stay type; a fetch
+    // failure just leaves the safe room_only default.
+    api<StaySettings>('/tenant/stays/settings')
+      .then((s) => {
+        if (s?.defaultStayType) {
+          setForm((f) => ({ ...f, stayType: s.defaultStayType }));
+        }
+      })
+      .catch(() => undefined);
   }, [open, emptyForm, loadRooms]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
@@ -127,6 +142,7 @@ export function CheckInModal({
           checkInDate: form.checkInDate,
           checkOutDate: form.checkOutDate,
           language: form.language,
+          stayType: form.stayType,
           ...(form.email.trim() ? { email: form.email.trim() } : {}),
           ...(form.phone.trim() ? { phone: form.phone.trim() } : {}),
           ...(form.guestsCount
@@ -269,6 +285,27 @@ export function CheckInModal({
             </select>
             <span className="mt-1 block text-xs text-ink-soft">
               {t('language.hint')}
+            </span>
+          </label>
+
+          {/* 16.1 AC1/AC2 — board basis; pre-selected from the hotel default. */}
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium text-ink">
+              {t('stayType.label')} <span className="text-danger">*</span>
+            </span>
+            <select
+              className={`${selectClass} w-full`}
+              value={form.stayType}
+              onChange={(e) => set('stayType', e.target.value as StayType)}
+            >
+              {STAY_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {tStayTypes(type)}
+                </option>
+              ))}
+            </select>
+            <span className="mt-1 block text-xs text-ink-soft">
+              {t('stayType.hint')}
             </span>
           </label>
 

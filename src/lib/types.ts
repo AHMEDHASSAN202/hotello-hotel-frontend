@@ -97,6 +97,8 @@ export interface TenantMeHotel {
   status: 'active' | 'suspended';
   /** IANA timezone — request timelines render in hotel time (Epic 15). */
   timezone: string;
+  /** ISO currency code — the kitchen board formats totals with it (Epic 16). */
+  currency: string;
 }
 
 export interface SubscriptionState {
@@ -312,6 +314,20 @@ export type StayStatus = 'active' | 'checked_out';
 export type CheckoutType = 'manual' | 'automatic';
 
 /** A stay row (GET /tenant/stays, GET /tenant/stays/:id) — never the code. */
+/** Board basis (Epic 16, 16.1) — drives F&B pricing in the Guest App. */
+export type StayType =
+  | 'all_inclusive'
+  | 'half_board'
+  | 'bed_breakfast'
+  | 'room_only';
+
+export const STAY_TYPES: StayType[] = [
+  'all_inclusive',
+  'half_board',
+  'bed_breakfast',
+  'room_only',
+];
+
 export interface Stay {
   id: string;
   roomId: string;
@@ -323,6 +339,7 @@ export interface Stay {
   language: GuestLanguage;
   guestsCount: number | null;
   note: string | null;
+  stayType: StayType;
   checkInDate: string;
   checkOutDate: string;
   /** Active stays only (hotel-local); null once checked out. */
@@ -356,9 +373,10 @@ export interface AvailableRoom {
   floor: number | null;
 }
 
-/** GET/PATCH /tenant/stays/settings (13.4 AC2). */
+/** GET/PATCH /tenant/stays/settings (13.4 AC2, 16.1 AC2). */
 export interface StaySettings {
   checkoutTime: string;
+  defaultStayType: StayType;
 }
 
 /* ---------------------------------------------- Requests (Epic 15) */
@@ -476,4 +494,192 @@ export interface CatalogCategoryManage {
 
 export interface RequestCatalogResponse {
   categories: CatalogCategoryManage[];
+}
+
+/* ---------------------------------------------- F&B (Epic 16) */
+
+export type FnbOrderStatus =
+  | 'new'
+  | 'preparing'
+  | 'on_the_way'
+  | 'delivered'
+  | 'cancelled';
+
+export const OPEN_FNB_ORDER_STATUSES: FnbOrderStatus[] = [
+  'new',
+  'preparing',
+  'on_the_way',
+];
+
+export type FnbCancelReason =
+  | 'guest'
+  | 'out_of_stock'
+  | 'kitchen_closed'
+  | 'guest_request'
+  | 'other';
+
+export const STAFF_FNB_CANCEL_REASONS: FnbCancelReason[] = [
+  'out_of_stock',
+  'kitchen_closed',
+  'guest_request',
+  'other',
+];
+
+export type FnbPaymentMethod = 'cash' | 'room_charge';
+
+export interface FnbWindow {
+  start: string;
+  end: string;
+}
+
+export interface FnbVariantOption {
+  key: string;
+  names: RequestTranslationMap;
+  price: number;
+}
+
+export interface FnbVariant {
+  label: RequestTranslationMap;
+  options: FnbVariantOption[];
+}
+
+/** GET /tenant/fnb-menus — full management tree (incl. inactive rows). */
+export interface FnbItemManage {
+  id: string;
+  sectionId: string;
+  names: RequestTranslationMap;
+  descriptions: RequestTranslationMap | null;
+  photoThumbUrl: string | null;
+  photoDetailUrl: string | null;
+  price: number;
+  /** null = inherit menu default; [] = always paid; else included for these. */
+  includedFor: StayType[] | null;
+  variant: FnbVariant | null;
+  allowNotes: boolean;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface FnbSectionManage {
+  id: string;
+  menuId: string;
+  names: RequestTranslationMap;
+  isActive: boolean;
+  sortOrder: number;
+  items: FnbItemManage[];
+}
+
+export interface FnbMenuManage {
+  id: string;
+  names: RequestTranslationMap;
+  descriptions: RequestTranslationMap | null;
+  windows: FnbWindow[];
+  defaultIncludedFor: StayType[];
+  prepSlaMinutes: number;
+  isActive: boolean;
+  sortOrder: number;
+  sections: FnbSectionManage[];
+}
+
+export interface FnbMenusResponse {
+  menus: FnbMenuManage[];
+}
+
+/** GET /tenant/fnb-locations (16.3). */
+export interface FnbLocation {
+  id: string;
+  key: string;
+  names: RequestTranslationMap;
+  hasSpots: boolean;
+  spotLabel: RequestTranslationMap | null;
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface FnbLocationsResponse {
+  locations: FnbLocation[];
+}
+
+/** GET/PATCH /tenant/fnb/settings (16.4). */
+export interface FnbSettings {
+  cashEnabled: true;
+  roomChargeEnabled: boolean;
+}
+
+/** Kitchen board rows (16.7). */
+export interface TenantFnbOrderLine {
+  id: string;
+  itemNameEn: string;
+  itemNameAr: string;
+  /** Guest-language name — what the guest actually ordered. */
+  itemName: string;
+  variantOptionNameEn: string | null;
+  variantOptionNameAr: string | null;
+  quantity: number;
+  unitPrice: number;
+  included: boolean;
+  lineTotal: number;
+  note: string | null;
+}
+
+export interface TenantFnbOrder {
+  id: string;
+  roomNumber: string;
+  guestName: string;
+  guestLanguage: GuestLanguage;
+  stayId: string;
+  destinationType: 'room' | 'location';
+  locationId: string | null;
+  locationNameEn: string | null;
+  locationNameAr: string | null;
+  spot: string | null;
+  paymentMethod: FnbPaymentMethod | null;
+  totalAmount: number;
+  currency: string;
+  status: FnbOrderStatus;
+  slaTargetMinutes: number;
+  dueAt: string;
+  menuIds: string[];
+  assignedTo: { id: string; name: string } | null;
+  createdAt: string;
+  startedAt: string | null;
+  outForDeliveryAt: string | null;
+  deliveredAt: string | null;
+  cancelledAt: string | null;
+  cancelledReason: FnbCancelReason | null;
+  cancelNote: string | null;
+  settledAt: string | null;
+  updatedAt: string;
+  lines: TenantFnbOrderLine[];
+}
+
+/** Board header stats-lite (16.7 AC3). */
+export interface FnbBoardCounts {
+  open: number;
+  deliveredToday: number;
+  overdueNow: number;
+  /** Delivered paid totals today — the owner number. */
+  revenueToday: number;
+}
+
+export interface FnbBoardResponse {
+  data: TenantFnbOrder[];
+  counts: FnbBoardCounts;
+  serverTime: string;
+}
+
+export type FnbHistoryResponse = Paginated<TenantFnbOrder>;
+
+/** GET /tenant/fnb-orders/assignees — options-endpoint shape. */
+export type FnbAssignee = RequestAssignee;
+
+/** GET /tenant/fnb-orders/stay/:stayId — the stay drawer's orders (16.8). */
+export interface StayFnbOrdersResponse {
+  data: TenantFnbOrder[];
+  unsettledTotal: number;
+}
+
+export interface SettleFnbOrdersResponse {
+  settled: number;
+  unsettledTotal: number;
 }

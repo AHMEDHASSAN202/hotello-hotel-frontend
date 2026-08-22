@@ -55,6 +55,7 @@ const STAY = {
   language: 'ar',
   guestsCount: null,
   note: null,
+  stayType: 'all_inclusive',
   checkInDate: '2026-08-20',
   checkOutDate: '2026-08-23',
   nightsRemaining: 3,
@@ -66,7 +67,8 @@ const STAY = {
 
 function mockApi(handlers: Record<string, unknown> = {}) {
   apiMock.api.mockImplementation(async (path: string) => {
-    if (path.startsWith('/tenant/stays/settings')) return { checkoutTime: '12:00' };
+    if (path.startsWith('/tenant/stays/settings'))
+      return { checkoutTime: '12:00', defaultStayType: 'room_only' };
     if (path.startsWith('/tenant/stays/available-rooms')) return [];
     for (const [prefix, value] of Object.entries(handlers)) {
       if (path.includes(prefix)) return value;
@@ -195,14 +197,40 @@ describe('StaysPage (13.2)', () => {
     await waitFor(() => expect(timeInput.value).toBe('12:00'));
 
     fireEvent.change(timeInput, { target: { value: '14:00' } });
-    apiMock.api.mockResolvedValueOnce({ checkoutTime: '14:00' });
+    apiMock.api.mockResolvedValueOnce({ checkoutTime: '14:00', defaultStayType: 'room_only' });
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
 
-    expect(await screen.findByText('Checkout time saved.')).toBeTruthy();
+    expect(await screen.findByText('Stay settings saved.')).toBeTruthy();
     const patchCall = apiMock.api.mock.calls.find(
       ([, init]) => (init as RequestInit | undefined)?.method === 'PATCH',
     );
     expect(patchCall).toBeTruthy();
     expect(String(patchCall![0])).toBe('/tenant/stays/settings');
+  });
+
+  it('16.1 AC2 — the settings card saves the default stay type with the hour', async () => {
+    mockApi({ 'view=active': { data: [], total: 0 } });
+    renderPage();
+
+    const select = (await screen.findByLabelText(
+      /Default stay type/,
+    )) as HTMLSelectElement;
+    await waitFor(() => expect(select.value).toBe('room_only'));
+
+    fireEvent.change(select, { target: { value: 'all_inclusive' } });
+    apiMock.api.mockResolvedValueOnce({
+      checkoutTime: '12:00',
+      defaultStayType: 'all_inclusive',
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+
+    expect(await screen.findByText('Stay settings saved.')).toBeTruthy();
+    const patchCall = apiMock.api.mock.calls.find(
+      ([, init]) => (init as RequestInit | undefined)?.method === 'PATCH',
+    );
+    expect(JSON.parse((patchCall![1] as RequestInit).body as string)).toEqual({
+      checkoutTime: '12:00',
+      defaultStayType: 'all_inclusive',
+    });
   });
 });

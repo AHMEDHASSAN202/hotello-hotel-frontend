@@ -6,7 +6,9 @@ import { useTenant } from '@/components/tenant-provider';
 import { Button, ErrorState, Field, Skeleton } from '@/components/ui';
 import { api, ApiError } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
-import type { StaySettings } from '@/lib/types';
+import { selectClass } from '@/components/ui';
+import type { StaySettings, StayType } from '@/lib/types';
+import { STAY_TYPES } from '@/lib/types';
 
 /**
  * 13.4 AC2 — the hotel's checkout hour. Rendered only for `stays.update`
@@ -16,10 +18,12 @@ export function StaySettingsCard() {
   const t = useTranslations('stays.settings');
   const tG = useTranslations('guidance.stays');
   const tList = useTranslations('stays.list');
+  const tStayTypes = useTranslations('stays.stayTypes');
   const resolveError = useApiError();
   const { readOnly } = useTenant();
 
   const [checkoutTime, setCheckoutTime] = useState('');
+  const [defaultStayType, setDefaultStayType] = useState<StayType>('room_only');
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -32,6 +36,7 @@ export function StaySettingsCard() {
     try {
       const res = await api<StaySettings>('/tenant/stays/settings');
       setCheckoutTime(res.checkoutTime);
+      setDefaultStayType(res.defaultStayType);
     } catch (err) {
       setLoadError(
         err instanceof ApiError ? resolveError(err) : t('loadError'),
@@ -53,9 +58,10 @@ export function StaySettingsCard() {
     try {
       const res = await api<StaySettings>('/tenant/stays/settings', {
         method: 'PATCH',
-        body: JSON.stringify({ checkoutTime }),
+        body: JSON.stringify({ checkoutTime, defaultStayType }),
       });
       setCheckoutTime(res.checkoutTime);
+      setDefaultStayType(res.defaultStayType);
       setSaved(true);
     } catch (err) {
       setSaveError(
@@ -92,6 +98,29 @@ export function StaySettingsCard() {
               setCheckoutTime(e.target.value);
             }}
           />
+          {/* 16.1 AC2 — resorts set All-Inclusive; city hotels keep Room only. */}
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium text-ink">
+              {t('defaultStayType.label')}
+            </span>
+            <select
+              className={`${selectClass} w-full`}
+              value={defaultStayType}
+              onChange={(e) => {
+                setSaved(false);
+                setDefaultStayType(e.target.value as StayType);
+              }}
+            >
+              {STAY_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {tStayTypes(type)}
+                </option>
+              ))}
+            </select>
+            <span className="mt-1 block text-xs text-ink-soft">
+              {t('defaultStayType.hint')}
+            </span>
+          </label>
           {saveError && (
             <p role="alert" className="text-sm text-danger">
               {saveError}

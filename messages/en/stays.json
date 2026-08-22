@@ -112,6 +112,10 @@
       "copy": "Copy code",
       "copied": "Copied",
       "done": "Done"
+    },
+    "stayType": {
+      "label": "Stay type",
+      "hint": "The guest's board basis — All-Inclusive guests see included menu items without prices."
     }
   },
   "detail": {
@@ -133,12 +137,14 @@
       "changeRoom": "Change room",
       "regenerate": "New code",
       "checkout": "Check out"
-    }
+    },
+    "stayType": "Stay type"
   },
   "edit": {
     "title": "Edit guest details",
     "save": "Save changes",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "stayType": "Stay type"
   },
   "extend": {
     "title": "Change check-out date",
@@ -172,7 +178,17 @@
     },
     "save": "Save",
     "saving": "Saving…",
-    "saved": "Checkout time saved.",
-    "loadError": "We couldn't load stay settings."
+    "saved": "Stay settings saved.",
+    "loadError": "We couldn't load stay settings.",
+    "defaultStayType": {
+      "label": "Default stay type",
+      "hint": "Pre-selected at check-in. Resorts usually set All-Inclusive; city hotels keep Room only."
+    }
+  },
+  "stayTypes": {
+    "all_inclusive": "All-Inclusive",
+    "half_board": "Half board",
+    "bed_breakfast": "Bed & breakfast",
+    "room_only": "Room only"
   }
 }

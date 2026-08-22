@@ -55,6 +55,8 @@ beforeEach(() => {
   apiMock.api.mockReset();
   apiMock.api.mockImplementation(async (path: string) => {
     if (path.includes('available-rooms')) return ROOMS;
+    if (path.includes('/tenant/stays/settings'))
+      return { checkoutTime: '12:00', defaultStayType: 'all_inclusive' };
     return {};
   });
 });
@@ -74,6 +76,39 @@ describe('CheckInModal (13.1)', () => {
     // Language defaults to the hotel default (ar) and lists all seven.
     const select = screen.getByDisplayValue('Arabic') as HTMLSelectElement;
     expect(select.options.length).toBe(7);
+  });
+
+  it('16.1 AC2 — the stay type pre-selects from the hotel default and rides the POST', async () => {
+    apiMock.api.mockImplementation(async (path: string, init?: RequestInit) => {
+      if (path.includes('available-rooms')) return ROOMS;
+      if (path.includes('/tenant/stays/settings'))
+        return { checkoutTime: '12:00', defaultStayType: 'all_inclusive' };
+      if (init?.method === 'POST')
+        return { stay: { id: 's1', guestName: 'Mona Adel', email: null }, code: '482913' };
+      return {};
+    });
+    renderModal();
+    await screen.findByText('Floor 1');
+
+    const select = (await screen.findByLabelText(
+      /Stay type/,
+    )) as HTMLSelectElement;
+    await waitFor(() => expect(select.value).toBe('all_inclusive'));
+
+    // An explicit pick wins over the default (16.1 AC1).
+    fireEvent.change(select, { target: { value: 'half_board' } });
+    fireEvent.change(screen.getByLabelText(/Guest name/), {
+      target: { value: 'Mona Adel' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: '101' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check in' }));
+    await screen.findByText('482913');
+
+    const postCall = apiMock.api.mock.calls.find(
+      ([, init]) => (init as RequestInit | undefined)?.method === 'POST',
+    )!;
+    const body = JSON.parse(String((postCall[1] as RequestInit).body));
+    expect(body.stayType).toBe('half_board');
   });
 
   it('AC1 — the room picker is searchable and filters the available rooms', async () => {

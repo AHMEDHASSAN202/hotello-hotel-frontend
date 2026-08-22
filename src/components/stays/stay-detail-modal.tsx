@@ -21,10 +21,11 @@ import { useApiError } from '@/lib/errors';
 import type {
   AvailableRoom,
   GuestLanguage,
+  StayType,
   Stay,
   StayWithCode,
 } from '@/lib/types';
-import { GUEST_LANGUAGES } from '@/lib/types';
+import { GUEST_LANGUAGES, STAY_TYPES } from '@/lib/types';
 
 type Mode = 'view' | 'edit' | 'extend' | 'move';
 
@@ -46,6 +47,7 @@ export function StayDetailModal({
   const t = useTranslations('stays.detail');
   const tStays = useTranslations('stays');
   const tLangs = useTranslations('stays.languages');
+  const tStayTypes = useTranslations('stays.stayTypes');
   const tList = useTranslations('stays.list');
   const tG = useTranslations('guidance.stays');
   const tCommon = useTranslations('common');
@@ -65,6 +67,7 @@ export function StayDetailModal({
   const [editForm, setEditForm] = useState({
     guestName: '',
     language: 'en' as GuestLanguage,
+    stayType: 'room_only' as StayType,
     email: '',
     phone: '',
     guestsCount: '',
@@ -122,6 +125,7 @@ export function StayDetailModal({
     setEditForm({
       guestName: current.guestName,
       language: current.language,
+      stayType: current.stayType,
       email: current.email ?? '',
       phone: current.phone ?? '',
       guestsCount: current.guestsCount ? String(current.guestsCount) : '',
@@ -158,6 +162,7 @@ export function StayDetailModal({
           body: JSON.stringify({
             guestName: editForm.guestName.trim(),
             language: editForm.language,
+            stayType: editForm.stayType,
             email: editForm.email.trim() || null,
             phone: editForm.phone.trim() || null,
             guestsCount: editForm.guestsCount
@@ -260,6 +265,7 @@ export function StayDetailModal({
                 tList('nights', { count: current.nightsRemaining ?? 0 }),
               )}
             {row(t('language'), tLangs(current.language))}
+            {row(t('stayType'), tStayTypes(current.stayType))}
             {row(t('email'), current.email)}
             {row(t('phone'), current.phone)}
             {row(t('guestsCount'), current.guestsCount)}
@@ -408,6 +414,28 @@ export function StayDetailModal({
             <span className="mt-1 block text-xs text-ink-soft">
               {tStays('checkin.language.hint')}
             </span>
+          </label>
+          {/* 16.1 AC1 — editable later; the change lands in the audit diff. */}
+          <label className="block">
+            <span className="mb-1 block text-sm font-medium text-ink">
+              {tStays('edit.stayType')} <span className="text-danger">*</span>
+            </span>
+            <select
+              className={`${selectClass} w-full`}
+              value={editForm.stayType}
+              onChange={(e) =>
+                setEditForm((f) => ({
+                  ...f,
+                  stayType: e.target.value as StayType,
+                }))
+              }
+            >
+              {STAY_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {tStayTypes(type)}
+                </option>
+              ))}
+            </select>
           </label>
           <div className="grid grid-cols-2 gap-3">
             <Field
