@@ -73,6 +73,13 @@
     "CUSTOM_ITEM_ONLY": "Built-in item content is managed by the platform — add a custom item instead.",
     "REQUEST_OPTION_INVALID": "The option settings are invalid — a quantity needs a range like 1–4.",
     "REQUEST_REORDER_INVALID": "The new order couldn't be applied — refresh and try again.",
-    "REQUEST_ITEM_NAMES_REQUIRED": "Custom items need both an Arabic and an English name."
+    "REQUEST_ITEM_NAMES_REQUIRED": "Custom items need both an Arabic and an English name.",
+    "MENU_UNAVAILABLE": "This menu is closed right now.",
+    "FNB_NAMES_REQUIRED": "Arabic and English names are required.",
+    "FNB_PHOTO_INVALID": "Choose a PNG, JPEG or WebP image up to 5 MB.",
+    "FNB_ORDER_INVALID_STATUS": "This order moved on — refresh and try again.",
+    "FNB_ASSIGNEE_INVALID": "That staff member can't work orders.",
+    "FNB_LOCATION_NO_SPOTS": "This location has no numbered spots.",
+    "FNB_STICKER_RANGE_INVALID": "Enter a valid from–to range."
   }
 }

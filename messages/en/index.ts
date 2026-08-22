@@ -1,6 +1,7 @@
 import auth from './auth.json';
 import common from './common.json';
 import errors from './errors.json';
+import fnb from './fnb.json';
 import guidance from './guidance.json';
 import profile from './profile.json';
 import requests from './requests.json';
@@ -19,6 +20,7 @@ const messages = {
   auth,
   common,
   errors,
+  fnb,
   guidance,
   profile,
   requests,

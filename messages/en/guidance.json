@@ -112,5 +112,12 @@
       "doneToday": "Requests completed since midnight, hotel time.",
       "overdueNow": "Open requests already past their time target."
     }
+  },
+  "fnb": {
+    "stats": {
+      "open": "Orders not yet delivered — received, preparing or on the way.",
+      "deliveredToday": "Orders delivered since midnight, hotel time.",
+      "revenueToday": "Paid totals of orders delivered today — cash and room-charge together. Included items count as 0."
+    }
   }
 }

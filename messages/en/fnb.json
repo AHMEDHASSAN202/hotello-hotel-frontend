@@ -1,0 +1,294 @@
+{
+  "eyebrow": "Food & Beverage",
+  "board": {
+    "title": "Kitchen board",
+    "intro": "Guest orders land here live — work them from received to delivered without a printer.",
+    "menusLink": "Menus",
+    "locationsLink": "Locations",
+    "settingsLink": "F&B settings",
+    "sound": {
+      "on": "New-order sound on",
+      "off": "New-order sound off"
+    },
+    "tabs": {
+      "open": "Open orders",
+      "history": "History"
+    },
+    "stats": {
+      "open": "Open now",
+      "deliveredToday": "Delivered today",
+      "revenueToday": "Paid revenue today"
+    },
+    "filters": {
+      "status": "All statuses",
+      "menu": "All menus",
+      "destination": "All destinations",
+      "room": "To rooms",
+      "assignee": "All assignees",
+      "mine": "Mine",
+      "overdueOnly": "Overdue only"
+    },
+    "status": {
+      "new": "Received",
+      "preparing": "Preparing",
+      "on_the_way": "On the way",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "empty": {
+      "allClearTitle": "No open orders",
+      "allClearHint": "New orders appear here the moment a guest places them.",
+      "filteredTitle": "No orders match these filters",
+      "filteredHint": "Try clearing a filter or two.",
+      "historyTitle": "No finished orders yet",
+      "historyHint": "Delivered and cancelled orders build the history."
+    },
+    "states": {
+      "loading": "Loading orders…"
+    },
+    "table": {
+      "order": "Order",
+      "destination": "Destination",
+      "total": "Total",
+      "status": "Status",
+      "finishedAt": "Finished",
+      "assignee": "Assignee"
+    },
+    "hint": {
+      "title": "How the kitchen board works",
+      "body": "Orders float to the top when they pass their prep target. Start an order to claim it, mark it out for delivery when it leaves, and Delivered when it reaches the guest. The paid-revenue number counts delivered orders only."
+    },
+    "noAccess": {
+      "title": "You don't have access to F&B orders",
+      "hint": "Ask a manager for the fnb orders permission."
+    }
+  },
+  "card": {
+    "room": "Room {room}",
+    "spotJoin": "{location} · {label} {spot}",
+    "note": "Note",
+    "linesMore": "+{count} more",
+    "roomWord": "Room"
+  },
+  "payment": {
+    "cash": "Cash: {amount}",
+    "roomCharge": "On the room bill",
+    "roomChargeAmount": "Room bill: {amount}",
+    "included": "✓ Included",
+    "settled": "Settled"
+  },
+  "detail": {
+    "title": "Order details",
+    "guestNoteLang": "Guest note ({language})",
+    "total": "Total",
+    "timeline": {
+      "created": "Received",
+      "startedAt": "Started",
+      "outForDeliveryAt": "Out for delivery",
+      "deliveredAt": "Delivered",
+      "cancelledAt": "Cancelled"
+    },
+    "actions": {
+      "start": "Start preparing",
+      "outForDelivery": "Out for delivery",
+      "deliver": "Delivered",
+      "cancel": "Cancel order",
+      "assign": "Assign"
+    },
+    "assign": {
+      "label": "Assigned to",
+      "unassigned": "Unassigned"
+    },
+    "cancel": {
+      "title": "Cancel this order?",
+      "reasonLabel": "Reason",
+      "reasons": {
+        "out_of_stock": "Out of stock",
+        "kitchen_closed": "Kitchen closed",
+        "guest_request": "Guest asked to cancel",
+        "other": "Other"
+      },
+      "noteLabel": "Note",
+      "noteHint": "Required when the reason is “Other”.",
+      "note": "The guest sees the order as cancelled immediately. This can't be undone.",
+      "confirm": "Cancel order"
+    }
+  },
+  "menus": {
+    "title": "Menus",
+    "intro": "Build photo menus with sections, prices and availability — guests browse them in their own language.",
+    "addMenu": "New menu",
+    "empty": {
+      "title": "No menus yet",
+      "hint": "Start with your main menu — In-Room Dining, Pool Bar, Breakfast…"
+    },
+    "menuCard": {
+      "alwaysOpen": "Always available",
+      "window": "{start}–{end}",
+      "prepSla": "Prep target: {minutes} min",
+      "inactive": "Hidden from guests",
+      "defaultIncluded": "Included by default for: {types}",
+      "defaultPaid": "All items paid unless overridden",
+      "addSection": "Add section",
+      "edit": "Edit menu"
+    },
+    "sectionRow": {
+      "addItem": "Add item",
+      "edit": "Edit",
+      "inactive": "Hidden",
+      "empty": "No items in this section yet."
+    },
+    "itemRow": {
+      "included": "✓ Included",
+      "inactive": "Hidden",
+      "noPhoto": "No photo",
+      "variants": "{count} options"
+    },
+    "menuModal": {
+      "createTitle": "New menu",
+      "editTitle": "Edit menu",
+      "windowsLabel": "Availability windows",
+      "windowsHint": "Hotel-local times. Overnight windows like 20:00–02:00 work. Leave empty for always available.",
+      "addWindow": "Add window",
+      "removeWindow": "Remove window",
+      "prepSlaLabel": "Prep-time target (minutes)",
+      "prepSlaHint": "Orders float on the board when they pass this target.",
+      "pricingLabel": "Default pricing",
+      "pricingHint": "Applies to every item unless the item overrides it.",
+      "pricingPaid": "All items paid",
+      "pricingIncluded": "Included for selected stay types",
+      "activeLabel": "Visible to guests",
+      "save": "Save menu",
+      "create": "Create menu"
+    },
+    "sectionModal": {
+      "createTitle": "New section",
+      "editTitle": "Edit section",
+      "activeLabel": "Visible to guests",
+      "save": "Save section",
+      "create": "Create section"
+    },
+    "itemModal": {
+      "createTitle": "New item",
+      "editTitle": "Edit item",
+      "priceLabel": "Price",
+      "priceHint": "In your hotel currency. Options carry their own absolute prices.",
+      "pricingLabel": "Pricing mode",
+      "pricingInherit": "Follow the menu default",
+      "pricingPaid": "Always paid",
+      "pricingIncluded": "Included for selected stay types",
+      "pricingInheritNote": "Menu default: {summary}",
+      "variantLabel": "Options group (optional)",
+      "variantHint": "One simple group, e.g. Size — Medium 80 / Large 110. Each option has its own full price.",
+      "variantEnable": "This item has options",
+      "variantGroupNameEn": "Group label (English)",
+      "variantGroupNameAr": "Group label (Arabic)",
+      "optionNameEn": "Option (English)",
+      "optionNameAr": "Option (Arabic)",
+      "optionPrice": "Price",
+      "addOption": "Add option",
+      "removeOption": "Remove",
+      "notesLabel": "Guests can add a note",
+      "notesHint": "e.g. “no onions”. Turn off for items where notes make no sense.",
+      "photoLabel": "Photo",
+      "photoHint": "PNG, JPEG or WebP up to 5 MB. Shown in the guest menu — good photos sell.",
+      "photoUpload": "Upload photo",
+      "photoReplace": "Replace photo",
+      "photoRemove": "Remove photo",
+      "photoInvalid": "Choose a PNG, JPEG or WebP image up to 5 MB.",
+      "activeLabel": "Visible to guests",
+      "save": "Save item",
+      "create": "Create item"
+    },
+    "names": {
+      "nameEn": "Name (English)",
+      "nameAr": "Name (Arabic)",
+      "descriptionEn": "Description (English)",
+      "descriptionAr": "Description (Arabic)",
+      "moreLanguages": "More languages (optional)",
+      "moreLanguagesHint": "Guests using these languages see English until you translate.",
+      "help": "Arabic and English are required; other languages fall back to English."
+    },
+    "loadError": "We couldn't load the menus."
+  },
+  "locations": {
+    "title": "Delivery locations",
+    "intro": "Define where guests can receive orders — pool, beach, lobby — and print QR stickers for each.",
+    "add": "New location",
+    "empty": {
+      "title": "No locations yet",
+      "hint": "Guests can always order to their room. Add the pool or beach to turn them into revenue surfaces."
+    },
+    "row": {
+      "spots": "Numbered spots: {label}",
+      "noSpots": "Zone only",
+      "inactive": "Hidden from guests",
+      "qr": "QR & stickers",
+      "edit": "Edit"
+    },
+    "modal": {
+      "createTitle": "New location",
+      "editTitle": "Edit location",
+      "nameEn": "Name (English)",
+      "nameAr": "Name (Arabic)",
+      "keyLabel": "QR key",
+      "keyHint": "Locked once created — printed stickers depend on it. Renaming changes display names only.",
+      "hasSpots": "Has numbered spots",
+      "spotLabelEn": "Spot label (English)",
+      "spotLabelAr": "Spot label (Arabic)",
+      "spotLabelHint": "e.g. Umbrella / Table — appears next to the number.",
+      "activeLabel": "Visible to guests",
+      "activeHint": "Hiding keeps printed QRs working — guests just pick a location manually.",
+      "save": "Save location",
+      "create": "Create location"
+    },
+    "qrModal": {
+      "title": "QR & stickers — {name}",
+      "urlLabel": "Guest link",
+      "download": "Download",
+      "single": "Zone sticker",
+      "series": "Numbered series",
+      "from": "From",
+      "to": "To",
+      "exclusions": "Skip numbers",
+      "exclusionsHint": "Comma-separated, e.g. 13,17",
+      "generate": "Download stickers PDF",
+      "generating": "Preparing PDF…",
+      "rangeInvalid": "Enter a valid from–to range.",
+      "loadError": "We couldn't load the QR."
+    },
+    "guidance": {
+      "title": "Zone stickers vs numbered stickers",
+      "body": "Print a zone sticker for every location. Use numbered series only for fixed furniture (mounted umbrellas, tables). Movable sunbeds should get the zone sticker — guests type their spot number themselves, because furniture moves and a wrong pre-filled spot is worse than none."
+    },
+    "loadError": "We couldn't load the locations."
+  },
+  "settings": {
+    "title": "Payment methods",
+    "intro": "How guests can pay for orders. Online payment is coming in a future update.",
+    "cashLabel": "Cash on delivery",
+    "cashHint": "Always on — the guest pays the waiter on delivery.",
+    "roomChargeLabel": "Room charge (pay at checkout)",
+    "roomChargeHint": "Orders go on the room bill; the front desk collects at checkout. Unsettled charges appear on the stay before checkout.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Payment methods saved.",
+    "loadError": "We couldn't load F&B settings."
+  },
+  "stayOrders": {
+    "title": "F&B orders",
+    "unsettled": "Unsettled room charges: {amount}",
+    "settle": "Mark as settled",
+    "settleTitle": "Mark room charges as settled?",
+    "settleNote": "This records {amount} of room-charge orders as collected. It can't be undone.",
+    "settleConfirm": "Mark as settled",
+    "settled": "All room charges settled.",
+    "checkoutNote": "This stay has {amount} of uncollected room-charge orders. Checking out will mark them as settled — collect the amount first.",
+    "empty": "No orders on this stay.",
+    "loadError": "We couldn't load this stay's orders."
+  },
+  "sla": {
+    "overdue": "Overdue",
+    "progress": "{elapsed}/{target} min"
+  }
+}
