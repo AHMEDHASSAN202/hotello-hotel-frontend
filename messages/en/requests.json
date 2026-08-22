@@ -1,0 +1,164 @@
+{
+  "eyebrow": "Guest services",
+  "title": "Requests",
+  "intro": "Everything guests order from the app lands here the moment they tap it — work it, assign it, finish it.",
+  "catalogLink": "Manage catalog",
+  "readOnlyHint": "Your subscription is read-only — renew to make changes.",
+  "noAccess": {
+    "title": "No access to requests",
+    "hint": "Your role doesn't include viewing guest requests. Ask a manager if you need access."
+  },
+  "stats": {
+    "open": "Open now",
+    "doneToday": "Done today",
+    "overdueNow": "Overdue now"
+  },
+  "hint": {
+    "title": "A live board",
+    "body": "New requests appear on their own — no refreshing. Overdue cards float to the top, and a soft sound announces new arrivals (you can mute it with the speaker button)."
+  },
+  "tabs": {
+    "open": "Open",
+    "history": "History"
+  },
+  "filters": {
+    "status": "All statuses",
+    "category": "All categories",
+    "assignee": "All assignees",
+    "floor": "Floor",
+    "mine": "My requests",
+    "overdueOnly": "Overdue only"
+  },
+  "status": {
+    "new": "New",
+    "in_progress": "In progress",
+    "done": "Done",
+    "cancelled": "Cancelled"
+  },
+  "sla": {
+    "label": "Time target",
+    "progress": "{elapsed}/{target} min",
+    "overdue": "Overdue"
+  },
+  "card": {
+    "room": "Room",
+    "floor": "Floor {floor}",
+    "noteTag": "Guest note language"
+  },
+  "empty": {
+    "allClearTitle": "All clear",
+    "allClearHint": "No open requests right now — new ones will appear here on their own.",
+    "filteredTitle": "No requests match these filters",
+    "filteredHint": "Try clearing a filter or two.",
+    "historyTitle": "No finished requests yet",
+    "historyHint": "Completed and cancelled requests are kept here permanently."
+  },
+  "states": {
+    "loading": "Loading requests…"
+  },
+  "table": {
+    "item": "Request",
+    "room": "Room",
+    "guest": "Guest",
+    "status": "Status",
+    "finishedAt": "Finished",
+    "assignee": "Assignee"
+  },
+  "sound": {
+    "on": "New-request sound is on — click to mute",
+    "off": "New-request sound is muted — click to enable"
+  },
+  "detail": {
+    "note": "Guest note",
+    "submitted": "Received",
+    "started": "Started",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "by": "by {name}",
+    "byGuest": "by the guest",
+    "guestLanguage": "guest app in {language}"
+  },
+  "cancelReason": {
+    "guest": "Cancelled by the guest",
+    "guest_request": "Guest asked to cancel",
+    "not_available": "Not available",
+    "duplicate": "Duplicate request",
+    "other": "Other"
+  },
+  "actions": {
+    "start": "Start",
+    "complete": "Complete",
+    "assign": "Assign",
+    "cancel": "Cancel request"
+  },
+  "cancelForm": {
+    "title": "Why is this request being cancelled?",
+    "notePlaceholder": "A short note about the reason (required for Other)",
+    "consequence": "Cancelling is final — the guest will see the request as cancelled. This can't be undone.",
+    "confirm": "Cancel the request"
+  },
+  "assignForm": {
+    "title": "Assign to",
+    "empty": "No staff members can work requests yet — grant a role the \"Work requests\" permission first.",
+    "unassign": "Remove assignee"
+  },
+  "catalog": {
+    "eyebrow": "Guest services",
+    "title": "Request catalog",
+    "intro": "What guests can order, in their own language — enable what your hotel offers, set time targets, and add your own items.",
+    "readOnlyHint": "Your subscription is read-only — renew to make changes.",
+    "noAccess": {
+      "title": "No access to the catalog",
+      "hint": "Your role doesn't include managing the request catalog."
+    },
+    "hint": {
+      "title": "Translated for you",
+      "body": "Built-in items are professionally translated into all seven guest languages — you only choose what's available and how fast it should be done. Custom items need Arabic and English; other languages are optional."
+    },
+    "disabled": "Hidden from guests",
+    "addCustom": "Add item",
+    "disable": "Disable",
+    "enable": "Enable",
+    "customBadge": "Custom",
+    "optionQuantity": "Quantity {min}–{max}",
+    "optionTime": "Time picker",
+    "slaLabel": "Target",
+    "slaMinutes": "min",
+    "slaAria": "Time target in minutes for {item}",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "editItem": "Edit {item}",
+    "disableConfirm": {
+      "title": "Hide this item from guests?",
+      "body": "Guests won't be able to order it until you enable it again. Requests already submitted are not affected."
+    }
+  },
+  "customItem": {
+    "createTitle": "Add a custom item",
+    "editTitle": "Edit custom item",
+    "nameEn": "Name (English)",
+    "nameAr": "Name (Arabic)",
+    "nameEnPlaceholder": "e.g. Pool towel",
+    "nameArPlaceholder": "مثال: منشفة مسبح",
+    "namesHelp": "Guests who use another language will see the English name unless you add their language below.",
+    "showExtraLangs": "Add more languages (optional)",
+    "hideExtraLangs": "Hide extra languages",
+    "lang": {
+      "ru": "Name (Russian)",
+      "fr": "Name (French)",
+      "it": "Name (Italian)",
+      "es": "Name (Spanish)",
+      "de": "Name (German)"
+    },
+    "descriptionEn": "Description (English, optional)",
+    "descriptionAr": "Description (Arabic, optional)",
+    "optionLabel": "Option",
+    "optionNone": "No option",
+    "optionQuantity": "Quantity range",
+    "optionTime": "Time picker",
+    "optionMin": "Minimum",
+    "optionMax": "Maximum",
+    "sla": "Time target (minutes)",
+    "slaHelp": "How long this should take from request to done — the board turns amber near the target and red past it."
+  }
+}

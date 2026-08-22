@@ -102,25 +102,27 @@ export function RequestsFeedProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(timer);
   }, [active, boostCount, load]);
 
+  // Stable callbacks: consumers hang effects off these (boost on mount,
+  // chime subscription) — identities must not churn with poll results.
+  const refresh = useCallback(() => load('full'), [load]);
+  const applyRow = useCallback((row: TenantRequestView) => {
+    setRequests((prev) => mergeBoardDelta(prev ?? [], [row]));
+  }, []);
+  const boost = useCallback(() => {
+    setBoostCount((c) => c + 1);
+    void load('delta');
+    return () => setBoostCount((c) => Math.max(0, c - 1));
+  }, [load]);
+  const onNewRequests = useCallback((listener: NewRequestListener) => {
+    listeners.current.add(listener);
+    return () => {
+      listeners.current.delete(listener);
+    };
+  }, []);
+
   const value = useMemo<RequestsFeedValue>(
-    () => ({
-      requests,
-      counts,
-      error,
-      refresh: () => load('full'),
-      applyRow: (row) =>
-        setRequests((prev) => mergeBoardDelta(prev ?? [], [row])),
-      boost: () => {
-        setBoostCount((c) => c + 1);
-        void load('delta');
-        return () => setBoostCount((c) => Math.max(0, c - 1));
-      },
-      onNewRequests: (listener) => {
-        listeners.current.add(listener);
-        return () => listeners.current.delete(listener);
-      },
-    }),
-    [requests, counts, error, load],
+    () => ({ requests, counts, error, refresh, applyRow, boost, onNewRequests }),
+    [requests, counts, error, refresh, applyRow, boost, onNewRequests],
   );
 
   return (

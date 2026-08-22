@@ -3,6 +3,7 @@ import common from './common.json';
 import errors from './errors.json';
 import guidance from './guidance.json';
 import profile from './profile.json';
+import requests from './requests.json';
 import roles from './roles.json';
 import rooms from './rooms.json';
 import shell from './shell.json';
@@ -20,6 +21,7 @@ const messages = {
   errors,
   guidance,
   profile,
+  requests,
   roles,
   rooms,
   shell,

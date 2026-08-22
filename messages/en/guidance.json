@@ -96,5 +96,21 @@
     "codeNote": "Codes are stored securely and can't be viewed after check-in — if a guest forgets theirs, generate a new one.",
     "settingsIntro": "The daily hour when overdue stays end automatically.",
     "occupancyVacant": "No active stay — this room is free for check-in."
+  },
+  "requests": {
+    "status": {
+      "new": "Just arrived from the guest app — nobody has started on it yet.",
+      "in_progress": "A staff member pressed Start and owns it now.",
+      "done": "Completed — it stays in the history permanently.",
+      "cancelled": "Cancelled by staff (with a reason) or by the guest before work started."
+    },
+    "sla": "Each request carries a time target from the catalog. The chip turns amber at 80% of the target and red once it's overdue — overdue cards float to the top.",
+    "noteLanguage": "The note is in the guest's language — automatic translation is coming soon.",
+    "customItem": "A custom item your hotel added — you own its names and translations.",
+    "stats": {
+      "open": "Requests currently new or in progress.",
+      "doneToday": "Requests completed since midnight, hotel time.",
+      "overdueNow": "Open requests already past their time target."
+    }
   }
 }
