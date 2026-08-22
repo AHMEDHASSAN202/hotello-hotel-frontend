@@ -49,3 +49,14 @@ The hotel-facing dashboard (Next.js) — **this is the product our paying client
 Feature specs live in the backend repo (`hotello-backend`) under `/specs`. Before
 planning or implementing any feature, read its epic file fully — it is the source of
 truth. Durable decisions made during Q&A go back into the epic file.
+
+## Workflow (pre-production convention — revisit at launch)
+
+- All work happens directly on `master`; `main` (the GitHub default) is
+  fast-forwarded and pushed alongside it on every push so the default branch
+  is never stale. No feature branches, no stacked epic branches, no worktrees.
+- Small, clear commits per task; push to origin after each verified green
+  state — origin always holds the latest work.
+- Quality gates never relax: `npm test` + `npm run build` (includes the i18n
+  parity check) must be green before every push. Never push red.
+- Changes spanning repos land backend-first, then the frontends.
