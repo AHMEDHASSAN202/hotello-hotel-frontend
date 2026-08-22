@@ -28,6 +28,7 @@ import { api } from '@/lib/api';
 import { tokenStore } from '@/lib/auth';
 import type { ModuleKey } from '@/lib/types';
 import { brandLogo, brandName, useTenantBrand } from './tenant-brand-provider';
+import { useFnbFeed } from './fnb/fnb-feed-provider';
 import { useRequestsFeed } from './requests/requests-feed-provider';
 import { useTenant } from './tenant-provider';
 
@@ -49,7 +50,14 @@ const NAV_ITEMS: NavItem[] = [
   { segment: '', labelKey: 'overview', icon: LayoutDashboard },
   { segment: 'transportation', labelKey: 'transportation', icon: Car, module: 'transportation' },
   { segment: 'housekeeping', labelKey: 'housekeeping', icon: Sparkles, module: 'housekeeping' },
-  { segment: 'fnb', labelKey: 'fnb', icon: UtensilsCrossed, module: 'fnb' },
+  // Epic 16 — the kitchen board; badge shows the open-orders count.
+  {
+    segment: 'fnb',
+    labelKey: 'fnb',
+    icon: UtensilsCrossed,
+    module: 'fnb',
+    permission: 'fnb_orders.read',
+  },
   { segment: 'branding', labelKey: 'branding', icon: Paintbrush, module: 'guest_app_branding' },
   { segment: 'analytics', labelKey: 'analytics', icon: BarChart3, module: 'analytics' },
   // Epic 15 — the live guest-requests board; badge shows the open count.
@@ -78,9 +86,11 @@ export function Sidebar() {
   const brand = useTenantBrand();
   const { isModuleEnabled, hasPermission } = useTenant();
   const { counts } = useRequestsFeed();
+  const { counts: fnbCounts } = useFnbFeed();
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const openRequests = counts?.open ?? 0;
+  const openOrders = fnbCounts?.open ?? 0;
 
   const base = `/t/${slug}`;
   const logo = brandLogo(brand.logoUrl);
@@ -168,12 +178,14 @@ export function Sidebar() {
               <span className="relative shrink-0">
                 <Icon size={17} aria-hidden />
                 {/* Epic 15 — collapsed-mode badge survives as a corner dot. */}
-                {labelKey === 'requests' && openRequests > 0 && collapsed && (
-                  <span
-                    aria-hidden
-                    className="absolute -end-1 -top-1 h-2 w-2 rounded-full bg-gold"
-                  />
-                )}
+                {((labelKey === 'requests' && openRequests > 0) ||
+                  (labelKey === 'fnb' && openOrders > 0)) &&
+                  collapsed && (
+                    <span
+                      aria-hidden
+                      className="absolute -end-1 -top-1 h-2 w-2 rounded-full bg-gold"
+                    />
+                  )}
               </span>
               {!collapsed && (
                 <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
@@ -184,6 +196,14 @@ export function Sidebar() {
                       className="rounded-full bg-gold px-1.5 py-0.5 text-[10px] font-bold leading-none text-ink-deep"
                     >
                       {openRequests}
+                    </span>
+                  )}
+                  {labelKey === 'fnb' && openOrders > 0 && (
+                    <span
+                      data-testid="fnb-nav-badge"
+                      className="rounded-full bg-gold px-1.5 py-0.5 text-[10px] font-bold leading-none text-ink-deep"
+                    >
+                      {openOrders}
                     </span>
                   )}
                 </span>
