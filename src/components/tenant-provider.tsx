@@ -39,6 +39,11 @@ interface TenantContextValue {
   isHintDismissed: (key: string) => boolean;
   /** Optimistically hides the hint and persists the dismissal server-side. */
   dismissHint: (key: string) => void;
+  /**
+   * Epic 15 — removes a stored hint key (hint keys double as per-user
+   * toggles: `requests.soundMuted` mutes the board's new-request sound).
+   */
+  undismissHint: (key: string) => void;
 }
 
 const TenantContext = createContext<TenantContextValue | null>(null);
@@ -125,6 +130,24 @@ export function TenantProvider({
     }).catch(() => {});
   }, []);
 
+  const undismissHint = useCallback((key: string) => {
+    setMeState((prev) => {
+      if (!prev) return prev;
+      const dismissed = prev.user.dismissedHints ?? [];
+      if (!dismissed.includes(key)) return prev;
+      return {
+        ...prev,
+        user: {
+          ...prev.user,
+          dismissedHints: dismissed.filter((k) => k !== key),
+        },
+      };
+    });
+    api(`/tenant/me/hints/${encodeURIComponent(key)}`, {
+      method: 'DELETE',
+    }).catch(() => {});
+  }, []);
+
   const enabledModules = me?.subscription.enabledModules ?? [];
   const permissions = me?.user.permissions ?? [];
   const value: TenantContextValue = {
@@ -139,6 +162,7 @@ export function TenantProvider({
     hasPermission: (key) => grants(permissions, key),
     isHintDismissed: (key) => (me?.user.dismissedHints ?? []).includes(key),
     dismissHint,
+    undismissHint,
   };
 
   if (me && me.hotel.slug !== slug) {

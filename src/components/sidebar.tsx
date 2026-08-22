@@ -4,6 +4,7 @@ import {
   BarChart3,
   BedDouble,
   Car,
+  ConciergeBell,
   DoorOpen,
   LayoutDashboard,
   LogOut,
@@ -27,6 +28,7 @@ import { api } from '@/lib/api';
 import { tokenStore } from '@/lib/auth';
 import type { ModuleKey } from '@/lib/types';
 import { brandLogo, brandName, useTenantBrand } from './tenant-brand-provider';
+import { useRequestsFeed } from './requests/requests-feed-provider';
 import { useTenant } from './tenant-provider';
 
 /**
@@ -50,6 +52,14 @@ const NAV_ITEMS: NavItem[] = [
   { segment: 'fnb', labelKey: 'fnb', icon: UtensilsCrossed, module: 'fnb' },
   { segment: 'branding', labelKey: 'branding', icon: Paintbrush, module: 'guest_app_branding' },
   { segment: 'analytics', labelKey: 'analytics', icon: BarChart3, module: 'analytics' },
+  // Epic 15 — the live guest-requests board; badge shows the open count.
+  {
+    segment: 'requests',
+    labelKey: 'requests',
+    icon: ConciergeBell,
+    module: 'requests',
+    permission: 'requests.read',
+  },
   // Front-desk daily driver — listed before the setup-ish sections (Epic 13).
   { segment: 'stays', labelKey: 'stays', icon: DoorOpen, permission: 'stays.read' },
   { segment: 'staff', labelKey: 'staff', icon: Users, permission: 'staff.read' },
@@ -67,8 +77,10 @@ export function Sidebar() {
   const t = useTranslations('shell');
   const brand = useTenantBrand();
   const { isModuleEnabled, hasPermission } = useTenant();
+  const { counts } = useRequestsFeed();
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
+  const openRequests = counts?.open ?? 0;
 
   const base = `/t/${slug}`;
   const logo = brandLogo(brand.logoUrl);
@@ -153,8 +165,29 @@ export function Sidebar() {
                   className="absolute start-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-e bg-gold"
                 />
               )}
-              <Icon size={17} aria-hidden className="shrink-0" />
-              {!collapsed && t(`nav.${labelKey}`)}
+              <span className="relative shrink-0">
+                <Icon size={17} aria-hidden />
+                {/* Epic 15 — collapsed-mode badge survives as a corner dot. */}
+                {labelKey === 'requests' && openRequests > 0 && collapsed && (
+                  <span
+                    aria-hidden
+                    className="absolute -end-1 -top-1 h-2 w-2 rounded-full bg-gold"
+                  />
+                )}
+              </span>
+              {!collapsed && (
+                <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
+                  <span className="truncate">{t(`nav.${labelKey}`)}</span>
+                  {labelKey === 'requests' && openRequests > 0 && (
+                    <span
+                      data-testid="requests-nav-badge"
+                      className="rounded-full bg-gold px-1.5 py-0.5 text-[10px] font-bold leading-none text-ink-deep"
+                    >
+                      {openRequests}
+                    </span>
+                  )}
+                </span>
+              )}
             </Link>
           );
         })}

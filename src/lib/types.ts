@@ -13,7 +13,8 @@ export type ModuleKey =
   | 'housekeeping'
   | 'fnb'
   | 'guest_app_branding'
-  | 'analytics';
+  | 'analytics'
+  | 'requests';
 
 /* ------------------------------------------------- Public tenant context */
 
@@ -94,6 +95,8 @@ export interface TenantMeHotel {
   logoUrl: string | null;
   defaultLanguage: PreferredLanguage;
   status: 'active' | 'suspended';
+  /** IANA timezone — request timelines render in hotel time (Epic 15). */
+  timezone: string;
 }
 
 export interface SubscriptionState {
@@ -356,4 +359,121 @@ export interface AvailableRoom {
 /** GET/PATCH /tenant/stays/settings (13.4 AC2). */
 export interface StaySettings {
   checkoutTime: string;
+}
+
+/* ---------------------------------------------- Requests (Epic 15) */
+
+export type RequestStatus = 'new' | 'in_progress' | 'done' | 'cancelled';
+
+export type RequestCancelReason =
+  | 'guest'
+  | 'guest_request'
+  | 'not_available'
+  | 'duplicate'
+  | 'other';
+
+/** Staff-pickable reasons (the `guest` reason is guest-cancel only). */
+export const STAFF_CANCEL_REASONS = [
+  'guest_request',
+  'not_available',
+  'duplicate',
+  'other',
+] as const;
+export type StaffCancelReason = (typeof STAFF_CANCEL_REASONS)[number];
+
+export type RequestOptionType = 'quantity' | 'time';
+
+/** One board card (GET /tenant/requests). */
+export interface TenantRequestView {
+  id: string;
+  itemNameEn: string;
+  itemNameAr: string;
+  icon: string;
+  categoryId: string;
+  roomNumber: string;
+  floor: number | null;
+  guestName: string;
+  optionType: RequestOptionType | null;
+  optionValue: string | null;
+  note: string | null;
+  /** Guest language tag shown next to the raw note («RU»). */
+  noteLanguage: GuestLanguage | null;
+  status: RequestStatus;
+  slaTargetMinutes: number;
+  dueAt: string;
+  assignedTo: { id: string; name: string } | null;
+  createdAt: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  cancelledAt: string | null;
+  cancelledReason: RequestCancelReason | null;
+  updatedAt: string;
+}
+
+/** GET /tenant/requests/:id — the drawer timeline (15.5 AC3). */
+export interface TenantRequestDetail extends TenantRequestView {
+  guestLanguage: GuestLanguage;
+  cancelNote: string | null;
+  startedBy: { id: string; name: string } | null;
+  completedBy: { id: string; name: string } | null;
+  cancelledBy: { id: string; name: string } | null;
+}
+
+/** Board header stats-lite (15.6 AC3). */
+export interface RequestBoardCounts {
+  open: number;
+  doneToday: number;
+  overdueNow: number;
+}
+
+/** GET /tenant/requests (open board / `updatedSince` deltas). */
+export interface RequestBoardResponse {
+  data: TenantRequestView[];
+  counts: RequestBoardCounts;
+  serverTime: string;
+}
+
+/** GET /tenant/requests?tab=history — paginated final states. */
+export type RequestHistoryResponse = Paginated<TenantRequestView>;
+
+/** GET /tenant/requests/assignees — options-endpoint shape (15.5 AC2). */
+export interface RequestAssignee {
+  id: string;
+  name: string;
+  roleNameEn: string;
+  roleNameAr: string;
+}
+
+/** Translations JSONB shape mirrored from the catalog rows. */
+export type RequestTranslationMap = Partial<Record<GuestLanguage, string>>;
+
+/** GET /tenant/request-catalog items (management + filter names). */
+export interface CatalogItemManage {
+  id: string;
+  key: string | null;
+  names: RequestTranslationMap;
+  descriptions: RequestTranslationMap | null;
+  icon: string;
+  optionType: RequestOptionType | null;
+  optionMin: number | null;
+  optionMax: number | null;
+  defaultSlaMinutes: number;
+  /** Effective SLA (hotel override or platform default). */
+  slaMinutes: number;
+  sortOrder: number;
+  enabled: boolean;
+  isCustom: boolean;
+}
+
+export interface CatalogCategoryManage {
+  id: string;
+  key: string;
+  names: RequestTranslationMap;
+  icon: string;
+  enabled: boolean;
+  items: CatalogItemManage[];
+}
+
+export interface RequestCatalogResponse {
+  categories: CatalogCategoryManage[];
 }
