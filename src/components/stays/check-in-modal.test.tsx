@@ -8,9 +8,11 @@ import en from '../../../messages/en';
 const tenant = vi.hoisted(() => ({
   me: { user: { id: 'u1' }, hotel: { defaultLanguage: 'ar' } },
   hasPermission: vi.fn(() => true),
+  isModuleEnabled: vi.fn(() => false),
   readOnly: false,
   isHintDismissed: vi.fn(() => true),
   dismissHint: vi.fn(),
+  undismissHint: vi.fn(),
 }));
 
 vi.mock('@/components/tenant-provider', () => ({

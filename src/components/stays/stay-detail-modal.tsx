@@ -21,6 +21,7 @@ import { useApiError } from '@/lib/errors';
 import type {
   AvailableRoom,
   GuestLanguage,
+  StayFnbOrdersResponse,
   StayType,
   Stay,
   StayWithCode,
@@ -51,12 +52,18 @@ export function StayDetailModal({
   const tList = useTranslations('stays.list');
   const tG = useTranslations('guidance.stays');
   const tCommon = useTranslations('common');
+  const tFnbStay = useTranslations('fnb.stayOrders');
+  const tFnbPay = useTranslations('fnb.payment');
+  const tFnbBoard = useTranslations('fnb.board');
   const resolveError = useApiError();
-  const { formatDate, formatDateTime } = useFormatters();
-  const { hasPermission, readOnly } = useTenant();
+  const { locale, formatDate, formatDateTime, formatCurrency } = useFormatters();
+  const { hasPermission, isModuleEnabled, readOnly } = useTenant();
 
   const canUpdate = hasPermission('stays.update');
   const canCheckout = hasPermission('stays.checkout');
+  // Epic 16 (16.8) — room-charge visibility; hidden entirely without the module.
+  const showFnbOrders =
+    isModuleEnabled('fnb') && hasPermission('fnb_orders.read');
 
   const [current, setCurrent] = useState<Stay | null>(stay);
   const [mode, setMode] = useState<Mode>('view');
@@ -79,8 +86,10 @@ export function StayDetailModal({
   const [rooms, setRooms] = useState<AvailableRoom[] | null>(null);
   const [targetRoom, setTargetRoom] = useState<string | null>(null);
   // Confirms + one-time code display
-  const [confirming, setConfirming] = useState<'regenerate' | 'checkout' | null>(null);
+  const [confirming, setConfirming] = useState<'regenerate' | 'checkout' | 'settle' | null>(null);
   const [newCode, setNewCode] = useState<string | null>(null);
+  // Epic 16 (16.8) — the stay's F&B orders + unsettled room charges.
+  const [fnbOrders, setFnbOrders] = useState<StayFnbOrdersResponse | null>(null);
 
   useEffect(() => {
     setCurrent(stay);
@@ -88,6 +97,13 @@ export function StayDetailModal({
     setError(null);
     setNewCode(null);
     setConfirming(null);
+    setFnbOrders(null);
+    if (stay && isModuleEnabled('fnb') && hasPermission('fnb_orders.read')) {
+      api<StayFnbOrdersResponse>(`/tenant/fnb-orders/stay/${stay.id}`)
+        .then(setFnbOrders)
+        .catch(() => setFnbOrders(null));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stay]);
 
   const active = current?.status === 'active';
@@ -215,11 +231,39 @@ export function StayDetailModal({
     );
   }
 
-  function checkout() {
+  function settle() {
     if (!current) return;
     run(
       () =>
-        api<Stay>(`/tenant/stays/${current.id}/checkout`, { method: 'POST' }),
+        api<{ settled: number; unsettledTotal: number }>(
+          `/tenant/fnb-orders/stay/${current.id}/settle`,
+          { method: 'POST', body: JSON.stringify({}) },
+        ),
+      () => {
+        setConfirming(null);
+        api<StayFnbOrdersResponse>(`/tenant/fnb-orders/stay/${current.id}`)
+          .then(setFnbOrders)
+          .catch(() => {});
+      },
+    );
+  }
+
+  function checkout() {
+    if (!current) return;
+    run(
+      async () => {
+        // 16.8 AC2 — the interlock: settling rides the checkout confirm, so
+        // no order leaves unpaid without the desk seeing the amount.
+        if ((fnbOrders?.unsettledTotal ?? 0) > 0) {
+          await api(`/tenant/fnb-orders/stay/${current.id}/settle`, {
+            method: 'POST',
+            body: JSON.stringify({}),
+          });
+        }
+        return api<Stay>(`/tenant/stays/${current.id}/checkout`, {
+          method: 'POST',
+        });
+      },
       (result) => {
         setConfirming(null);
         applyResult(result);
@@ -312,6 +356,74 @@ export function StayDetailModal({
                     ••••••
                   </span>
                   <p className="text-xs text-ink-soft">{tG('codeNote')}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Epic 16 (16.8 AC1) — the stay's F&B orders + unsettled charges. */}
+          {showFnbOrders && fnbOrders && fnbOrders.data.length > 0 && (
+            <div className="mt-4 rounded-lg border border-line bg-paper p-4">
+              <p className="text-xs font-medium uppercase tracking-widest text-ink-soft">
+                {tFnbStay('title')}
+              </p>
+              <ul className="mt-2 space-y-1.5">
+                {fnbOrders.data.map((order) => (
+                  <li
+                    key={order.id}
+                    className="flex flex-wrap items-center justify-between gap-2 text-sm"
+                  >
+                    <span className="tabular-nums text-ink-soft">
+                      {formatDateTime(order.createdAt)}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <span className="tabular-nums text-ink">
+                        {order.totalAmount === 0
+                          ? tFnbPay('included')
+                          : formatCurrency(order.totalAmount, order.currency)}
+                      </span>
+                      {order.paymentMethod === 'room_charge' ? (
+                        <Badge tone={order.settledAt ? 'neutral' : 'warning'}>
+                          {order.settledAt
+                            ? tFnbPay('settled')
+                            : tFnbPay('roomCharge')}
+                        </Badge>
+                      ) : null}
+                      <Badge
+                        tone={
+                          order.status === 'delivered'
+                            ? 'success'
+                            : order.status === 'cancelled'
+                              ? 'neutral'
+                              : 'gold'
+                        }
+                      >
+                        {tFnbBoard(`status.${order.status}`)}
+                      </Badge>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {fnbOrders.unsettledTotal > 0 && (
+                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line/60 pt-3">
+                  <p className="text-sm font-medium text-danger">
+                    {tFnbStay('unsettled', {
+                      amount: formatCurrency(
+                        fnbOrders.unsettledTotal,
+                        fnbOrders.data[0]?.currency ?? 'EGP',
+                      ),
+                    })}
+                  </p>
+                  {canCheckout && (
+                    <Button
+                      variant="ghost"
+                      onClick={() => setConfirming('settle')}
+                      disabled={readOnly}
+                      title={disabledHint}
+                    >
+                      {tFnbStay('settle')}
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
@@ -581,6 +693,38 @@ export function StayDetailModal({
         error={error}
       >
         <ConsequenceNote tone="danger">{tStays('checkout.note')}</ConsequenceNote>
+        {/* 16.8 AC2 — surface uncollected room charges inside the confirm. */}
+        {(fnbOrders?.unsettledTotal ?? 0) > 0 && (
+          <div className="mt-2">
+            <ConsequenceNote tone="danger">
+              {tFnbStay('checkoutNote', {
+                amount: formatCurrency(
+                  fnbOrders!.unsettledTotal,
+                  fnbOrders!.data[0]?.currency ?? 'EGP',
+                ),
+              })}
+            </ConsequenceNote>
+          </div>
+        )}
+      </ConfirmModal>
+
+      <ConfirmModal
+        open={confirming === 'settle'}
+        onClose={() => setConfirming(null)}
+        title={tFnbStay('settleTitle')}
+        confirmLabel={tFnbStay('settleConfirm')}
+        onConfirm={settle}
+        loading={busy}
+        error={error}
+      >
+        <ConsequenceNote tone="danger">
+          {tFnbStay('settleNote', {
+            amount: formatCurrency(
+              fnbOrders?.unsettledTotal ?? 0,
+              fnbOrders?.data[0]?.currency ?? 'EGP',
+            ),
+          })}
+        </ConsequenceNote>
       </ConfirmModal>
     </Modal>
   );
