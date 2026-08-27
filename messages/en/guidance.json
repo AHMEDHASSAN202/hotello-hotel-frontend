@@ -119,5 +119,12 @@
       "deliveredToday": "Orders delivered since midnight, hotel time.",
       "revenueToday": "Paid totals of orders delivered today — cash and room-charge together. Included items count as 0."
     }
+  },
+  "hotelInfo": {
+    "intro": "Everything guests usually ask the desk — WiFi, hours, services — one tile in their app, in their language.",
+    "hint": {
+      "title": "Start with WiFi and facility hours",
+      "body": "They answer 80% of what guests ask the desk. Fill Essentials first, then add facilities with opening hours — guests see a live “Open now” badge."
+    }
   }
 }

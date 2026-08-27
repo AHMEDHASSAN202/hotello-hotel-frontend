@@ -80,6 +80,12 @@
     "FNB_ORDER_INVALID_STATUS": "This order moved on — refresh and try again.",
     "FNB_ASSIGNEE_INVALID": "That staff member can't work orders.",
     "FNB_LOCATION_NO_SPOTS": "This location has no numbered spots.",
-    "FNB_STICKER_RANGE_INVALID": "Enter a valid from–to range."
+    "FNB_STICKER_RANGE_INVALID": "Enter a valid from–to range.",
+    "HOTEL_INFO_NAMES_REQUIRED": "Arabic and English names are required.",
+    "HOTEL_INFO_PHOTO_INVALID": "Choose a PNG, JPEG or WebP image up to 5 MB.",
+    "HOTEL_INFO_PHOTOS_FULL": "This section has reached its photo limit.",
+    "HOTEL_INFO_REORDER_INVALID": "The new order couldn't be applied — refresh and try again.",
+    "HOTEL_INFO_FIELD_INVALID": "One of the fields doesn't belong to this section — refresh and try again.",
+    "HOTEL_INFO_ENTRY_NOT_FOUND": "That entry no longer exists."
   }
 }

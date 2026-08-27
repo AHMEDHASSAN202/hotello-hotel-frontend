@@ -3,6 +3,7 @@
 import {
   BarChart3,
   BedDouble,
+  BookOpen,
   Car,
   ConciergeBell,
   DoorOpen,
@@ -68,6 +69,14 @@ const NAV_ITEMS: NavItem[] = [
     icon: ConciergeBell,
     module: 'requests',
     permission: 'requests.read',
+  },
+  // Epic 17 — the guest-facing directory (WiFi, facilities, house rules).
+  {
+    segment: 'hotel-info',
+    labelKey: 'hotelInfo',
+    icon: BookOpen,
+    module: 'hotel_info',
+    permission: 'hotel_info.manage',
   },
   // Front-desk daily driver — listed before the setup-ish sections (Epic 13).
   { segment: 'stays', labelKey: 'stays', icon: DoorOpen, permission: 'stays.read' },

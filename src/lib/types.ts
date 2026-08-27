@@ -14,7 +14,8 @@ export type ModuleKey =
   | 'fnb'
   | 'guest_app_branding'
   | 'analytics'
-  | 'requests';
+  | 'requests'
+  | 'hotel_info';
 
 /* ------------------------------------------------- Public tenant context */
 
@@ -682,4 +683,55 @@ export interface StayFnbOrdersResponse {
 export interface SettleFnbOrdersResponse {
   settled: number;
   unsettledTotal: number;
+}
+
+/* ------------------------------------------------- Hotel Info (Epic 17) */
+
+export type HotelInfoSection =
+  | 'essentials'
+  | 'facilities'
+  | 'services'
+  | 'house_rules'
+  | 'about';
+
+export interface HotelInfoPhotoView {
+  id: string;
+  /** API-relative paths (`files/{key}`) — prefix with assetUrl(). */
+  thumbUrl: string;
+  detailUrl: string;
+}
+
+/** Per-section typed payload (essentials wifi/phones, facility hours…). */
+export interface HotelInfoStructured {
+  wifiName?: string;
+  wifiPassword?: string;
+  receptionPhone?: string;
+  whatsapp?: string;
+  emergencyPhone?: string;
+  windows?: FnbWindow[];
+  locationNote?: RequestTranslationMap;
+  howTo?: RequestTranslationMap;
+  priceNote?: RequestTranslationMap;
+}
+
+export interface InfoEntryManage {
+  id: string;
+  section: HotelInfoSection;
+  names: RequestTranslationMap;
+  descriptions: RequestTranslationMap | null;
+  structured: HotelInfoStructured;
+  photos: HotelInfoPhotoView[];
+  sortOrder: number;
+  isActive: boolean;
+}
+
+/** GET /tenant/hotel-info — the whole management page in one call. */
+export interface HotelInfoOverview {
+  /** Epic 13 setting projection — read-only here. */
+  checkoutTime: string;
+  essentials: InfoEntryManage | null;
+  facilities: InfoEntryManage[];
+  services: InfoEntryManage[];
+  houseRules: InfoEntryManage[];
+  about: InfoEntryManage | null;
 }

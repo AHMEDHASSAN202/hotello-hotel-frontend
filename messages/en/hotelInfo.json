@@ -1,0 +1,110 @@
+{
+  "title": "Hotel info",
+  "loadError": "We couldn't load the hotel info.",
+  "readOnlyHint": "Your subscription is read-only — reactivate to edit.",
+  "names": {
+    "nameEn": "Name (English)",
+    "nameAr": "Name (Arabic)",
+    "descriptionEn": "Description (English)",
+    "descriptionAr": "Description (Arabic)",
+    "moreLanguages": "More languages (optional)",
+    "moreLanguagesHint": "Guests using these languages see English until you translate.",
+    "help": "Arabic and English are required; other languages fall back to English."
+  },
+  "essentials": {
+    "title": "Essentials",
+    "intro": "Pinned first for guests — WiFi, key numbers and checkout time.",
+    "wifiName": "WiFi network name",
+    "wifiPassword": "WiFi password",
+    "wifiPasswordHelp": "Guests get a tap-to-copy button for this.",
+    "receptionPhone": "Reception phone",
+    "whatsapp": "WhatsApp number",
+    "emergencyPhone": "Emergency contact",
+    "phoneHelp": "Shown as tap-to-call. Include the country code, e.g. +20 100 123 4567.",
+    "checkout": "Checkout time",
+    "checkoutHelp": "Pulled from Stays → Settings; change it there.",
+    "save": "Save essentials",
+    "empty": "Nothing filled yet — guests won't see this card until you save something."
+  },
+  "sections": {
+    "facilities": {
+      "title": "Facilities",
+      "add": "Add facility",
+      "empty": "No facilities yet",
+      "emptyHint": "Pool, gym, spa, kids club — each with opening hours so guests see “Open now”."
+    },
+    "services": {
+      "title": "Services",
+      "add": "Add service",
+      "empty": "No services yet",
+      "emptyHint": "Laundry, babysitting, late checkout — say how guests get each one."
+    },
+    "house_rules": {
+      "title": "House rules & good to know",
+      "add": "Add rule",
+      "empty": "No rules yet",
+      "emptyHint": "Quiet hours, pool towels, smoking policy — short and clear."
+    }
+  },
+  "row": {
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "edit": "Edit",
+    "activate": "Show to guests",
+    "deactivate": "Hide from guests",
+    "inactive": "Hidden"
+  },
+  "entryModal": {
+    "createTitle": {
+      "facilities": "New facility",
+      "services": "New service",
+      "house_rules": "New rule"
+    },
+    "editTitle": {
+      "facilities": "Edit facility",
+      "services": "Edit service",
+      "house_rules": "Edit rule"
+    },
+    "windowsLabel": "Opening hours",
+    "windowsHint": "Hotel-local times. Overnight windows like 20:00–02:00 work. Leave empty for always open.",
+    "addWindow": "Add hours",
+    "removeWindow": "Remove",
+    "locationNoteEn": "Location note (English)",
+    "locationNoteAr": "Location note (Arabic)",
+    "locationNoteHelp": "Where to find it — e.g. Building B, floor 2.",
+    "howToEn": "How to get it (English)",
+    "howToAr": "How to get it (Arabic)",
+    "howToHelp": "e.g. Call reception, or leave the bag at your door before 9:00.",
+    "priceNoteEn": "Price note (English)",
+    "priceNoteAr": "Price note (Arabic)",
+    "priceNoteHelp": "Free text — e.g. From 50 EGP per kg.",
+    "visible": "Visible to guests",
+    "photo": "Photo",
+    "photoUpload": "Upload photo",
+    "photoReplace": "Replace photo",
+    "photoRemove": "Remove photo",
+    "photoInvalid": "Use a PNG, JPEG or WebP up to 5 MB.",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "about": {
+    "title": "About the hotel",
+    "intro": "A short story of the place — paragraphs only, plus up to {max} photos.",
+    "textEn": "About text (English)",
+    "textAr": "About text (Arabic)",
+    "textLang": "About text ({lang})",
+    "textHelp": "Separate paragraphs with a blank line.",
+    "moreLanguages": "More languages (optional)",
+    "save": "Save about",
+    "gallery": "Photo gallery",
+    "addPhoto": "Add photo",
+    "removePhoto": "Remove this photo",
+    "galleryFull": "Gallery is full ({max} photos).",
+    "saveFirst": "Save the about text first, then add photos.",
+    "empty": "Not written yet — guests won't see this card."
+  },
+  "noPermission": {
+    "title": "No access to hotel info",
+    "hint": "You need the “Manage hotel info” permission. Ask a manager to grant it."
+  }
+}

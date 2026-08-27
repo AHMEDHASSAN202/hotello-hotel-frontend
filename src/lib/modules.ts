@@ -20,6 +20,7 @@ export const MODULE_PAGES: Record<ModuleKey, ModulePageDef> = {
   guest_app_branding: { segment: 'branding', built: false },
   analytics: { segment: 'analytics', built: false },
   requests: { segment: 'requests', built: true },
+  hotel_info: { segment: 'hotel-info', built: true },
 };
 
 export function isModuleBuilt(key: ModuleKey): boolean {

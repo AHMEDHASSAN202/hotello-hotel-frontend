@@ -80,6 +80,12 @@
     "FNB_ORDER_INVALID_STATUS": "تغيّرت حالة الطلب — حدّث الصفحة وحاول مجددًا.",
     "FNB_ASSIGNEE_INVALID": "هذا الموظف لا يمكنه معالجة الطلبات.",
     "FNB_LOCATION_NO_SPOTS": "هذا المكان بلا أماكن مرقّمة.",
-    "FNB_STICKER_RANGE_INVALID": "أدخل نطاقًا صحيحًا من–إلى."
+    "FNB_STICKER_RANGE_INVALID": "أدخل نطاقًا صحيحًا من–إلى.",
+    "HOTEL_INFO_NAMES_REQUIRED": "الاسمان العربي والإنجليزي مطلوبان.",
+    "HOTEL_INFO_PHOTO_INVALID": "اختر صورة PNG أو JPEG أو WebP حتى 5 م.ب.",
+    "HOTEL_INFO_PHOTOS_FULL": "وصل هذا القسم إلى الحد الأقصى للصور.",
+    "HOTEL_INFO_REORDER_INVALID": "تعذّر تطبيق الترتيب الجديد — حدّث الصفحة وحاول مجددًا.",
+    "HOTEL_INFO_FIELD_INVALID": "أحد الحقول لا يخص هذا القسم — حدّث الصفحة وحاول مجددًا.",
+    "HOTEL_INFO_ENTRY_NOT_FOUND": "هذا العنصر لم يعد موجودًا."
   }
 }

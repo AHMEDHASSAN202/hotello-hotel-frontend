@@ -3,6 +3,7 @@ import common from './common.json';
 import errors from './errors.json';
 import fnb from './fnb.json';
 import guidance from './guidance.json';
+import hotelInfo from './hotelInfo.json';
 import profile from './profile.json';
 import requests from './requests.json';
 import roles from './roles.json';
@@ -19,6 +20,7 @@ const messages = {
   errors,
   fnb,
   guidance,
+  hotelInfo,
   profile,
   requests,
   roles,
