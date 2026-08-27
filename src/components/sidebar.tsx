@@ -26,6 +26,7 @@ import { useState } from 'react';
 import type { Locale } from '@/i18n/config';
 import { api } from '@/lib/api';
 import { tokenStore } from '@/lib/auth';
+import { isModuleBuilt } from '@/lib/modules';
 import type { ModuleKey } from '@/lib/types';
 import { brandLogo, brandName, useTenantBrand } from './tenant-brand-provider';
 import { useFnbFeed } from './fnb/fnb-feed-provider';
@@ -151,7 +152,36 @@ export function Sidebar() {
         className="flex-1 space-y-1 overflow-y-auto px-2"
         aria-label={t('nav.main')}
       >
-        {visibleItems.map(({ segment, labelKey, icon: Icon }) => {
+        {visibleItems.map(({ segment, labelKey, icon: Icon, module }) => {
+          // In the plan but not built yet — visible ambition, inert entry
+          // (`lib/modules.ts`); its route shows the ComingSoon page.
+          if (module && !isModuleBuilt(module)) {
+            return (
+              <span
+                key={labelKey}
+                aria-disabled="true"
+                title={
+                  collapsed
+                    ? `${t(`nav.${labelKey}`)} — ${t('nav.soon')}`
+                    : undefined
+                }
+                className="flex cursor-default items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-white/40"
+              >
+                <Icon size={17} aria-hidden className="shrink-0" />
+                {!collapsed && (
+                  <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
+                    <span className="truncate">{t(`nav.${labelKey}`)}</span>
+                    <span
+                      data-testid="nav-soon-badge"
+                      className="rounded-full border border-white/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white/45"
+                    >
+                      {t('nav.soon')}
+                    </span>
+                  </span>
+                )}
+              </span>
+            );
+          }
           const href = segment ? `${base}/${segment}` : base;
           const active =
             segment === ''
