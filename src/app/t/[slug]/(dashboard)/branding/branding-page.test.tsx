@@ -39,6 +39,7 @@ vi.mock('@/lib/api', () => ({
   },
 }));
 
+import { ApiError } from '@/lib/api';
 import BrandingPage from './page';
 
 const VIEW = {
@@ -167,6 +168,18 @@ describe('BrandingPage (18.1)', () => {
     expect(body.brandAccentColor).toBe('#B3402A');
     expect(body.welcomeEn).toBe('Welcome');
     expect(body.welcomeAr).toBe('أهلاً');
+  });
+
+  it('a save rejection with code BRANDING_WELCOME_REQUIRED renders the translated string', async () => {
+    renderPage();
+    await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
+    apiMock.api.mockRejectedValueOnce(
+      new ApiError(400, 'Welcome message needs both languages', undefined, 'BRANDING_WELCOME_REQUIRED'),
+    );
+    fireEvent.click(saveButton());
+    expect(
+      await screen.findByText(en.errors.code.BRANDING_WELCOME_REQUIRED),
+    ).toBeTruthy();
   });
 
   it('AC3 — global reset confirms with ConsequenceNote then clears everything', async () => {

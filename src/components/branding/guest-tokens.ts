@@ -19,7 +19,7 @@ export const GUEST_TOKENS = {
 
 /** Mirror of the guest app's accentVars() — prefixed --gp- to avoid collisions. */
 export function previewAccentVars(accent: string | null): Record<string, string> {
-  const value = accent ?? GXP_NAVY;
+  const value = accent || GXP_NAVY;
   return {
     '--gp-accent': value,
     '--gp-accent-soft': `color-mix(in srgb, ${value} 8%, white)`,

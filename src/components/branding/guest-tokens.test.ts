@@ -12,6 +12,8 @@ describe('guest design tokens (18.1 AC2, spec note 3 — deliberate duplication 
     });
     // null → GXP default navy
     expect(previewAccentVars(null)['--gp-accent']).toBe('#0E2A47');
+    // empty string → GXP default navy (empty is falsy, not just null)
+    expect(previewAccentVars('')['--gp-accent']).toBe('#0E2A47');
   });
 
   // Sync test: reads the sibling guest repo when present (local workspace),

@@ -86,6 +86,10 @@
     "HOTEL_INFO_PHOTOS_FULL": "وصل هذا القسم إلى الحد الأقصى للصور.",
     "HOTEL_INFO_REORDER_INVALID": "تعذّر تطبيق الترتيب الجديد — حدّث الصفحة وحاول مجددًا.",
     "HOTEL_INFO_FIELD_INVALID": "أحد الحقول لا يخص هذا القسم — حدّث الصفحة وحاول مجددًا.",
-    "HOTEL_INFO_ENTRY_NOT_FOUND": "هذا العنصر لم يعد موجودًا."
+    "HOTEL_INFO_ENTRY_NOT_FOUND": "هذا العنصر لم يعد موجودًا.",
+    "BRANDING_WELCOME_REQUIRED": "رسالة الترحيب تحتاج نصًا بالعربية والإنجليزية قبل حفظها.",
+    "BRANDING_ACCENT_CONTRAST": "هذا اللون فاتح جدًا لعرض نص مقروء. اختر درجة أغمق أو استخدم اللون المقترح.",
+    "BRANDING_COVER_INVALID": "تعذّر استخدام هذه الصورة. ارفع صورة بصيغة PNG أو JPEG أو WebP.",
+    "BRANDING_COVER_REQUIRED": "اختر صورة لرفعها."
   }
 }
