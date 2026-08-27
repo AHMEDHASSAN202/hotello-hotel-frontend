@@ -735,3 +735,13 @@ export interface HotelInfoOverview {
   houseRules: InfoEntryManage[];
   about: InfoEntryManage | null;
 }
+
+/* --- Epic 18 — Guest App Branding --- */
+
+export interface BrandingManageView {
+  brandAccentColor: string | null;
+  /** API-relative `files/{key}` paths — prefix with assetUrl(). */
+  coverThumbUrl: string | null;
+  coverDetailUrl: string | null;
+  welcomeMessage: RequestTranslationMap | null;
+}
