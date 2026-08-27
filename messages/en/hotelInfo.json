@@ -101,7 +101,8 @@
     "removePhoto": "Remove this photo",
     "galleryFull": "Gallery is full ({max} photos).",
     "saveFirst": "Save the about text first, then add photos.",
-    "empty": "Not written yet — guests won't see this card."
+    "empty": "Not written yet — guests won't see this card.",
+    "photoInvalid": "Use a PNG, JPEG or WebP up to 5 MB."
   },
   "noPermission": {
     "title": "No access to hotel info",
