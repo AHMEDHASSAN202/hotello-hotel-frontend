@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RequiredNote } from '@/components/guidance';
 import { Button, Field, Modal } from '@/components/ui';
 import { api, apiUpload, assetUrl } from '@/lib/api';
@@ -17,10 +17,8 @@ import {
   NameFields,
   NameFieldValues,
   namesToFields,
-} from './name-fields';
-
-const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
-const PHOTO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+} from '@/components/name-fields';
+import { isValidPhoto, PhotoPicker } from '@/components/photo-picker';
 
 type PricingMode = 'inherit' | 'paid' | 'included';
 
@@ -69,7 +67,6 @@ export function ItemModal({
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoError, setPhotoError] = useState<string | null>(null);
   const [removePhoto, setRemovePhoto] = useState(false);
-  const fileInput = useRef<HTMLInputElement | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -106,7 +103,7 @@ export function ItemModal({
   function pickPhoto(file: File | undefined) {
     setPhotoError(null);
     if (!file) return;
-    if (!PHOTO_TYPES.includes(file.type) || file.size > MAX_PHOTO_BYTES) {
+    if (!isValidPhoto(file)) {
       setPhotoError(t('photoInvalid'));
       return;
     }
@@ -194,68 +191,22 @@ export function ItemModal({
         />
 
         {/* Photo (spec note 6) */}
-        <div>
-          <span className="mb-1 block text-sm font-medium text-ink">
-            {t('photoLabel')}
-          </span>
-          <p className="mb-2 text-xs text-ink-soft">{t('photoHint')}</p>
-          <div className="flex items-center gap-3">
-            {photoFile ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={URL.createObjectURL(photoFile)}
-                alt=""
-                className="h-16 w-20 rounded-lg border border-line object-cover"
-              />
-            ) : currentPhoto ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={currentPhoto}
-                alt=""
-                className="h-16 w-20 rounded-lg border border-line object-cover"
-              />
-            ) : (
-              <span className="flex h-16 w-20 items-center justify-center rounded-lg border border-dashed border-line text-xs text-ink-soft">
-                {t('photoLabel')}
-              </span>
-            )}
-            <div className="flex flex-col gap-1">
-              <input
-                ref={fileInput}
-                type="file"
-                accept={PHOTO_TYPES.join(',')}
-                className="hidden"
-                onChange={(e) => pickPhoto(e.target.files?.[0])}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => fileInput.current?.click()}
-              >
-                {item?.photoThumbUrl || photoFile
-                  ? t('photoReplace')
-                  : t('photoUpload')}
-              </Button>
-              {item?.photoThumbUrl && !removePhoto ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setRemovePhoto(true);
-                    setPhotoFile(null);
-                  }}
-                  className="text-sm text-danger underline-offset-2 hover:underline"
-                >
-                  {t('photoRemove')}
-                </button>
-              ) : null}
-            </div>
-          </div>
-          {photoError && (
-            <p role="alert" className="mt-1 text-sm text-danger">
-              {photoError}
-            </p>
-          )}
-        </div>
+        <PhotoPicker
+          label={t('photoLabel')}
+          hint={t('photoHint')}
+          currentUrl={currentPhoto}
+          pending={photoFile}
+          canRemove={Boolean(item?.photoThumbUrl && !removePhoto)}
+          uploadLabel={t('photoUpload')}
+          replaceLabel={t('photoReplace')}
+          removeLabel={t('photoRemove')}
+          error={photoError}
+          onPick={pickPhoto}
+          onRemove={() => {
+            setRemovePhoto(true);
+            setPhotoFile(null);
+          }}
+        />
 
         <Field
           label={t('priceLabel')}

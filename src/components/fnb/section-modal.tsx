@@ -12,7 +12,7 @@ import {
   NameFields,
   NameFieldValues,
   namesToFields,
-} from './name-fields';
+} from '@/components/name-fields';
 
 /** 16.2 AC2 — section editor (Starters, Mains, Drinks…). */
 export function SectionModal({

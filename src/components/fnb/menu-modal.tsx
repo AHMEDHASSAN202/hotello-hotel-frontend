@@ -13,7 +13,8 @@ import {
   NameFields,
   NameFieldValues,
   namesToFields,
-} from './name-fields';
+} from '@/components/name-fields';
+import { HoursEditor } from '@/components/hours-editor';
 
 /**
  * 16.2 AC1 — menu editor: 7-locale names, availability windows (overnight
@@ -97,60 +98,11 @@ export function MenuModal({
       <form onSubmit={submit} className="space-y-4">
         <NameFields values={names} onChange={(k, v) => setNames((s) => ({ ...s, [k]: v }))} withDescriptions />
 
-        <div>
-          <span className="mb-1 block text-sm font-medium text-ink">
-            {t('windowsLabel')}
-          </span>
-          <p className="mb-2 text-xs text-ink-soft">{t('windowsHint')}</p>
-          <div className="space-y-2">
-            {windows.map((w, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <input
-                  type="time"
-                  required
-                  aria-label={`${t('windowsLabel')} ${i + 1}`}
-                  className="rounded-lg border border-line px-3 py-2 text-sm"
-                  value={w.start}
-                  onChange={(e) =>
-                    setWindows((ws) =>
-                      ws.map((x, j) => (j === i ? { ...x, start: e.target.value } : x)),
-                    )
-                  }
-                />
-                <span className="text-ink-soft">–</span>
-                <input
-                  type="time"
-                  required
-                  className="rounded-lg border border-line px-3 py-2 text-sm"
-                  value={w.end}
-                  onChange={(e) =>
-                    setWindows((ws) =>
-                      ws.map((x, j) => (j === i ? { ...x, end: e.target.value } : x)),
-                    )
-                  }
-                />
-                <button
-                  type="button"
-                  onClick={() => setWindows((ws) => ws.filter((_, j) => j !== i))}
-                  className="text-sm text-danger underline-offset-2 hover:underline"
-                >
-                  {t('removeWindow')}
-                </button>
-              </div>
-            ))}
-          </div>
-          {windows.length < 4 ? (
-            <button
-              type="button"
-              onClick={() =>
-                setWindows((ws) => [...ws, { start: '07:00', end: '11:00' }])
-              }
-              className="mt-2 text-sm font-medium text-ink underline-offset-2 hover:underline"
-            >
-              {t('addWindow')}
-            </button>
-          ) : null}
-        </div>
+        <HoursEditor
+          value={windows}
+          onChange={setWindows}
+          namespace="fnb.menus.menuModal"
+        />
 
         <Field
           label={t('prepSlaLabel')}

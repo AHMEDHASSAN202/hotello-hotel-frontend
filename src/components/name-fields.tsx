@@ -58,12 +58,15 @@ export function NameFields({
   values,
   onChange,
   withDescriptions = false,
+  namespace = 'fnb.menus.names',
 }: {
   values: NameFieldValues;
   onChange: (key: string, value: string) => void;
   withDescriptions?: boolean;
+  /** Translation namespace providing the name/description labels. */
+  namespace?: string;
 }) {
-  const t = useTranslations('fnb.menus.names');
+  const t = useTranslations(namespace);
   const [expanded, setExpanded] = useState(false);
 
   return (
