@@ -33,6 +33,14 @@ const STRINGS = {
 
 const TILE_ICONS = [ConciergeBell, UtensilsCrossed, Bell, Info];
 
+/**
+ * Stock cover for the locked upsell preview (18.3 AC1). Recorded epic
+ * decision: a crafted gradient, never a binary asset — it rides the accent
+ * so the sample still reads as one designed system.
+ */
+const DEMO_COVER_GRADIENT =
+  'linear-gradient(135deg, var(--gp-accent) 0%, #123A4F 55%, #C8A24A 145%)';
+
 export function PhonePreview({
   accent,
   coverUrl,
@@ -40,6 +48,7 @@ export function PhonePreview({
   previewLocale,
   hotelName,
   logoUrl,
+  demoCover = false,
 }: {
   accent: string | null;
   coverUrl: string | null;
@@ -47,6 +56,8 @@ export function PhonePreview({
   previewLocale: 'en' | 'ar';
   hotelName: string;
   logoUrl: string | null;
+  /** Fill the cover slot with the stock gradient when no photo is set (18.3). */
+  demoCover?: boolean;
 }) {
   const s = STRINGS[previewLocale];
   const vars = previewAccentVars(accent) as CSSProperties;
@@ -65,9 +76,15 @@ export function PhonePreview({
       className="mx-auto w-[300px] overflow-hidden rounded-[2.2rem] border-[6px] border-ink-deep shadow-xl"
     >
       <div className="h-[560px] overflow-hidden text-[13px]" style={{ color: GUEST_TOKENS.ink }}>
-        {coverUrl ? (
-          <div data-testid="preview-cover" className="relative aspect-[16/9] w-full">
-            <img src={coverUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        {coverUrl || demoCover ? (
+          <div
+            data-testid={coverUrl ? 'preview-cover' : 'preview-demo-cover'}
+            className="relative aspect-[16/9] w-full"
+            style={coverUrl ? undefined : { background: DEMO_COVER_GRADIENT }}
+          >
+            {coverUrl ? (
+              <img src={coverUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            ) : null}
             <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 px-4 pb-2.5">
               {logoUrl ? <img src={logoUrl} alt="" className="h-6 w-6 rounded-lg object-contain" /> : null}

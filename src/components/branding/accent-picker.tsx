@@ -27,6 +27,9 @@ export function AccentPicker({
 }) {
   const t = useTranslations('branding.accent');
   const effective = isHexColor(value) ? value : GXP_NAVY;
+  /** Half-typed or nonsense input — teach the format instead of silently
+      disabling Save (the parent disables it either way). */
+  const malformed = value !== '' && !isHexColor(value);
   const blocked = value !== '' && isHexColor(value) && !isAccentAllowed(value);
   const suggestion = blocked ? nearestSafeAccent(value) : null;
 
@@ -47,7 +50,8 @@ export function AccentPicker({
             value={value}
             placeholder={GXP_NAVY}
             maxLength={7}
-            onChange={(e) => onChange(e.target.value)}
+            error={malformed ? t('invalidHex') : undefined}
+            onChange={(e) => onChange(e.target.value.toUpperCase())}
             disabled={disabled}
             dir="ltr"
           />
@@ -72,7 +76,7 @@ export function AccentPicker({
             type="button"
             data-testid="accent-suggestion"
             disabled={disabled}
-            onClick={() => onChange(suggestion)}
+            onClick={() => onChange(suggestion.toUpperCase())}
             className="mt-2 inline-flex items-center gap-2 font-semibold text-ink underline underline-offset-2"
           >
             <span

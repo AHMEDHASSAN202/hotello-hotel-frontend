@@ -56,6 +56,16 @@ function renderPage() {
   );
 }
 
+/**
+ * The hex input. `exact: false` because Field renders its inline error inside
+ * the same <label>, which extends the field's accessible name.
+ */
+function hexInput(): HTMLInputElement {
+  return screen.getByLabelText(en.branding.accent.hex, {
+    exact: false,
+  }) as HTMLInputElement;
+}
+
 /** The Save button — the label lives inside <button>, not on it. */
 function saveButton(): HTMLButtonElement {
   return screen.getByText(en.branding.save).closest('button')!;
@@ -93,10 +103,35 @@ describe('BrandingPage (18.1)', () => {
     expect(screen.getByTestId('preview-welcome').textContent).toBe('Welcome');
   });
 
+  it('AC1 — a malformed hex explains itself and keeps save disabled', async () => {
+    renderPage();
+    await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
+    fireEvent.change(hexInput(), {
+      target: { value: '#0F6' },
+    });
+    expect(screen.getByText(en.branding.accent.invalidHex)).toBeTruthy();
+    expect(saveButton().hasAttribute('disabled')).toBe(true);
+    // ...and clears once the value is a real hex
+    fireEvent.change(hexInput(), {
+      target: { value: '#0F6B5C' },
+    });
+    expect(screen.queryByText(en.branding.accent.invalidHex)).toBeNull();
+    expect(saveButton().hasAttribute('disabled')).toBe(false);
+  });
+
+  it('AC1 — hex entry is normalized to uppercase', async () => {
+    renderPage();
+    await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
+    fireEvent.change(hexInput(), {
+      target: { value: '#b3402a' },
+    });
+    expect(hexInput().value).toBe('#B3402A');
+  });
+
   it('AC1 — blocks an unreadable accent with explanation + suggestion; save disabled', async () => {
     renderPage();
     await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
-    fireEvent.change(screen.getByLabelText(en.branding.accent.hex), {
+    fireEvent.change(hexInput(), {
       target: { value: '#FFA500' },
     });
     expect(screen.getByText(en.branding.accent.blocked)).toBeTruthy();
@@ -107,7 +142,7 @@ describe('BrandingPage (18.1)', () => {
   it('AC1 — the suggestion button applies a passing shade and unblocks save', async () => {
     renderPage();
     await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
-    fireEvent.change(screen.getByLabelText(en.branding.accent.hex), {
+    fireEvent.change(hexInput(), {
       target: { value: '#FFA500' },
     });
     fireEvent.click(screen.getByTestId('accent-suggestion'));
@@ -118,7 +153,7 @@ describe('BrandingPage (18.1)', () => {
   it('AC3 — save PATCHes accent + all welcome fields', async () => {
     renderPage();
     await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
-    fireEvent.change(screen.getByLabelText(en.branding.accent.hex), {
+    fireEvent.change(hexInput(), {
       target: { value: '#B3402A' },
     });
     fireEvent.click(saveButton());
@@ -168,6 +203,23 @@ describe('BrandingPage (18.1)', () => {
     );
   });
 
+  it('AC3 — the welcome knob resets on its own, leaving the accent untouched', async () => {
+    renderPage();
+    await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
+    fireEvent.click(
+      screen.getByText(en.branding.welcome.reset).closest('button')!,
+    );
+    expect(screen.queryByDisplayValue('Welcome')).toBeNull();
+    expect(screen.queryByTestId('preview-welcome')).toBeNull();
+    fireEvent.click(saveButton());
+    await waitFor(() => {
+      const body = patchBody();
+      expect(body.welcomeEn).toBe('');
+      expect(body.welcomeAr).toBe('');
+      expect(body.brandAccentColor).toBe('#0F6B5C');
+    });
+  });
+
   it('AC4 — links to the profile for the logo instead of duplicating an upload', async () => {
     renderPage();
     await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
@@ -204,9 +256,29 @@ describe('BrandingPage (18.1)', () => {
   });
 });
 
-describe('BrandingPage — locked state (18.3)', () => {
-  it('AC1/AC2 — module off: upsell shell, demo preview, no API call', () => {
+describe('BrandingPage — permission gate', () => {
+  it('no branding.manage → designed gate screen, no fetch', () => {
+    tenant.hasPermission.mockReturnValue(false);
+    renderPage();
+    expect(tenant.hasPermission).toHaveBeenCalledWith('branding.manage');
+    expect(screen.getByText(en.branding.noPermission.title)).toBeTruthy();
+    expect(screen.getByText(en.branding.noPermission.hint)).toBeTruthy();
+    expect(apiMock.api).not.toHaveBeenCalled();
+  });
+
+  it('the permission gate wins over the module upsell', () => {
+    tenant.hasPermission.mockReturnValue(false);
     tenant.isModuleEnabled.mockReturnValue(false);
+    renderPage();
+    expect(screen.getByText(en.branding.noPermission.title)).toBeTruthy();
+    expect(screen.queryByTestId('module-upsell-guest_app_branding')).toBeNull();
+  });
+});
+
+describe('BrandingPage — locked state (18.3)', () => {
+  beforeEach(() => tenant.isModuleEnabled.mockReturnValue(false));
+
+  it('AC1/AC2 — module off: upsell shell, demo preview, no API call', () => {
     renderPage();
     expect(
       screen.getByTestId('module-upsell-guest_app_branding'),
@@ -217,5 +289,35 @@ describe('BrandingPage — locked state (18.3)', () => {
       'Welcome to the heart of Hurghada',
     );
     expect(apiMock.api).not.toHaveBeenCalled();
+  });
+
+  it('AC1 — all three knobs are present and inert, over a stock demo cover', () => {
+    renderPage();
+    // every knob is visible…
+    expect(screen.getByText(en.branding.accent.label)).toBeTruthy();
+    expect(screen.getAllByText(en.branding.cover.label).length).toBeGreaterThan(
+      0,
+    );
+    expect(screen.getByText(en.branding.welcome.title)).toBeTruthy();
+    // …filled with the sample branding…
+    const hex = hexInput();
+    expect(hex.value).toBe('#0F6B5C');
+    expect(screen.getByDisplayValue('Welcome to the heart of Hurghada'))
+      .toBeTruthy();
+    // …and locked: no focusable control escapes the inert wrapper.
+    expect(hex.disabled).toBe(true);
+    expect(
+      (
+        screen.getByLabelText(en.branding.accent.label) as HTMLInputElement
+      ).disabled,
+    ).toBe(true);
+    expect(
+      screen.getByText(en.branding.cover.upload).closest('button')!.disabled,
+    ).toBe(true);
+    // the stock cover is a gradient, not an uploaded asset
+    expect(screen.getByTestId('preview-demo-cover')).toBeTruthy();
+    // no save/reset affordances at all — nothing to save
+    expect(screen.queryByText(en.branding.save)).toBeNull();
+    expect(screen.queryByText(en.branding.reset.all)).toBeNull();
   });
 });

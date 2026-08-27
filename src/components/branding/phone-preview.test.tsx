@@ -43,4 +43,25 @@ describe('PhonePreview (18.1 AC2)', () => {
     render(<PhonePreview {...base} welcome={null} />);
     expect(screen.queryByTestId('preview-welcome')).toBeNull();
   });
+
+  it('renders the stock gradient cover for the locked upsell (18.3 AC1) — no img', () => {
+    render(<PhonePreview {...base} demoCover />);
+    const cover = screen.getByTestId('preview-demo-cover');
+    expect(cover.querySelector('img')).toBeNull();
+    expect(cover.getAttribute('style')).toContain('gradient');
+    // it occupies the real cover slot, so the clean header is gone
+    expect(screen.queryByTestId('preview-cover')).toBeNull();
+  });
+
+  it('a real cover wins over the demo flag', () => {
+    render(
+      <PhonePreview
+        {...base}
+        demoCover
+        coverUrl="http://api/files/branding/x-thumb.webp"
+      />,
+    );
+    expect(screen.getByTestId('preview-cover')).toBeTruthy();
+    expect(screen.queryByTestId('preview-demo-cover')).toBeNull();
+  });
 });

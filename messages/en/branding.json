@@ -10,6 +10,7 @@
     "hex": "Hex value",
     "help": "Used for buttons, active navigation, and highlights in the guest app. We keep the design in control — you pick the hue.",
     "blocked": "This color is too light for readable text and controls. Try the suggested shade below.",
+    "invalidHex": "Enter a 6-digit hex color like #0E2A47.",
     "useSuggestion": "Use {hex} instead",
     "reset": "Reset color"
   },
@@ -47,5 +48,9 @@
   "logoNote": {
     "text": "Your logo comes from the hotel profile so it stays consistent everywhere.",
     "link": "Manage it in Profile"
+  },
+  "noPermission": {
+    "title": "No access to branding",
+    "hint": "You need the \u201cManage branding\u201d permission. Ask a manager to grant it."
   }
 }

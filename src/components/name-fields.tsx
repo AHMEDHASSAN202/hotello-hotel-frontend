@@ -60,6 +60,7 @@ export function NameFields({
   withDescriptions = false,
   namespace = 'fnb.menus.names',
   maxLength,
+  disabled = false,
 }: {
   values: NameFieldValues;
   onChange: (key: string, value: string) => void;
@@ -68,6 +69,8 @@ export function NameFields({
   namespace?: string;
   /** Per-field character cap (Epic 18 welcome lines); undefined = uncapped. */
   maxLength?: number;
+  /** Read-only rendering (Epic 18 locked upsell); keeps fields out of the tab order. */
+  disabled?: boolean;
 }) {
   const t = useTranslations(namespace);
   const [expanded, setExpanded] = useState(false);
@@ -77,6 +80,7 @@ export function NameFields({
       <div className="grid grid-cols-2 gap-3">
         <Field
           maxLength={maxLength}
+          disabled={disabled}
           label={t('nameEn')}
           hint={t('help')}
           required
@@ -85,6 +89,7 @@ export function NameFields({
         />
         <Field
           maxLength={maxLength}
+          disabled={disabled}
           label={t('nameAr')}
           required
           dir="rtl"
@@ -96,12 +101,14 @@ export function NameFields({
         <div className="grid grid-cols-2 gap-3">
           <Field
             maxLength={maxLength}
+            disabled={disabled}
             label={t('descriptionEn')}
             value={values.descriptionEn ?? ''}
             onChange={(e) => onChange('descriptionEn', e.target.value)}
           />
           <Field
             maxLength={maxLength}
+            disabled={disabled}
             label={t('descriptionAr')}
             dir="rtl"
             value={values.descriptionAr ?? ''}
@@ -113,6 +120,7 @@ export function NameFields({
         type="button"
         onClick={() => setExpanded((v) => !v)}
         aria-expanded={expanded}
+        disabled={disabled}
         className="text-sm font-medium text-ink-soft underline-offset-2 hover:underline"
       >
         {t('moreLanguages')}
@@ -125,6 +133,7 @@ export function NameFields({
               <Field
                 key={lang}
                 maxLength={maxLength}
+                disabled={disabled}
                 label={`${t('nameEn').replace(/\(.*\)/, '')} (${lang.toUpperCase()})`}
                 value={values[`name${lang}`] ?? ''}
                 onChange={(e) => onChange(`name${lang}`, e.target.value)}
