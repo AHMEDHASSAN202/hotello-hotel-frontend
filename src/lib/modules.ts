@@ -17,7 +17,7 @@ export const MODULE_PAGES: Record<ModuleKey, ModulePageDef> = {
   transportation: { segment: 'transportation', built: false },
   housekeeping: { segment: 'housekeeping', built: false },
   fnb: { segment: 'fnb', built: true },
-  guest_app_branding: { segment: 'branding', built: false },
+  guest_app_branding: { segment: 'branding', built: true },
   analytics: { segment: 'analytics', built: false },
   requests: { segment: 'requests', built: true },
   hotel_info: { segment: 'hotel-info', built: true },

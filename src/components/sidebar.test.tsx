@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import en from '../../messages/en';
+import { MODULE_PAGES } from '@/lib/modules';
+import type { ModuleKey } from '@/lib/types';
 
 /**
  * Nav gating for plan modules: a module missing from enabledModules stays
@@ -99,15 +101,12 @@ describe('sidebar module gating', () => {
   });
 
   it('every unbuilt module in the plan gets its own Soon chip', () => {
-    renderSidebar([
-      'transportation',
-      'housekeeping',
-      'fnb',
-      'guest_app_branding',
-      'analytics',
-      'requests',
-    ]);
-    expect(screen.getAllByTestId('nav-soon-badge')).toHaveLength(4);
+    const modules = Object.keys(MODULE_PAGES) as ModuleKey[];
+    renderSidebar(modules);
+    // Derived from MODULE_PAGES so shipping a module's page (flipping `built`)
+    // never leaves this count stale.
+    const unbuilt = modules.filter((key) => !MODULE_PAGES[key].built);
+    expect(screen.getAllByTestId('nav-soon-badge')).toHaveLength(unbuilt.length);
   });
 });
 

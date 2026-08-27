@@ -28,6 +28,7 @@ export function PhotoPicker({
   removeLabel,
   error,
   disabled = false,
+  previewClassName = 'h-16 w-20',
   onPick,
   onRemove,
 }: {
@@ -44,6 +45,8 @@ export function PhotoPicker({
   removeLabel: string;
   error: string | null;
   disabled?: boolean;
+  /** Sizing for the preview/placeholder box — defaults to the thumbnail box. */
+  previewClassName?: string;
   onPick: (file: File | undefined) => void;
   onRemove: () => void;
 }) {
@@ -71,10 +74,12 @@ export function PhotoPicker({
           <img
             src={preview}
             alt=""
-            className="h-16 w-20 rounded-lg border border-line object-cover"
+            className={`${previewClassName} rounded-lg border border-line object-cover`}
           />
         ) : (
-          <span className="flex h-16 w-20 items-center justify-center rounded-lg border border-dashed border-line text-xs text-ink-soft">
+          <span
+            className={`${previewClassName} flex items-center justify-center rounded-lg border border-dashed border-line px-2 text-center text-xs text-ink-soft`}
+          >
             {label}
           </span>
         )}

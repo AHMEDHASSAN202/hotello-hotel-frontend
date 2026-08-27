@@ -59,12 +59,15 @@ export function NameFields({
   onChange,
   withDescriptions = false,
   namespace = 'fnb.menus.names',
+  maxLength,
 }: {
   values: NameFieldValues;
   onChange: (key: string, value: string) => void;
   withDescriptions?: boolean;
   /** Translation namespace providing the name/description labels. */
   namespace?: string;
+  /** Per-field character cap (Epic 18 welcome lines); undefined = uncapped. */
+  maxLength?: number;
 }) {
   const t = useTranslations(namespace);
   const [expanded, setExpanded] = useState(false);
@@ -73,6 +76,7 @@ export function NameFields({
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
         <Field
+          maxLength={maxLength}
           label={t('nameEn')}
           hint={t('help')}
           required
@@ -80,6 +84,7 @@ export function NameFields({
           onChange={(e) => onChange('nameEn', e.target.value)}
         />
         <Field
+          maxLength={maxLength}
           label={t('nameAr')}
           required
           dir="rtl"
@@ -90,11 +95,13 @@ export function NameFields({
       {withDescriptions ? (
         <div className="grid grid-cols-2 gap-3">
           <Field
+            maxLength={maxLength}
             label={t('descriptionEn')}
             value={values.descriptionEn ?? ''}
             onChange={(e) => onChange('descriptionEn', e.target.value)}
           />
           <Field
+            maxLength={maxLength}
             label={t('descriptionAr')}
             dir="rtl"
             value={values.descriptionAr ?? ''}
@@ -117,6 +124,7 @@ export function NameFields({
             {EXTRA_LANGS.map((lang) => (
               <Field
                 key={lang}
+                maxLength={maxLength}
                 label={`${t('nameEn').replace(/\(.*\)/, '')} (${lang.toUpperCase()})`}
                 value={values[`name${lang}`] ?? ''}
                 onChange={(e) => onChange(`name${lang}`, e.target.value)}
