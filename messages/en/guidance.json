@@ -126,5 +126,12 @@
       "title": "Start with WiFi and facility hours",
       "body": "They answer 80% of what guests ask the desk. Fill Essentials first, then add facilities with opening hours — guests see a live “Open now” badge."
     }
+  },
+  "branding": {
+    "intro": "Make the guest app unmistakably yours — pick your accent color, add a cover photo, and write a welcome line. The design system keeps everything readable.",
+    "hint": {
+      "title": "Three knobs, zero design skills",
+      "body": "Changes preview instantly on the phone mock and reach your guests within a minute of saving."
+    }
   }
 }

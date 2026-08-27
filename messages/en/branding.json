@@ -1,0 +1,51 @@
+{
+  "title": "Guest App Branding",
+  "loadError": "Couldn't load your branding settings.",
+  "readOnlyHint": "Your subscription is read-only — reactivate to edit.",
+  "save": "Save changes",
+  "saved": "Saved. Changes reach your guests within a minute.",
+  "propagation": "Changes appear to guests within a minute.",
+  "accent": {
+    "label": "Accent color",
+    "hex": "Hex value",
+    "help": "Used for buttons, active navigation, and highlights in the guest app. We keep the design in control — you pick the hue.",
+    "blocked": "This color is too light for readable text and controls. Try the suggested shade below.",
+    "useSuggestion": "Use {hex} instead",
+    "reset": "Reset color"
+  },
+  "cover": {
+    "label": "Home cover photo",
+    "hint": "Optional. A wide photo works best — it will be cropped to 16:9. Without one, the clean default header stays.",
+    "upload": "Upload photo",
+    "replace": "Replace photo",
+    "remove": "Remove photo",
+    "reset": "Remove cover"
+  },
+  "welcome": {
+    "title": "Welcome message",
+    "help": "One short line under the guest greeting. Arabic and English are required; other languages fall back to English.",
+    "nameEn": "Welcome message (English)",
+    "nameAr": "Welcome message (Arabic)",
+    "descriptionEn": "",
+    "descriptionAr": "",
+    "moreLanguages": "More languages",
+    "moreLanguagesHint": "Optional. Guests using these languages see the English message unless you translate it.",
+    "reset": "Clear message"
+  },
+  "preview": {
+    "title": "Live preview",
+    "caption": "Built from the real guest app design — what you see is what guests get.",
+    "english": "EN",
+    "arabic": "AR"
+  },
+  "reset": {
+    "all": "Reset all to defaults",
+    "confirmTitle": "Reset branding to defaults?",
+    "confirmBody": "The accent color, cover photo, and welcome message will return to the GXP defaults.",
+    "consequence": "Guests will see the default look within a minute. Your uploaded photo is removed."
+  },
+  "logoNote": {
+    "text": "Your logo comes from the hotel profile so it stays consistent everywhere.",
+    "link": "Manage it in Profile"
+  }
+}

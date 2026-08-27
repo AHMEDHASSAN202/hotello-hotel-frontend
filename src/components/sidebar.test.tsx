@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import en from '../../messages/en';
 
 /**
@@ -11,8 +11,8 @@ import en from '../../messages/en';
 
 const tenant = vi.hoisted(() => ({
   enabledModules: [] as string[],
-  isModuleEnabled: (key: string) => tenant.enabledModules.includes(key),
-  hasPermission: () => true,
+  isModuleEnabled: (key: string): boolean => tenant.enabledModules.includes(key),
+  hasPermission: (_key: string): boolean => true,
 }));
 
 vi.mock('@/components/tenant-provider', () => ({
@@ -44,14 +44,29 @@ vi.mock('@/lib/auth', () => ({ tokenStore: { clear: vi.fn() } }));
 
 import { Sidebar } from './sidebar';
 
-function renderSidebar(enabledModules: string[]) {
-  tenant.enabledModules = enabledModules;
+/**
+ * `enabledModules` drives the default `isModuleEnabled`/`hasPermission` gate;
+ * pass nothing when a test has already overridden `tenant.isModuleEnabled` /
+ * `tenant.hasPermission` directly (Epic 18 upsell cases below).
+ */
+function renderSidebar(enabledModules?: string[]) {
+  if (enabledModules) {
+    tenant.enabledModules = enabledModules;
+    tenant.isModuleEnabled = (key: string) => tenant.enabledModules.includes(key);
+    tenant.hasPermission = () => true;
+  }
   return render(
     <NextIntlClientProvider locale="en" messages={en} timeZone="Africa/Cairo">
       <Sidebar />
     </NextIntlClientProvider>,
   );
 }
+
+beforeEach(() => {
+  tenant.enabledModules = [];
+  tenant.isModuleEnabled = (key: string) => tenant.enabledModules.includes(key);
+  tenant.hasPermission = () => true;
+});
 
 describe('sidebar module gating', () => {
   it('a built module in the plan renders as a link without a Soon chip', () => {
@@ -72,11 +87,15 @@ describe('sidebar module gating', () => {
     );
   });
 
-  it('a module missing from the plan stays hidden, built or not', () => {
+  it('a module missing from the plan stays hidden, built or not — except upsell modules, which flip to visible-with-badge (18.3)', () => {
     renderSidebar(['fnb']);
     expect(screen.queryByText('Transportation')).toBeNull();
     expect(screen.queryByText('Analytics')).toBeNull();
     expect(screen.queryByText('Requests')).toBeNull();
+    // Branding is an upsell module (18.3): it stays visible with an Upgrade
+    // badge instead of disappearing, even though it's not in this plan.
+    expect(screen.getByText('Guest App Branding')).toBeTruthy();
+    expect(screen.getByTestId('nav-upgrade-badge')).toBeTruthy();
   });
 
   it('every unbuilt module in the plan gets its own Soon chip', () => {
@@ -89,5 +108,33 @@ describe('sidebar module gating', () => {
       'requests',
     ]);
     expect(screen.getAllByTestId('nav-soon-badge')).toHaveLength(4);
+  });
+});
+
+describe('Epic 18 — upsell vs permission distinction (18.3 AC1/AC3)', () => {
+  it('branding stays visible with an Upgrade badge when the module is not in the plan', () => {
+    // Every other module enabled (so their own Soon chips are irrelevant
+    // noise here) — only branding is out of the plan.
+    tenant.isModuleEnabled = (k: string) => k !== 'guest_app_branding';
+    tenant.hasPermission = () => true;
+    renderSidebar();
+    const branding = screen.getByText(en.shell.nav.branding).closest('a');
+    expect(branding).not.toBeNull();
+    expect(branding?.querySelector('[data-testid="nav-upgrade-badge"]')).toBeTruthy();
+    expect(branding?.querySelector('[data-testid="nav-soon-badge"]')).toBeNull();
+  });
+
+  it('branding is hidden when the user lacks branding.manage — even with the module in plan', () => {
+    tenant.isModuleEnabled = () => true;
+    tenant.hasPermission = (k: string) => k !== 'branding.manage';
+    renderSidebar();
+    expect(screen.queryByText(en.shell.nav.branding)).toBeNull();
+  });
+
+  it('non-upsell modules missing from the plan stay hidden (existing behavior)', () => {
+    tenant.isModuleEnabled = (k: string) => k !== 'fnb';
+    tenant.hasPermission = () => true;
+    renderSidebar();
+    expect(screen.queryByText(en.shell.nav.fnb)).toBeNull();
   });
 });

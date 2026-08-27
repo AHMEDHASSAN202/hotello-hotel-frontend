@@ -1,4 +1,5 @@
 import auth from './auth.json';
+import branding from './branding.json';
 import common from './common.json';
 import errors from './errors.json';
 import fnb from './fnb.json';
@@ -19,6 +20,7 @@ import subscription from './subscription.json';
  */
 const messages = {
   auth,
+  branding,
   common,
   errors,
   fnb,

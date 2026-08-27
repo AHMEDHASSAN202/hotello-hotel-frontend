@@ -14,7 +14,8 @@
     "roles": "Roles",
     "rooms": "Rooms",
     "profile": "My profile",
-    "soon": "Soon"
+    "soon": "Soon",
+    "upgrade": "Upgrade"
   },
   "comingSoon": {
     "eyebrow": "Coming soon",
@@ -48,8 +49,7 @@
   },
   "moduleLocked": {
     "title": "This module isn't part of your plan",
-    "hint": "Upgrade your subscription to unlock this feature for your hotel.",
-    "cta": "View plans"
+    "hint": "Available on a higher plan — contact the GXP team to upgrade."
   },
   "wrongTenant": {
     "title": "You're signed in to a different hotel",

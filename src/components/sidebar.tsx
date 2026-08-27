@@ -46,6 +46,8 @@ type NavItem = {
   icon: LucideIcon;
   module?: ModuleKey;
   permission?: string;
+  /** Plan-gated upsell module: stays visible with an Upgrade badge when not in the plan (18.3). */
+  upsell?: boolean;
 };
 
 const NAV_ITEMS: NavItem[] = [
@@ -60,7 +62,14 @@ const NAV_ITEMS: NavItem[] = [
     module: 'fnb',
     permission: 'fnb_orders.read',
   },
-  { segment: 'branding', labelKey: 'branding', icon: Paintbrush, module: 'guest_app_branding' },
+  {
+    segment: 'branding',
+    labelKey: 'branding',
+    icon: Paintbrush,
+    module: 'guest_app_branding',
+    permission: 'branding.manage',
+    upsell: true,
+  },
   { segment: 'analytics', labelKey: 'analytics', icon: BarChart3, module: 'analytics' },
   // Epic 15 — the live guest-requests board; badge shows the open count.
   {
@@ -108,7 +117,7 @@ export function Sidebar() {
 
   const visibleItems = NAV_ITEMS.filter(
     (item) =>
-      (!item.module || isModuleEnabled(item.module)) &&
+      (!item.module || isModuleEnabled(item.module) || item.upsell) &&
       (!item.permission || hasPermission(item.permission)),
   );
 
@@ -161,10 +170,15 @@ export function Sidebar() {
         className="flex-1 space-y-1 overflow-y-auto px-2"
         aria-label={t('nav.main')}
       >
-        {visibleItems.map(({ segment, labelKey, icon: Icon, module }) => {
+        {visibleItems.map(({ segment, labelKey, icon: Icon, module, upsell }) => {
+          // Upsell module not in the plan (18.3) — stays a real, clickable
+          // link with an Upgrade badge instead of disappearing or going
+          // inert; only reachable for items with `upsell: true` since the
+          // filter above already dropped non-upsell out-of-plan modules.
+          const locked = Boolean(module && upsell && !isModuleEnabled(module));
           // In the plan but not built yet — visible ambition, inert entry
           // (`lib/modules.ts`); its route shows the ComingSoon page.
-          if (module && !isModuleBuilt(module)) {
+          if (module && !locked && !isModuleBuilt(module)) {
             return (
               <span
                 key={labelKey}
@@ -229,6 +243,14 @@ export function Sidebar() {
               {!collapsed && (
                 <span className="flex min-w-0 flex-1 items-center justify-between gap-2">
                   <span className="truncate">{t(`nav.${labelKey}`)}</span>
+                  {locked && (
+                    <span
+                      data-testid="nav-upgrade-badge"
+                      className="ms-auto rounded-full bg-gold-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink"
+                    >
+                      {t('nav.upgrade')}
+                    </span>
+                  )}
                   {labelKey === 'requests' && openRequests > 0 && (
                     <span
                       data-testid="requests-nav-badge"
