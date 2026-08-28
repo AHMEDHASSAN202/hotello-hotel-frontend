@@ -746,3 +746,47 @@ export interface BrandingManageView {
   coverDetailUrl: string | null;
   welcomeMessage: RequestTranslationMap | null;
 }
+
+/* ------------------------------------------- Guest Announcements (Epic 19) */
+
+export type AnnouncementStatus =
+  | 'draft'
+  | 'scheduled'
+  | 'live'
+  | 'retracted'
+  | 'expired';
+
+/**
+ * The stored audience FILTER (19.1 AC3 — dynamic, never a snapshot). Empty
+ * object = all current guests; `stayId` is exclusive with the other
+ * dimensions; the rest AND together.
+ */
+export interface AudienceFilter {
+  stayTypes?: StayType[];
+  floors?: number[];
+  roomIds?: string[];
+  stayId?: string;
+}
+
+/** GET /tenant/announcements — one row of sent history (19.3). */
+export interface TenantAnnouncement {
+  id: string;
+  titles: RequestTranslationMap;
+  bodies: RequestTranslationMap;
+  infoEntryId: string | null;
+  priority: boolean;
+  audience: AudienceFilter;
+  status: AnnouncementStatus;
+  /** Hotel-local 'YYYY-MM-DD HH:MM' strings (never UTC). */
+  publishAtLocal: string | null;
+  activeUntilLocal: string | null;
+  publishedAt: string | null;
+  retractedAt: string | null;
+  expiredAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** Resolved when the audience targets one specific stay. */
+  audienceStay: { guestName: string; roomNumber: string } | null;
+  /** "قرأه 34 من 62" — reads / currently-matching audience, live-computed. */
+  stats: { reads: number; audienceNow: number };
+}
