@@ -32,6 +32,7 @@ import { isModuleBuilt } from '@/lib/modules';
 import type { ModuleKey } from '@/lib/types';
 import { brandLogo, brandName, useTenantBrand } from './tenant-brand-provider';
 import { useFnbFeed } from './fnb/fnb-feed-provider';
+import { useHousekeepingFeed } from './housekeeping/housekeeping-feed-provider';
 import { useRequestsFeed } from './requests/requests-feed-provider';
 import { useTenant } from './tenant-provider';
 
@@ -54,7 +55,14 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { segment: '', labelKey: 'overview', icon: LayoutDashboard },
   { segment: 'transportation', labelKey: 'transportation', icon: Car, module: 'transportation' },
-  { segment: 'housekeeping', labelKey: 'housekeeping', icon: Sparkles, module: 'housekeeping' },
+  // Epic 20 — the cleaning board; badge shows the rooms-to-clean count.
+  {
+    segment: 'housekeeping',
+    labelKey: 'housekeeping',
+    icon: Sparkles,
+    module: 'housekeeping',
+    permission: 'housekeeping.read',
+  },
   // Epic 16 — the kitchen board; badge shows the open-orders count.
   {
     segment: 'fnb',
@@ -115,10 +123,15 @@ export function Sidebar() {
   const { isModuleEnabled, hasPermission } = useTenant();
   const { counts } = useRequestsFeed();
   const { counts: fnbCounts } = useFnbFeed();
+  const { counts: hkCounts } = useHousekeepingFeed();
   const [collapsed, setCollapsed] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
   const openRequests = counts?.open ?? 0;
   const openOrders = fnbCounts?.open ?? 0;
+  // Epic 20 — rooms currently waiting for a clean (checkout + daily).
+  const roomsToClean = hkCounts
+    ? hkCounts.toCleanCheckout + hkCounts.toCleanDaily
+    : 0;
 
   const base = `/t/${slug}`;
   const logo = brandLogo(brand.logoUrl);
@@ -241,7 +254,8 @@ export function Sidebar() {
                 <Icon size={17} aria-hidden />
                 {/* Epic 15 — collapsed-mode badge survives as a corner dot. */}
                 {((labelKey === 'requests' && openRequests > 0) ||
-                  (labelKey === 'fnb' && openOrders > 0)) &&
+                  (labelKey === 'fnb' && openOrders > 0) ||
+                  (labelKey === 'housekeeping' && roomsToClean > 0)) &&
                   collapsed && (
                     <span
                       aria-hidden
@@ -274,6 +288,14 @@ export function Sidebar() {
                       className="rounded-full bg-gold px-1.5 py-0.5 text-[10px] font-bold leading-none text-ink-deep"
                     >
                       {openOrders}
+                    </span>
+                  )}
+                  {labelKey === 'housekeeping' && roomsToClean > 0 && (
+                    <span
+                      data-testid="housekeeping-nav-badge"
+                      className="rounded-full bg-gold px-1.5 py-0.5 text-[10px] font-bold leading-none text-ink-deep"
+                    >
+                      {roomsToClean}
                     </span>
                   )}
                 </span>

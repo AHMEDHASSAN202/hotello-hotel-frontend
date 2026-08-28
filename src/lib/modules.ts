@@ -15,7 +15,7 @@ export interface ModulePageDef {
 
 export const MODULE_PAGES: Record<ModuleKey, ModulePageDef> = {
   transportation: { segment: 'transportation', built: false },
-  housekeeping: { segment: 'housekeeping', built: false },
+  housekeeping: { segment: 'housekeeping', built: true },
   fnb: { segment: 'fnb', built: true },
   guest_app_branding: { segment: 'branding', built: true },
   analytics: { segment: 'analytics', built: false },

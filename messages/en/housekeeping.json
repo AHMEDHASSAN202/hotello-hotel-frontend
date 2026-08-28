@@ -1,0 +1,117 @@
+{
+  "eyebrow": "Housekeeping",
+  "title": "Cleaning board",
+  "intro": "Every room's cleaning state, live on one screen — rooms flag themselves at checkout and each morning, your team works the board.",
+  "settingsLink": "Settings",
+  "readOnlyHint": "Your subscription is read-only — renew to make changes.",
+  "noAccess": {
+    "title": "No access to housekeeping",
+    "hint": "Your role doesn't include viewing the cleaning board. Ask a manager if you need access."
+  },
+  "stats": {
+    "toClean": "To clean",
+    "toCleanSplit": "{checkout} checkout · {daily} daily",
+    "inProgress": "In progress",
+    "doneToday": "Done today",
+    "dnd": "Do not disturb"
+  },
+  "hint": {
+    "title": "The board fills itself",
+    "body": "When a guest checks out, the room flags itself for a checkout clean. Every morning at your daily service hour, occupied rooms flag themselves for daily service — skipping Do-Not-Disturb rooms. You only flag manually for exceptions."
+  },
+  "sound": {
+    "on": "New-flag sound is on — click to mute",
+    "off": "New-flag sound is muted — click to enable"
+  },
+  "filters": {
+    "searchPlaceholder": "Find a room…",
+    "searchAria": "Find a room by number",
+    "floor": "All floors",
+    "status": "All statuses",
+    "type": "All cleaning types",
+    "assignee": "All assignees",
+    "unassigned": "Unassigned only",
+    "mine": "My rooms"
+  },
+  "status": {
+    "clean": "Clean",
+    "needs_cleaning": "Needs cleaning",
+    "in_progress": "In progress",
+    "dnd": "Do not disturb"
+  },
+  "type": {
+    "checkout": "Checkout",
+    "daily": "Daily"
+  },
+  "floor": {
+    "label": "Floor {floor}",
+    "none": "No floor"
+  },
+  "card": {
+    "occupied": "Occupied",
+    "vacant": "Vacant",
+    "outOfService": "Out of service"
+  },
+  "empty": {
+    "allClearTitle": "All rooms are clean ✨",
+    "allClearHint": "Nothing waiting right now — rooms flag themselves here the moment they need attention.",
+    "filteredTitle": "No rooms match these filters",
+    "filteredHint": "Try clearing a filter or two."
+  },
+  "select": {
+    "enter": "Select",
+    "selectFloor": "Select floor",
+    "deselectFloor": "Deselect floor",
+    "selected": "{count} selected",
+    "assigneeLabel": "Assign to…",
+    "unassignOption": "Remove assignment",
+    "apply": "Apply",
+    "roomAria": "Select room {room}"
+  },
+  "modal": {
+    "title": "Room {room}",
+    "lastCleaned": "Last cleaned {time}",
+    "lastCleanedBy": "Last cleaned {time} by {name}",
+    "neverCleaned": "Not cleaned yet",
+    "dndStartBlocked": "The guest has switched on Do-Not-Disturb — cleaning can start after it lifts."
+  },
+  "actions": {
+    "start": "Start",
+    "done": "Done",
+    "clearFlag": "Clear flag",
+    "flag": "Flag for cleaning",
+    "interrupt": "Interrupted…",
+    "assign": "Assign"
+  },
+  "flagForm": {
+    "title": "Flag this room for cleaning",
+    "checkoutHint": "deeper turnover clean",
+    "dailyHint": "stay-over service",
+    "reasonPlaceholder": "A short note about why (optional)",
+    "parkedHint": "The flag is kept but the room stays parked under Do-Not-Disturb until the guest releases it.",
+    "confirm": "Flag room"
+  },
+  "interruptForm": {
+    "title": "Why was the cleaning stopped?",
+    "placeholder": "e.g. the guest returned and asked to come back later",
+    "confirm": "Mark as interrupted"
+  },
+  "assignForm": {
+    "title": "Assign to",
+    "empty": "No staff members can work the cleaning queue yet — grant a role the \"Work the cleaning queue\" permission first.",
+    "unassign": "Remove assignment"
+  },
+  "settings": {
+    "title": "Housekeeping settings",
+    "intro": "When the morning round starts, and everything else about how the board runs itself.",
+    "cardTitle": "Daily service hour",
+    "dailyServiceTime": {
+      "label": "Daily service time",
+      "hint": "Each day at this hour (hotel time), occupied rooms are flagged for daily service and Do-Not-Disturb lifts."
+    },
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Housekeeping settings saved.",
+    "loadError": "We couldn't load housekeeping settings."
+  }
+}

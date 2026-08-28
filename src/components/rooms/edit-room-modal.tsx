@@ -3,11 +3,13 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { FormEvent, useEffect, useState } from 'react';
 import { ConsequenceNote, InfoTip, RequiredNote } from '@/components/guidance';
+import { useTenant } from '@/components/tenant-provider';
 import { Button, Field, Modal, selectClass } from '@/components/ui';
 import type { Locale } from '@/i18n/config';
+import { formatDate } from '@/i18n/format';
 import { api, ApiError } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
-import type { Room, RoomStatus, RoomType } from '@/lib/types';
+import type { Room, RoomDetail, RoomStatus, RoomType } from '@/lib/types';
 
 interface FormState {
   roomNumber: string;
@@ -51,8 +53,10 @@ export function EditRoomModal({
   const t = useTranslations('rooms');
   const tCommon = useTranslations('common');
   const tG = useTranslations('guidance.rooms');
+  const tHk = useTranslations('housekeeping.modal');
   const resolveError = useApiError();
   const locale = useLocale() as Locale;
+  const { me } = useTenant();
 
   const activeTypes = types.filter(
     (rt) => rt.isActive || rt.id === room?.roomType.id,
@@ -85,6 +89,19 @@ export function EditRoomModal({
       setFieldErrors({});
     }
   }, [room]);
+
+  // Epic 20 (20.3 AC3) — the room's cleaning memory rides the detail
+  // endpoint, field-gated server-side by housekeeping.read. Best-effort:
+  // a failed fetch just means no meta line.
+  const roomId = room?.id ?? null;
+  const [detail, setDetail] = useState<RoomDetail | null>(null);
+  useEffect(() => {
+    setDetail(null);
+    if (!roomId) return;
+    api<RoomDetail>(`/tenant/rooms/${roomId}`)
+      .then(setDetail)
+      .catch(() => {});
+  }, [roomId]);
 
   function set<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -222,6 +239,35 @@ export function EditRoomModal({
         </div>
         {countabilityChanged && (
           <ConsequenceNote>{tG(`status.${form.status}`)}</ConsequenceNote>
+        )}
+
+        {/* Read-only housekeeping meta (Epic 20) — only when the API
+            returned the block (actor holds housekeeping.read). */}
+        {detail?.housekeeping !== undefined && (
+          <p className="text-xs text-ink-soft">
+            {detail.housekeeping.lastCleanedAt
+              ? detail.housekeeping.lastCleanedBy
+                ? tHk('lastCleanedBy', {
+                    time: formatDate(detail.housekeeping.lastCleanedAt, locale, {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      timeZone: me?.hotel.timezone ?? 'Africa/Cairo',
+                    }),
+                    name: detail.housekeeping.lastCleanedBy.name,
+                  })
+                : tHk('lastCleaned', {
+                    time: formatDate(detail.housekeeping.lastCleanedAt, locale, {
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      timeZone: me?.hotel.timezone ?? 'Africa/Cairo',
+                    }),
+                  })
+              : tHk('neverCleaned')}
+          </p>
         )}
 
         <RequiredNote />

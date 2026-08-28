@@ -253,6 +253,16 @@ export interface RoomOccupancy {
 /** GET /tenant/rooms/:id — adds the guest-facing URL for this room's QR. */
 export interface RoomDetail extends Room {
   guestUrl: string;
+  /**
+   * Epic 20 (20.3 AC3) — the room's cleaning memory. `undefined` when the
+   * actor lacks `housekeeping.read` (field absent, `currentStay` precedent).
+   */
+  housekeeping?: {
+    housekeepingStatus: HousekeepingStatus;
+    cleaningType: CleaningType | null;
+    lastCleanedAt: string | null;
+    lastCleanedBy: { id: string; name: string } | null;
+  };
 }
 
 /** GET /tenant/rooms — `usage` reflects the plan's room-count limit (active + out_of_service only). */
@@ -790,3 +800,64 @@ export interface TenantAnnouncement {
   /** "قرأه 34 من 62" — reads / currently-matching audience, live-computed. */
   stats: { reads: number; audienceNow: number };
 }
+
+/* ---- Housekeeping (Epic 20) ---- */
+
+/** The cleanliness axis — fully independent from the room's `status`. */
+export type HousekeepingStatus =
+  | 'clean'
+  | 'needs_cleaning'
+  | 'in_progress'
+  | 'dnd';
+
+/** Why a room needs cleaning: checkout turnover vs stay-over daily service. */
+export type CleaningType = 'checkout' | 'daily';
+
+/** One board card (GET /tenant/housekeeping/board). */
+export interface HousekeepingRoomView {
+  id: string;
+  roomNumber: string;
+  floor: number | null;
+  /** Operational axis (Epic 11) — inactive rooms never appear on the board. */
+  roomStatus: 'active' | 'out_of_service';
+  housekeepingStatus: HousekeepingStatus;
+  cleaningType: CleaningType | null;
+  /** Derived from the Epic 13 active-stay data. */
+  occupied: boolean;
+  assignedTo: { id: string; name: string } | null;
+  lastCleanedAt: string | null;
+  lastCleanedBy: { id: string; name: string } | null;
+  updatedAt: string;
+}
+
+/**
+ * `updatedSince` delta rows: a full view, or a tombstone for a room that
+ * turned inactive — the client must DROP tombstoned rows (Epic 19 pattern).
+ */
+export type HousekeepingRoomDelta =
+  | HousekeepingRoomView
+  | { id: string; active: false };
+
+/** Board header stats (20.2 AC2) — doneToday is the shift's progress bar. */
+export interface HousekeepingBoardCounts {
+  toCleanCheckout: number;
+  toCleanDaily: number;
+  inProgress: number;
+  doneToday: number;
+  dnd: number;
+}
+
+/** GET /tenant/housekeeping/board (full board / `updatedSince` deltas). */
+export interface HousekeepingBoardResponse {
+  data: HousekeepingRoomDelta[];
+  counts: HousekeepingBoardCounts;
+  serverTime: string;
+}
+
+/** GET/PATCH /tenant/housekeeping/settings — 'HH:MM', hotel-local. */
+export interface HousekeepingSettings {
+  dailyServiceTime: string;
+}
+
+/** GET /tenant/housekeeping/assignees — options-endpoint shape (20.3 AC1). */
+export type HousekeepingAssignee = RequestAssignee;

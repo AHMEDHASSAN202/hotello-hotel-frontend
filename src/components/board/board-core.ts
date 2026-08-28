@@ -52,3 +52,22 @@ export function mergeBoardDelta<T extends { id: string }>(
   for (const row of delta) byId.set(row.id, row);
   return Array.from(byId.values());
 }
+
+/**
+ * Tombstone-aware delta merge (Epic 19 pattern, reused by the Epic 20
+ * housekeeping board): a delta row of `{ id, active: false }` means the
+ * entity left the board (room turned inactive) and its card must be DROPPED
+ * from state, not rendered. Full rows replace-by-id / append as usual.
+ */
+export function mergeBoardDeltaWithTombstones<T extends { id: string }>(
+  current: T[],
+  delta: Array<T | { id: string; active: false }>,
+): T[] {
+  if (delta.length === 0) return current;
+  const byId = new Map(current.map((r) => [r.id, r] as [string, T]));
+  for (const row of delta) {
+    if ('active' in row && row.active === false) byId.delete(row.id);
+    else byId.set(row.id, row as T);
+  }
+  return Array.from(byId.values());
+}

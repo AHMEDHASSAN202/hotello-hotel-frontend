@@ -100,6 +100,9 @@
     "ANNOUNCEMENT_WINDOW_INVALID": "\"Active until\" must be after the publish time.",
     "ANNOUNCEMENT_AUDIENCE_INVALID": "A single-guest audience can't be combined with other filters.",
     "ANNOUNCEMENT_STAY_NOT_FOUND": "The selected guest stay is no longer active.",
-    "ANNOUNCEMENT_INFO_ENTRY_NOT_FOUND": "The linked Hotel Info entry no longer exists."
+    "ANNOUNCEMENT_INFO_ENTRY_NOT_FOUND": "The linked Hotel Info entry no longer exists.",
+    "HOUSEKEEPING_INVALID_STATUS": "This action isn't possible in the room's current cleaning state — it may have just changed.",
+    "HOUSEKEEPING_ROOM_DND": "The guest has switched on Do-Not-Disturb — cleaning can start after it lifts.",
+    "HOUSEKEEPING_ASSIGNEE_INVALID": "That staff member can't work the cleaning queue — their role needs the housekeeping permission."
   }
 }

@@ -6,6 +6,7 @@ import errors from './errors.json';
 import fnb from './fnb.json';
 import guidance from './guidance.json';
 import hotelInfo from './hotelInfo.json';
+import housekeeping from './housekeeping.json';
 import profile from './profile.json';
 import requests from './requests.json';
 import roles from './roles.json';
@@ -25,6 +26,7 @@ const messages = {
   fnb,
   guidance,
   hotelInfo,
+  housekeeping,
   profile,
   requests,
   roles,

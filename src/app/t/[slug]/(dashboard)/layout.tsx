@@ -1,4 +1,5 @@
 import { FnbFeedProvider } from '@/components/fnb/fnb-feed-provider';
+import { HousekeepingFeedProvider } from '@/components/housekeeping/housekeeping-feed-provider';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { RequestsFeedProvider } from '@/components/requests/requests-feed-provider';
 import { Sidebar } from '@/components/sidebar';
@@ -22,6 +23,7 @@ export default function DashboardLayout({
       {/* Epic 15/16 — one poller per feed app-wide (nav badge + board share it). */}
       <RequestsFeedProvider>
         <FnbFeedProvider>
+        <HousekeepingFeedProvider>
         {/* Sidebar is the first flex child, so dir="rtl" moves it to the inline
             end automatically — no per-direction overrides needed. */}
         <div className="flex min-h-screen">
@@ -38,6 +40,7 @@ export default function DashboardLayout({
             </main>
           </div>
         </div>
+        </HousekeepingFeedProvider>
         </FnbFeedProvider>
       </RequestsFeedProvider>
     </TenantProvider>

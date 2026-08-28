@@ -12,6 +12,11 @@ import en from '../../../messages/en';
 
 const apiMock = vi.hoisted(() => ({ api: vi.fn() }));
 
+// Epic 20 — the modal reads the hotel timezone for the last-cleaned meta line.
+vi.mock('@/components/tenant-provider', () => ({
+  useTenant: () => ({ me: null }),
+}));
+
 vi.mock('@/lib/api', () => ({
   api: apiMock.api,
   ApiError: class ApiError extends Error {
@@ -81,6 +86,8 @@ function renderModal(room: Room | null = ROOM) {
 
 beforeEach(() => {
   apiMock.api.mockReset();
+  // The Epic 20 room-detail fetch (last-cleaned meta) runs on every open.
+  apiMock.api.mockResolvedValue({});
 });
 
 describe('EditRoomModal (11.4 AC1)', () => {

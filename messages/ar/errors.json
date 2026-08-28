@@ -100,6 +100,9 @@
     "ANNOUNCEMENT_WINDOW_INVALID": "يجب أن يكون «نشط حتى» بعد وقت النشر.",
     "ANNOUNCEMENT_AUDIENCE_INVALID": "جمهور النزيل الواحد لا يُدمج مع مرشِّحات أخرى.",
     "ANNOUNCEMENT_STAY_NOT_FOUND": "إقامة النزيل المحدد لم تعد نشطة.",
-    "ANNOUNCEMENT_INFO_ENTRY_NOT_FOUND": "مدخل معلومات الفندق المرتبط لم يعد موجودًا."
+    "ANNOUNCEMENT_INFO_ENTRY_NOT_FOUND": "مدخل معلومات الفندق المرتبط لم يعد موجودًا.",
+    "HOUSEKEEPING_INVALID_STATUS": "هذا الإجراء غير ممكن في حالة نظافة الغرفة الحالية — ربما تغيّرت للتو.",
+    "HOUSEKEEPING_ROOM_DND": "النزيل فعَّل وضع عدم الإزعاج — يمكن بدء التنظيف بعد رفعه.",
+    "HOUSEKEEPING_ASSIGNEE_INVALID": "هذا الموظف لا يمكنه العمل في قائمة التنظيف — دوره يحتاج صلاحية التدبير الفندقي."
   }
 }

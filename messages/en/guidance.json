@@ -153,5 +153,21 @@
       "retracted": "Pulled back — it left all guest inboxes immediately. Read stats are preserved.",
       "expired": "Its active-until time passed and it left guest inboxes automatically."
     }
+  },
+  "housekeeping": {
+    "status": {
+      "clean": "Nothing to do here — the room was cleaned and nothing has flagged it since. New rooms start clean.",
+      "needs_cleaning": "Waiting for a clean. Checkout flags appear automatically when a stay ends; daily flags each morning at your daily service hour for occupied rooms.",
+      "in_progress": "An attendant pressed Start and owns this room right now. Starting an unassigned room assigns it to you.",
+      "dnd": "The guest switched on Do-Not-Disturb in their app. Cleaning can't start until it lifts — it clears automatically at the next daily service hour, at checkout, or when the guest turns it off."
+    },
+    "stats": {
+      "toClean": "Rooms currently flagged for cleaning — checkout turnovers and daily stay-over service.",
+      "inProgress": "Rooms an attendant is cleaning right now.",
+      "doneToday": "Rooms finished since midnight, hotel time — the shift's progress bar.",
+      "dnd": "Rooms the guest asked not to disturb today. The daily round skips them."
+    },
+    "dnd": "The guest asked not to be disturbed today. Do-Not-Disturb lifts automatically at the next daily service hour (or at checkout) — you can still assign the room or park a flag for later.",
+    "settingsIntro": "Each morning at this hour, occupied rooms flag themselves for daily service and Do-Not-Disturb lifts — in your hotel's local time."
   }
 }
