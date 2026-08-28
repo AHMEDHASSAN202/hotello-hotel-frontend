@@ -1,0 +1,111 @@
+{
+  "title": "الإعلانات",
+  "readOnlyHint": "اشتراكك للقراءة فقط — أعد التفعيل لإرسال الإعلانات.",
+  "noPermission": {
+    "title": "لا صلاحية للإعلانات",
+    "hint": "دورك لا يتضمن إدارة الإعلانات. اطلبها من المدير إذا كنت بحاجة إليها."
+  },
+  "empty": {
+    "title": "لا إعلانات بعد",
+    "hint": "رسالتك الأولى تصل إلى النزلاء في تطبيقهم فورًا — جرّب جدول اليوم أو إشعار صيانة.",
+    "cta": "إعلان جديد"
+  },
+  "list": {
+    "compose": "إعلان جديد",
+    "sentAt": "أُرسل {time}",
+    "scheduledFor": "مجدول في {time}",
+    "audienceColumn": "الجمهور",
+    "actions": {
+      "view": "التفاصيل",
+      "edit": "تعديل",
+      "send": "إرسال الآن",
+      "cancel": "إلغاء الجدولة",
+      "retract": "سحب"
+    }
+  },
+  "status": {
+    "draft": "مسودة",
+    "scheduled": "مجدول",
+    "live": "منشور",
+    "retracted": "مسحوب",
+    "expired": "منتهي"
+  },
+  "stats": {
+    "readBy": "قرأه {reads} من {audience}"
+  },
+  "audience": {
+    "label": "الجمهور",
+    "everyone": "جميع النزلاء الحاليين",
+    "filtered": "جمهور مُصفّى",
+    "guest": "نزيل واحد محدد",
+    "stayTypes": "أنواع الإقامة",
+    "floors": "الطوابق",
+    "rooms": "غرف محددة",
+    "roomsCount": "{count, plural, zero {لا غرف} one {غرفة واحدة} two {غرفتان} few {# غرف} many {# غرفة} other {# غرفة}}",
+    "floorLabel": "الطابق {floor}",
+    "guestSearch": "ابحث في النزلاء الحاليين",
+    "guestSearchPlaceholder": "الاسم أو رقم الغرفة…",
+    "noMatches": "لا نزلاء مطابقين حاليًا",
+    "liveCount": "سيصل إلى {count, plural, zero {لا نزلاء} one {نزيل واحد} two {نزيلين} few {# نزلاء} many {# نزيلًا} other {# نزيل}} حاليًا",
+    "counting": "جارٍ العدّ…"
+  },
+  "stayTypes": {
+    "all_inclusive": "شامل كليًا",
+    "half_board": "نصف إقامة",
+    "bed_breakfast": "إقامة وإفطار",
+    "room_only": "غرفة فقط"
+  },
+  "fields": {
+    "titleEn": "العنوان (بالإنجليزية)",
+    "titleAr": "العنوان (بالعربية)",
+    "bodyEn": "الرسالة (بالإنجليزية)",
+    "bodyAr": "الرسالة (بالعربية)",
+    "help": "قصيرة وعملية — النزلاء يتصفحون سريعًا ولا يقرؤون بتمعّن.",
+    "moreLanguages": "لغات إضافية (اختياري)",
+    "moreLanguagesHint": "النزيل الذي لا تتوفر لغته يرى النسخة الإنجليزية."
+  },
+  "compose": {
+    "title": "إعلان جديد",
+    "editTitle": "تعديل الإعلان",
+    "back": "عودة إلى الإعلانات",
+    "contentTitle": "الرسالة",
+    "infoLink": "ربط بمدخل معلومات الفندق (اختياري)",
+    "infoLinkNone": "بدون ربط",
+    "priority": "وضع علامة مهم",
+    "timingTitle": "التوقيت",
+    "modeNow": "إرسال الآن",
+    "modeSchedule": "جدولة لوقت لاحق",
+    "publishDate": "تاريخ النشر",
+    "publishTime": "وقت النشر",
+    "activeUntil": "نشط حتى (اختياري)",
+    "activeUntilDate": "تاريخ الانتهاء",
+    "activeUntilTime": "وقت الانتهاء",
+    "submitSend": "إرسال الآن",
+    "submitSchedule": "جدولة",
+    "submitSave": "حفظ التعديلات",
+    "cancelSchedule": "إلغاء الجدولة"
+  },
+  "nudge": {
+    "title": "هناك إعلان مهم منشور بالفعل",
+    "body": "كثرة الإشعارات المثبتة تُفقدها قوتها. هل تريد إرسال هذا الإعلان كمهم رغم ذلك؟",
+    "confirm": "إرسال رغم ذلك"
+  },
+  "retract": {
+    "title": "سحب الإعلان",
+    "confirm": "سحب",
+    "consequence": "سيختفي من صناديق جميع النزلاء فورًا. تبقى إحصاءات القراءة محفوظة في السجل. لتغيير الصياغة: اسحب الإعلان وأرسل إعلانًا جديدًا."
+  },
+  "detail": {
+    "languages": "المحتوى",
+    "audience": "الجمهور",
+    "timeline": "الخط الزمني",
+    "readStats": "إحصاءات القراءة",
+    "created": "أُنشئ",
+    "scheduled": "جُدول",
+    "published": "نُشر",
+    "retracted": "سُحب",
+    "expired": "انتهى",
+    "activeUntil": "نشط حتى",
+    "emptyLocale": "غير متوفر — يرى النزلاء النسخة الإنجليزية."
+  }
+}

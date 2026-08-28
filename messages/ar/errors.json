@@ -90,6 +90,16 @@
     "BRANDING_WELCOME_REQUIRED": "رسالة الترحيب تحتاج نصًا بالعربية والإنجليزية قبل حفظها.",
     "BRANDING_ACCENT_CONTRAST": "هذا اللون فاتح جدًا لعرض نص مقروء. اختر درجة أغمق أو استخدم اللون المقترح.",
     "BRANDING_COVER_INVALID": "تعذّر استخدام هذه الصورة. ارفع صورة بصيغة PNG أو JPEG أو WebP.",
-    "BRANDING_COVER_REQUIRED": "اختر صورة لرفعها."
+    "BRANDING_COVER_REQUIRED": "اختر صورة لرفعها.",
+    "ANNOUNCEMENT_NOT_FOUND": "هذا الإعلان لم يعد موجودًا.",
+    "ANNOUNCEMENT_TRANSLATIONS_REQUIRED": "العنوان والرسالة مطلوبان بالعربية والإنجليزية.",
+    "ANNOUNCEMENT_NOT_EDITABLE": "الإعلانات المنشورة لا تُعدَّل — اسحبها وأرسل إعلانًا جديدًا.",
+    "ANNOUNCEMENT_INVALID_STATE": "هذا الإجراء غير متاح في حالة الإعلان الحالية.",
+    "ANNOUNCEMENT_SCHEDULE_REQUIRED": "اختر تاريخ ووقت النشر للجدولة.",
+    "ANNOUNCEMENT_SCHEDULE_IN_PAST": "التوقيت المجدول انقضى بالفعل في توقيت الفندق.",
+    "ANNOUNCEMENT_WINDOW_INVALID": "يجب أن يكون «نشط حتى» بعد وقت النشر.",
+    "ANNOUNCEMENT_AUDIENCE_INVALID": "جمهور النزيل الواحد لا يُدمج مع مرشِّحات أخرى.",
+    "ANNOUNCEMENT_STAY_NOT_FOUND": "إقامة النزيل المحدد لم تعد نشطة.",
+    "ANNOUNCEMENT_INFO_ENTRY_NOT_FOUND": "مدخل معلومات الفندق المرتبط لم يعد موجودًا."
   }
 }

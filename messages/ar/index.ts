@@ -1,3 +1,4 @@
+import announcements from './announcements.json';
 import auth from './auth.json';
 import branding from './branding.json';
 import common from './common.json';
@@ -16,6 +17,7 @@ import subscription from './subscription.json';
 
 /** Arabic message bundle — must expose the same key set as `en`. */
 const messages = {
+  announcements,
   auth,
   branding,
   common,

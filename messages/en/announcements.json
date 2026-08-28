@@ -1,0 +1,111 @@
+{
+  "title": "Announcements",
+  "readOnlyHint": "Your subscription is read-only — reactivate to send announcements.",
+  "noPermission": {
+    "title": "No access to announcements",
+    "hint": "Your role doesn't include managing announcements. Ask a manager if you need it."
+  },
+  "empty": {
+    "title": "No announcements yet",
+    "hint": "Your first message reaches guests in their app instantly — try today's schedule or a maintenance notice.",
+    "cta": "New announcement"
+  },
+  "list": {
+    "compose": "New announcement",
+    "sentAt": "Sent {time}",
+    "scheduledFor": "Scheduled for {time}",
+    "audienceColumn": "Audience",
+    "actions": {
+      "view": "Details",
+      "edit": "Edit",
+      "send": "Send now",
+      "cancel": "Cancel schedule",
+      "retract": "Retract"
+    }
+  },
+  "status": {
+    "draft": "Draft",
+    "scheduled": "Scheduled",
+    "live": "Live",
+    "retracted": "Retracted",
+    "expired": "Expired"
+  },
+  "stats": {
+    "readBy": "Read by {reads} of {audience}"
+  },
+  "audience": {
+    "label": "Audience",
+    "everyone": "All current guests",
+    "filtered": "Filtered audience",
+    "guest": "One specific guest",
+    "stayTypes": "Stay types",
+    "floors": "Floors",
+    "rooms": "Specific rooms",
+    "roomsCount": "{count, plural, one {# room} other {# rooms}}",
+    "floorLabel": "Floor {floor}",
+    "guestSearch": "Search active guests",
+    "guestSearchPlaceholder": "Name or room number…",
+    "noMatches": "No matching active guests",
+    "liveCount": "Will reach {count, plural, one {# guest} other {# guests}} currently",
+    "counting": "Counting…"
+  },
+  "stayTypes": {
+    "all_inclusive": "All-Inclusive",
+    "half_board": "Half Board",
+    "bed_breakfast": "Bed & Breakfast",
+    "room_only": "Room Only"
+  },
+  "fields": {
+    "titleEn": "Title (English)",
+    "titleAr": "Title (Arabic)",
+    "bodyEn": "Message (English)",
+    "bodyAr": "Message (Arabic)",
+    "help": "Short and operational — guests scan, they don't read.",
+    "moreLanguages": "More languages (optional)",
+    "moreLanguagesHint": "Guests whose language is missing see the English version."
+  },
+  "compose": {
+    "title": "New announcement",
+    "editTitle": "Edit announcement",
+    "back": "Back to announcements",
+    "contentTitle": "Message",
+    "infoLink": "Link a Hotel Info entry (optional)",
+    "infoLinkNone": "No link",
+    "priority": "Mark as important (مهم)",
+    "timingTitle": "Timing",
+    "modeNow": "Send now",
+    "modeSchedule": "Schedule for later",
+    "publishDate": "Publish date",
+    "publishTime": "Publish time",
+    "activeUntil": "Active until (optional)",
+    "activeUntilDate": "End date",
+    "activeUntilTime": "End time",
+    "submitSend": "Send now",
+    "submitSchedule": "Schedule",
+    "submitSave": "Save changes",
+    "cancelSchedule": "Cancel schedule"
+  },
+  "nudge": {
+    "title": "Another important announcement is already live",
+    "body": "Pinned notices lose their power when they pile up. Send this one as important anyway?",
+    "confirm": "Send anyway"
+  },
+  "retract": {
+    "title": "Retract announcement",
+    "confirm": "Retract",
+    "consequence": "It disappears from all guests' inboxes immediately. Read stats are preserved in your history. To change the wording, retract and send a new announcement."
+  },
+  "detail": {
+    "languages": "Content",
+    "audience": "Audience",
+    "timeline": "Timeline",
+    "readStats": "Read stats",
+    "created": "Created",
+    "scheduled": "Scheduled",
+    "published": "Published",
+    "retracted": "Retracted",
+    "expired": "Expired",
+    "activeUntil": "Active until",
+    "emptyLocale": "Not provided — guests see English."
+  }
+}

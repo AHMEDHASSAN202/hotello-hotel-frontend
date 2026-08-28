@@ -133,5 +133,25 @@
       "title": "Three knobs, zero design skills",
       "body": "Changes preview instantly on the phone mock and reach your guests within a minute of saving."
     }
+  },
+  "announcements": {
+    "intro": "Speak to your guests in their app — pool closures, schedule changes, tonight's plans — targeted so the right rooms hear it.",
+    "hint": {
+      "title": "The audience is a filter, not a list",
+      "body": "A guest checking in tonight who matches your filter sees the announcement too, as long as it's active. The recipient count is labeled \"currently\" for exactly that reason."
+    },
+    "dynamicAudience": "The audience is a live filter, not a snapshot — a guest checking in tonight who matches it will also see this announcement while it's active.",
+    "priority": "Use sparingly. Important notices pin to the top of the guest inbox and surface on their home screen — too many and guests stop noticing.",
+    "readStats": "Reads over guests currently matching the audience — the denominator moves as guests check in and out.",
+    "editLocked": "Live announcements can't be edited — guests may have read the original. Retract it and send a new one instead.",
+    "activeUntil": "After this time the notice leaves guest inboxes automatically — expired operational notices are just noise.",
+    "infoLink": "Guests see a tappable chip that opens the linked Hotel Info entry.",
+    "status": {
+      "draft": "Not visible to guests. Edit it, then send or schedule.",
+      "scheduled": "Goes live automatically at the hotel-local time you chose. Editable until then.",
+      "live": "Visible to every guest matching the audience right now.",
+      "retracted": "Pulled back — it left all guest inboxes immediately. Read stats are preserved.",
+      "expired": "Its active-until time passed and it left guest inboxes automatically."
+    }
   }
 }

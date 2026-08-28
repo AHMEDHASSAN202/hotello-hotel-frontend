@@ -110,6 +110,28 @@ describe('sidebar module gating', () => {
   });
 });
 
+describe('Epic 19 — announcements nav gating', () => {
+  it('renders as a link when the module is enabled and permission held', () => {
+    renderSidebar(['announcements']);
+    const item = screen.getByText(en.shell.nav.announcements).closest('a');
+    expect(item?.getAttribute('href')).toBe('/t/sunrise/announcements');
+    expect(item?.querySelector('[data-testid="nav-soon-badge"]')).toBeNull();
+  });
+
+  it('hidden entirely when the module is missing from the plan (backfilled, not an upsell)', () => {
+    renderSidebar(['fnb']);
+    expect(screen.queryByText(en.shell.nav.announcements)).toBeNull();
+    // No Upgrade badge either — announcements is not an upsell module.
+  });
+
+  it('hidden without announcements.manage even with the module in plan', () => {
+    tenant.isModuleEnabled = () => true;
+    tenant.hasPermission = (k: string) => k !== 'announcements.manage';
+    renderSidebar();
+    expect(screen.queryByText(en.shell.nav.announcements)).toBeNull();
+  });
+});
+
 describe('Epic 18 — upsell vs permission distinction (18.3 AC1/AC3)', () => {
   it('branding stays visible with an Upgrade badge when the module is not in the plan', () => {
     // Every other module enabled (so their own Soon chips are irrelevant

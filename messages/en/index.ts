@@ -1,3 +1,4 @@
+import announcements from './announcements.json';
 import auth from './auth.json';
 import branding from './branding.json';
 import common from './common.json';
@@ -19,6 +20,7 @@ import subscription from './subscription.json';
  * imported so webpack bundles it and scripts/check-i18n.mjs can diff `ar`.
  */
 const messages = {
+  announcements,
   auth,
   branding,
   common,

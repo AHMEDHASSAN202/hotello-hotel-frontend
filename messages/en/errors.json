@@ -90,6 +90,16 @@
     "BRANDING_WELCOME_REQUIRED": "The welcome message needs both Arabic and English before it can be saved.",
     "BRANDING_ACCENT_CONTRAST": "That color is too light for readable text. Pick a darker shade or use the suggested one.",
     "BRANDING_COVER_INVALID": "That image couldn't be used. Upload a PNG, JPEG, or WebP photo.",
-    "BRANDING_COVER_REQUIRED": "Choose a photo to upload."
+    "BRANDING_COVER_REQUIRED": "Choose a photo to upload.",
+    "ANNOUNCEMENT_NOT_FOUND": "This announcement no longer exists.",
+    "ANNOUNCEMENT_TRANSLATIONS_REQUIRED": "Arabic and English title and message are required.",
+    "ANNOUNCEMENT_NOT_EDITABLE": "Live announcements can't be edited — retract and send a new one.",
+    "ANNOUNCEMENT_INVALID_STATE": "This action isn't available in the announcement's current state.",
+    "ANNOUNCEMENT_SCHEDULE_REQUIRED": "Pick a publish date and time to schedule.",
+    "ANNOUNCEMENT_SCHEDULE_IN_PAST": "The scheduled time has already passed at the hotel.",
+    "ANNOUNCEMENT_WINDOW_INVALID": "\"Active until\" must be after the publish time.",
+    "ANNOUNCEMENT_AUDIENCE_INVALID": "A single-guest audience can't be combined with other filters.",
+    "ANNOUNCEMENT_STAY_NOT_FOUND": "The selected guest stay is no longer active.",
+    "ANNOUNCEMENT_INFO_ENTRY_NOT_FOUND": "The linked Hotel Info entry no longer exists."
   }
 }

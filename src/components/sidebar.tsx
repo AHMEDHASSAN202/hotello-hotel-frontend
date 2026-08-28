@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   LogOut,
   type LucideIcon,
+  Megaphone,
   PanelLeftClose,
   PanelLeftOpen,
   Paintbrush,
@@ -86,6 +87,14 @@ const NAV_ITEMS: NavItem[] = [
     icon: BookOpen,
     module: 'hotel_info',
     permission: 'hotel_info.manage',
+  },
+  // Epic 19 — the hotel speaks to its guests (compose, schedule, read stats).
+  {
+    segment: 'announcements',
+    labelKey: 'announcements',
+    icon: Megaphone,
+    module: 'announcements',
+    permission: 'announcements.manage',
   },
   // Front-desk daily driver — listed before the setup-ish sections (Epic 13).
   { segment: 'stays', labelKey: 'stays', icon: DoorOpen, permission: 'stays.read' },

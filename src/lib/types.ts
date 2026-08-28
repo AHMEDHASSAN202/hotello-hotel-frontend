@@ -15,7 +15,8 @@ export type ModuleKey =
   | 'guest_app_branding'
   | 'analytics'
   | 'requests'
-  | 'hotel_info';
+  | 'hotel_info'
+  | 'announcements';
 
 /* ------------------------------------------------- Public tenant context */
 
