@@ -48,6 +48,26 @@ function flattenInfoEntries(overview: HotelInfoOverview): InfoEntryManage[] {
   ];
 }
 
+/**
+ * `NameFields`/`fieldsToPayload` are built around the F&B/hotel-info
+ * `name*`/`description*` DTO convention — but `CreateEventDto`/
+ * `UpdateEventDto` name the title fields `titleEn`/`titleAr`/`titleRu`…
+ * (`create-event.dto.ts`, `update-event.dto.ts`; `TenantEventsService.mergeTitles`
+ * reads `dto.titleEn`/`dto.titleAr`). Remap the `name*` keys to `title*` here,
+ * local to this caller, rather than touching the shared component — every
+ * other `NameFields` caller (F&B, hotel-info, branding) is on the `name*`
+ * convention and must stay untouched. `description*` keys already match the
+ * backend as-is and pass through unchanged.
+ */
+function toEventContentPayload(names: NameFieldValues): Record<string, string> {
+  const raw = fieldsToPayload(names, true);
+  const payload: Record<string, string> = {};
+  for (const [key, value] of Object.entries(raw)) {
+    payload[key.startsWith('name') ? `title${key.slice(4)}` : key] = value;
+  }
+  return payload;
+}
+
 export function EventModal({
   event,
   open,
@@ -199,7 +219,7 @@ export function EventModal({
     setBusy(true);
     try {
       const body: Record<string, unknown> = {
-        ...fieldsToPayload(names, true),
+        ...toEventContentPayload(names),
         // Always capacity-safe server-side (increase-or-equal, or switching
         // to unlimited) — never gated behind isPublished.
         capacity: unlimited ? null : Number(capacity),
