@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { CopyButton } from '@/components/copy-button';
 import { ConfirmModal, ConsequenceNote, RequiredNote } from '@/components/guidance';
 import { RoomPicker } from '@/components/stays/room-picker';
@@ -32,6 +32,20 @@ import type {
 import { GUEST_LANGUAGES, STAY_TYPES } from '@/lib/types';
 
 type Mode = 'view' | 'edit' | 'extend' | 'move';
+
+/**
+ * The verification state of this stay's outstanding balance — the interlock
+ * that decides whether checkout may be offered at all.
+ *
+ * `ready` is the ONLY state in which the amount below is known, and it is
+ * reached exclusively by a fetch that RESOLVED. `checking` covers every
+ * in-flight round trip (modal opened, stay switched, retry pressed, the
+ * post-settle reload, a re-check after a failed checkout attempt) — an
+ * unknown amount, not a zero one. Money-correctness beats convenience:
+ * while the amount is unknown we don't offer checkout, because the settle
+ * step that rides the checkout would silently be skipped.
+ */
+type UnsettledCheck = 'idle' | 'checking' | 'ready' | 'failed';
 
 /**
  * 13.3 — the stay drawer: guest info, masked code (hash-only storage — no
@@ -106,21 +120,37 @@ export function StayDetailModal({
    * be swallowed into `null`, which reads exactly like "nothing owed": the
    * banner disappeared AND the checkout interlock silently stopped
    * settling, so a transient 500 could check a stay out with uncollected
-   * room charges. A failure is now its own state: we say we couldn't verify,
-   * offer a retry, and hold checkout until a fetch succeeds.
+   * room charges. A boolean `failed` flag then left the SAME hole open for
+   * every in-flight fetch (it was cleared on entry, so during the round trip
+   * checkout was enabled again and `total ?? 0` was 0). Verification is now
+   * explicit and positive: nothing but a resolved fetch says `ready`.
    */
-  const [unsettledFailed, setUnsettledFailed] = useState(false);
+  const [unsettledCheck, setUnsettledCheck] = useState<UnsettledCheck>('idle');
+  const verified = unsettledCheck === 'ready';
+  /**
+   * Generation guard (the `cancelled` pattern of `event-modal.tsx`, as a
+   * counter because reloads are also fired imperatively from retry/settle).
+   * The drawer is permanently mounted (`stays/page.tsx` renders it with
+   * `stay={detailStay}`), so switching stays re-runs the effect WITHOUT an
+   * unmount: without this, stay A's slow response lands on stay B and either
+   * unblocks B with A's verdict or blocks a verified B.
+   */
+  const unsettledRun = useRef(0);
 
   const loadUnsettled = useCallback((stayId: string) => {
-    setUnsettledFailed(false);
+    const run = (unsettledRun.current += 1);
+    setUnsettled(null);
+    setUnsettledCheck('checking');
     api<StayUnsettledView>(`/tenant/stays/${stayId}/unsettled`)
       .then((result) => {
+        if (run !== unsettledRun.current) return;
         setUnsettled(result);
-        setUnsettledFailed(false);
+        setUnsettledCheck('ready');
       })
       .catch(() => {
+        if (run !== unsettledRun.current) return;
         setUnsettled(null);
-        setUnsettledFailed(true);
+        setUnsettledCheck('failed');
       });
   }, []);
 
@@ -132,7 +162,11 @@ export function StayDetailModal({
     setConfirming(null);
     setFnbOrders(null);
     setUnsettled(null);
-    setUnsettledFailed(false);
+    setUnsettledCheck('idle');
+    // Whatever is still in flight belongs to the stay we just left — retire
+    // it even when the new stay fetches nothing (closed drawer, no
+    // `stays.checkout`), where `loadUnsettled` wouldn't bump the counter.
+    unsettledRun.current += 1;
     if (stay && isModuleEnabled('fnb') && hasPermission('fnb_orders.read')) {
       api<StayFnbOrdersResponse>(`/tenant/fnb-orders/stay/${stay.id}`)
         .then(setFnbOrders)
@@ -159,6 +193,7 @@ export function StayDetailModal({
   async function run<T>(
     request: () => Promise<T>,
     onSuccess: (result: T) => void,
+    onFailure?: () => void,
   ) {
     setBusy(true);
     setError(null);
@@ -169,6 +204,7 @@ export function StayDetailModal({
       setError(
         err instanceof ApiError ? resolveError(err) : t('loadError'),
       );
+      onFailure?.();
     } finally {
       setBusy(false);
     }
@@ -290,9 +326,11 @@ export function StayDetailModal({
 
   function checkout() {
     // The interlock, enforced at the action itself and not only on the
-    // button: without a verified total we cannot settle what's owed, so we
-    // don't check out either.
-    if (!current || unsettledFailed) return;
+    // button: without a VERIFIED total we cannot settle what's owed, so we
+    // don't check out either. This is reachable — the confirm dialog's own
+    // button is never disabled, and a failed attempt below re-opens the
+    // verification underneath it.
+    if (!current || !verified) return;
     run(
       async () => {
         // 16.8 AC2 / 21.6 AC2 — the interlock: settling the combined F&B +
@@ -311,6 +349,11 @@ export function StayDetailModal({
         setConfirming(null);
         applyResult(result);
       },
+      // The attempt failed somewhere between settle and checkout, so what is
+      // still owed is no longer known (the settle may well have landed). The
+      // confirm stays open with the error — re-verify before a second press
+      // is allowed through the guard above.
+      () => loadUnsettled(current.id),
     );
   }
 
@@ -487,12 +530,28 @@ export function StayDetailModal({
           )}
 
           {/*
+            The amount is still being verified — a neutral "we're checking"
+            note, NOT the red failure banner: nothing has gone wrong yet, but
+            checkout stays on hold (below) because the figure is unknown.
+            Both states are gated on `active && canCheckout`, i.e. only where
+            a Check out button actually exists — a checked-out stay must not
+            be told its checkout is on hold.
+          */}
+          {unsettledCheck === 'checking' && canCheckout && active && (
+            <div className="mt-4">
+              <Banner variant="info" title={t('unsettledCheck.checkingTitle')}>
+                {t('unsettledCheck.checkingBody')}
+              </Banner>
+            </div>
+          )}
+
+          {/*
             The unsettled check failed — say so instead of rendering the
             "nothing owed" silence, and keep checkout on hold (below) until a
             retry succeeds. Money-correctness beats convenience: the desk can
             still edit/extend/move the stay meanwhile.
           */}
-          {unsettledFailed && canCheckout && (
+          {unsettledCheck === 'failed' && canCheckout && active && (
             <div className="mt-4">
               <Banner
                 variant="warning"
@@ -559,11 +618,9 @@ export function StayDetailModal({
                 <Button
                   variant="danger"
                   onClick={() => setConfirming('checkout')}
-                  disabled={readOnly || unsettledFailed}
+                  disabled={readOnly || !verified}
                   title={
-                    unsettledFailed
-                      ? t('unsettledCheck.blockedHint')
-                      : disabledHint
+                    !verified ? t('unsettledCheck.blockedHint') : disabledHint
                   }
                 >
                   {t('actions.checkout')}

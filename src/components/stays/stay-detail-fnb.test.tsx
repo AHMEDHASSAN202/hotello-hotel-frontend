@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 import en from '../../../messages/en';
@@ -67,12 +67,32 @@ const RC_ORDER = {
   settledAt: null,
 };
 
-function renderModal() {
+/** A second stay for the switch-while-in-flight case (the drawer never unmounts). */
+const STAY_B = {
+  ...(STAY as Record<string, unknown>),
+  id: 'stay-2',
+  roomNumber: '512',
+  guestName: 'Sara Nabil',
+} as never;
+
+const NO_FNB_ORDERS = { data: [], unsettledTotal: 0 };
+
+function renderModal(stay: typeof STAY = STAY) {
   return render(
     <NextIntlClientProvider locale="en" messages={en} timeZone="Africa/Cairo">
-      <StayDetailModal stay={STAY} onClose={vi.fn()} onChanged={vi.fn()} />
+      <StayDetailModal stay={stay} onClose={vi.fn()} onChanged={vi.fn()} />
     </NextIntlClientProvider>,
   );
+}
+
+function checkoutButton() {
+  return screen.getByRole('button', { name: 'Check out' }) as HTMLButtonElement;
+}
+
+/** The confirm dialog's own button — last in the DOM, and never disabled. */
+function confirmCheckoutButton() {
+  const all = screen.getAllByRole('button', { name: 'Check out' });
+  return all[all.length - 1];
 }
 
 beforeEach(() => {
@@ -259,6 +279,205 @@ describe('StayDetailModal — F&B orders (16.8) + combined settlement (21.6 AC2)
           .disabled,
       ).toBe(false);
     });
+  });
+
+  it('while the check is IN FLIGHT — checkout is held and the state reads as pending, not failed (final-review Critical 1)', async () => {
+    // The dangerous middle state: not failed, just unknown. A binary
+    // failed/not-failed flag left checkout enabled for the whole round trip,
+    // and `(unsettled?.total ?? 0) > 0` was false meanwhile — so a checkout
+    // pressed here skipped the settle POST entirely and wrote the charges off.
+    let resolveUnsettled: ((value: unknown) => void) | undefined;
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        return new Promise((resolve) => {
+          resolveUnsettled = resolve;
+        });
+      if (path.includes('/tenant/fnb-orders/stay/stay-1'))
+        return { data: [RC_ORDER], unsettledTotal: 460 };
+      return {};
+    });
+    renderModal();
+
+    expect(await screen.findByText('Checking for unpaid charges…')).toBeTruthy();
+    // The neutral pending affordance, NOT the red failure banner.
+    expect(
+      screen.queryByText("We couldn't check for unpaid charges"),
+    ).toBeNull();
+    expect(checkoutButton().disabled).toBe(true);
+
+    await act(async () => {
+      resolveUnsettled!({ total: 610, byKey: { fnb: 460, events: 150 } });
+    });
+
+    expect(
+      await screen.findByText(/Unsettled room charges: EGP\s*610/),
+    ).toBeTruthy();
+    expect(screen.queryByText('Checking for unpaid charges…')).toBeNull();
+    expect(checkoutButton().disabled).toBe(false);
+  });
+
+  it('Try again does not re-open checkout for the duration of the retry (final-review Critical 1)', async () => {
+    // The widest instance of the hole: pressing retry used to clear the
+    // failure flag on ENTRY, so checkout was enabled again for the whole
+    // round trip — exactly when the endpoint is slow and about to fail again.
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        throw new Error('boom');
+      if (path.includes('/tenant/fnb-orders/stay/stay-1')) return NO_FNB_ORDERS;
+      return {};
+    });
+    renderModal();
+    await screen.findByText("We couldn't check for unpaid charges");
+
+    let resolveRetry: ((value: unknown) => void) | undefined;
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        return new Promise((resolve) => {
+          resolveRetry = resolve;
+        });
+      if (path.includes('/tenant/fnb-orders/stay/stay-1')) return NO_FNB_ORDERS;
+      return {};
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+
+    // The failure banner steps aside (nothing has failed yet) — but checkout
+    // stays held, because the amount is still unknown.
+    await waitFor(() =>
+      expect(
+        screen.queryByText("We couldn't check for unpaid charges"),
+      ).toBeNull(),
+    );
+    expect(screen.getByText('Checking for unpaid charges…')).toBeTruthy();
+    expect(checkoutButton().disabled).toBe(true);
+
+    await act(async () => {
+      resolveRetry!({ total: 610, byKey: { fnb: 610, events: 0 } });
+    });
+    expect(
+      await screen.findByText(/Unsettled room charges: EGP\s*610/),
+    ).toBeTruthy();
+    expect(checkoutButton().disabled).toBe(false);
+  });
+
+  it('the in-function guard — a second confirm press while the amount is being re-verified issues no checkout (final-review Minor 1)', async () => {
+    // The confirm dialog's button is never disabled, so the guard inside
+    // `checkout()` is the only thing standing between a failed attempt and a
+    // checkout that skips the settle step (`unsettled` is null again during
+    // the re-verification, so the interlock would read "nothing owed").
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        return { total: 610, byKey: { fnb: 460, events: 150 } };
+      if (path.includes('/tenant/fnb-orders/stay/stay-1'))
+        return { data: [RC_ORDER], unsettledTotal: 460 };
+      return {};
+    });
+    renderModal();
+    await screen.findByText(/Unsettled room charges:/);
+
+    fireEvent.click(checkoutButton());
+    await screen.findByText(/uncollected room charges/);
+
+    // The attempt fails at the settle step and the re-verification it kicks
+    // off hangs; the confirm dialog stays open with its error.
+    let resolveRecheck: ((value: unknown) => void) | undefined;
+    apiMock.api.mockImplementation(async (path: string, init?: RequestInit) => {
+      if (path.endsWith('/tenant/stays/stay-1/settle') && init?.method === 'POST')
+        throw new Error('boom');
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        return new Promise((resolve) => {
+          resolveRecheck = resolve;
+        });
+      if (path.includes('/tenant/fnb-orders/stay/stay-1')) return NO_FNB_ORDERS;
+      return {};
+    });
+    fireEvent.click(confirmCheckoutButton());
+    await waitFor(() => expect(resolveRecheck).toBeTruthy());
+
+    const checkoutPosts = () =>
+      apiMock.api.mock.calls.filter(
+        ([path, init]) =>
+          String(path).endsWith('/tenant/stays/stay-1/checkout') &&
+          (init as RequestInit | undefined)?.method === 'POST',
+      ).length;
+    expect(checkoutPosts()).toBe(0);
+
+    fireEvent.click(confirmCheckoutButton());
+    await act(async () => {
+      await Promise.resolve();
+    });
+    // Still nothing: the guard refuses to check out an unverified balance.
+    expect(checkoutPosts()).toBe(0);
+  });
+
+  it('a slow response from the stay we left never lands on the stay we are on (final-review Important 2)', async () => {
+    // The drawer is permanently mounted (`Modal open={current !== null}`), so
+    // switching stays re-runs the effect without an unmount: stay A's late
+    // "nothing owed" used to unblock stay B's checkout with A's verdict.
+    let resolveA: ((value: unknown) => void) | undefined;
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        return new Promise((resolve) => {
+          resolveA = resolve;
+        });
+      if (path.includes('/tenant/fnb-orders/stay/')) return NO_FNB_ORDERS;
+      return {};
+    });
+    const { rerender } = renderModal();
+    await screen.findByText('Checking for unpaid charges…');
+
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.endsWith('/tenant/stays/stay-2/unsettled'))
+        throw new Error('boom');
+      if (path.includes('/tenant/fnb-orders/stay/')) return NO_FNB_ORDERS;
+      return {};
+    });
+    rerender(
+      <NextIntlClientProvider locale="en" messages={en} timeZone="Africa/Cairo">
+        <StayDetailModal stay={STAY_B} onClose={vi.fn()} onChanged={vi.fn()} />
+      </NextIntlClientProvider>,
+    );
+    await screen.findByText('Sara Nabil');
+    await screen.findByText("We couldn't check for unpaid charges");
+
+    await act(async () => {
+      resolveA!({ total: 0, byKey: { fnb: 0, events: 0 } });
+    });
+
+    expect(
+      screen.getByText("We couldn't check for unpaid charges"),
+    ).toBeTruthy();
+    expect(checkoutButton().disabled).toBe(true);
+  });
+
+  it('a checked-out stay is never told its check-out is on hold (final-review Minor 4)', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        throw new Error('boom');
+      if (path.includes('/tenant/fnb-orders/stay/stay-1')) return NO_FNB_ORDERS;
+      return {};
+    });
+    renderModal({
+      ...(STAY as Record<string, unknown>),
+      status: 'checked_out',
+      checkedOutAt: '2026-08-25T09:00:00Z',
+      checkoutType: 'manual',
+    } as never);
+
+    await screen.findByText('Ahmed Ali');
+    await waitFor(() =>
+      expect(
+        apiMock.api.mock.calls.some(([p]) =>
+          String(p).endsWith('/tenant/stays/stay-1/unsettled'),
+        ),
+      ).toBe(true),
+    );
+    // There is no Check out button on a closed record, so a banner saying
+    // check-out is on hold points at nothing.
+    expect(screen.queryByRole('button', { name: 'Check out' })).toBeNull();
+    expect(
+      screen.queryByText("We couldn't check for unpaid charges"),
+    ).toBeNull();
+    expect(screen.queryByText('Checking for unpaid charges…')).toBeNull();
   });
 
   it('no checkout permission — the combined unsettled endpoint is never called', async () => {
