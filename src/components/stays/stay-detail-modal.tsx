@@ -422,7 +422,20 @@ export function StayDetailModal({
                   </li>
                 ))}
               </ul>
-              {/* 21.6 AC2 — the combined F&B + events unsettled total, not F&B-only. */}
+              {/*
+                21.6 AC2 — the combined F&B + events unsettled total, not
+                F&B-only. `unsettled` is populated only for `canCheckout`
+                holders (the backend's `stays.checkout` guard on
+                GET /tenant/stays/:id/unsettled — see the mount effect
+                above), so this banner is now invisible to staff who have
+                `fnb_orders.read` but not `stays.checkout`. That's a
+                deliberate tradeoff, not an oversight: this banner's own
+                button drives the combined settle action, so showing it
+                without `canCheckout` would offer no way to act on it, and
+                falling back to the old F&B-only `fnbOrders.unsettledTotal`
+                here would silently under-report a stay with unsettled
+                event bookings — exactly the bug this task fixes.
+              */}
               {(unsettled?.total ?? 0) > 0 && (
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line/60 pt-3">
                   <p className="text-sm font-medium text-danger">
