@@ -132,6 +132,27 @@ describe('Epic 19 — announcements nav gating', () => {
   });
 });
 
+describe('Epic 21 — events nav gating (final-review Minor)', () => {
+  it('renders as a link when the events module is enabled and events.read is held', () => {
+    renderSidebar(['events']);
+    const item = screen.getByText(en.shell.nav.events).closest('a');
+    expect(item?.getAttribute('href')).toBe('/t/sunrise/events');
+    expect(item?.querySelector('[data-testid="nav-soon-badge"]')).toBeNull();
+  });
+
+  it('hidden entirely when the events module is missing from the plan', () => {
+    renderSidebar(['fnb']);
+    expect(screen.queryByText(en.shell.nav.events)).toBeNull();
+  });
+
+  it('hidden without events.read even with the module in plan', () => {
+    tenant.isModuleEnabled = () => true;
+    tenant.hasPermission = (k: string) => k !== 'events.read';
+    renderSidebar();
+    expect(screen.queryByText(en.shell.nav.events)).toBeNull();
+  });
+});
+
 describe('Epic 21 — hotel settings (payment methods) nav', () => {
   it('renders as a link even with no plan modules enabled — it is not module-gated', () => {
     renderSidebar([]);
