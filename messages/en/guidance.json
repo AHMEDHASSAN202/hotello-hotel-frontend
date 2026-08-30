@@ -156,6 +156,10 @@
   },
   "events": {
     "intro": "Host workshops, tastings and get-togethers — guests browse and reserve a spot right from their phones, and you track who's coming.",
+    "hint": {
+      "title": "Publishing locks the schedule and price",
+      "body": "Get the schedule and price right before you publish — once an event is published, guests may already be booked, so its date, time, price, pricing mode and location can no longer be changed. To fix any of those, cancel the event and create a new one."
+    },
     "status": {
       "draft": "Not visible to guests yet. Finish the details, then publish.",
       "published": "Live on the guest Events tile — guests can browse it and book a spot.",

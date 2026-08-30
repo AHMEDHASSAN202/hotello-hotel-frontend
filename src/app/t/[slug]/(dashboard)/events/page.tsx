@@ -7,7 +7,12 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { EventModal } from '@/components/events/event-modal';
 import { EventStatusBadge } from '@/components/events/status-badge';
-import { ConfirmModal, ConsequenceNote, PageIntro } from '@/components/guidance';
+import {
+  ConfirmModal,
+  ConsequenceNote,
+  HintCard,
+  PageIntro,
+} from '@/components/guidance';
 import { useTenant } from '@/components/tenant-provider';
 import { Button, EmptyState, ErrorState, Skeleton } from '@/components/ui';
 import { api } from '@/lib/api';
@@ -175,6 +180,19 @@ export default function EventsPage() {
         </div>
         {canManage && createButton}
       </div>
+
+      {/* Final-review fix (Important 4) — the non-obvious power: once
+          published, an event's schedule/price/pricing-mode/location/
+          info-link lock permanently (cancel-and-recreate is the only way
+          to change them). Previously discoverable only after opening the
+          edit modal on an already-published event. */}
+      {canManage && (
+        <div className="mt-6">
+          <HintCard hintKey="events.firstRun" title={g('hint.title')}>
+            {g('hint.body')}
+          </HintCard>
+        </div>
+      )}
 
       {/* Upcoming / past / cancelled tabs — the app's aria-pressed pill pattern. */}
       <div className="mt-6 flex max-w-md gap-2 rounded-lg border border-line p-1">

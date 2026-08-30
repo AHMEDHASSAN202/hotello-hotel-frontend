@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import en from '../../../../../../messages/en';
@@ -14,6 +14,12 @@ const tenant = vi.hoisted(() => ({
   // list-page tests, but its component body still runs on every render.
   isModuleEnabled: vi.fn(() => false),
   readOnly: false,
+  // Final-review fix (Important 4) — the HintCard added to this page reads
+  // these; dismissed by default so it doesn't crowd out the row assertions
+  // below (a dedicated test flips this to exercise the card itself).
+  isHintDismissed: vi.fn(() => true),
+  dismissHint: vi.fn(),
+  undismissHint: vi.fn(),
 }));
 
 vi.mock('@/components/tenant-provider', () => ({ useTenant: () => tenant }));
@@ -178,5 +184,155 @@ describe('EventsPage', () => {
     expect(await screen.findByText(en.events.list.empty.pastTitle)).toBeTruthy();
     // Only the header CTA remains — the categorical empty state has none of its own.
     expect(screen.getAllByText(en.events.list.createEvent).length).toBe(1);
+  });
+
+  it('the events HintCard surfaces the safe-edit-lock guidance and can be dismissed', async () => {
+    tenant.isHintDismissed.mockReturnValue(false);
+    stubApi([makeEvent()]);
+    renderPage();
+    await screen.findByText('Sunset Yoga');
+    expect(screen.getByText(en.guidance.events.hint.title)).toBeTruthy();
+    fireEvent.click(screen.getByLabelText(en.guidance.common.dismiss));
+    expect(tenant.dismissHint).toHaveBeenCalledWith('events.firstRun');
+  });
+});
+
+/**
+ * Task 14 review fix (final-review Important 3) — publish/cancel had zero
+ * test coverage despite this exact feature already shipping one silent
+ * wrong-payload bug on this branch (commit 0612c5d, titleEn/titleAr vs
+ * nameEn/nameAr). These pin the request bodies and the untested cancel
+ * validation branch.
+ */
+describe('EventsPage — publish/cancel confirm flows (Task 14, final-review Important 3)', () => {
+  it('publish defaults the announce checkbox on and posts {announce: true}', async () => {
+    const draft = makeEvent({ id: 'evt-1', status: 'draft' });
+    apiMock.api.mockImplementation(async (path: string, init?: RequestInit) => {
+      if (path.startsWith('/tenant/events?tab=')) return { data: [draft] };
+      if (path === '/tenant/events/evt-1/publish' && init?.method === 'POST')
+        return {};
+      throw new Error(`unmocked ${path} ${init?.method ?? 'GET'}`);
+    });
+    renderPage();
+    await screen.findByText('Sunset Yoga');
+    fireEvent.click(screen.getByText(en.events.list.actions.publish));
+
+    const dialog = await screen.findByRole('dialog', {
+      name: en.events.publish.title,
+    });
+    const checkbox = within(dialog).getByRole('checkbox') as HTMLInputElement;
+    expect(checkbox.checked).toBe(true);
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: en.events.publish.confirm }),
+    );
+
+    await waitFor(() => {
+      const call = apiMock.api.mock.calls.find(
+        ([p]) => p === '/tenant/events/evt-1/publish',
+      );
+      expect(call).toBeTruthy();
+      const body = JSON.parse(String((call![1] as RequestInit).body));
+      expect(body).toEqual({ announce: true });
+    });
+  });
+
+  it('unchecking "announce" before confirming publish posts {announce: false}', async () => {
+    const draft = makeEvent({ id: 'evt-1', status: 'draft' });
+    apiMock.api.mockImplementation(async (path: string, init?: RequestInit) => {
+      if (path.startsWith('/tenant/events?tab=')) return { data: [draft] };
+      if (path === '/tenant/events/evt-1/publish' && init?.method === 'POST')
+        return {};
+      throw new Error(`unmocked ${path} ${init?.method ?? 'GET'}`);
+    });
+    renderPage();
+    await screen.findByText('Sunset Yoga');
+    fireEvent.click(screen.getByText(en.events.list.actions.publish));
+
+    const dialog = await screen.findByRole('dialog', {
+      name: en.events.publish.title,
+    });
+    fireEvent.click(within(dialog).getByRole('checkbox'));
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: en.events.publish.confirm }),
+    );
+
+    await waitFor(() => {
+      const call = apiMock.api.mock.calls.find(
+        ([p]) => p === '/tenant/events/evt-1/publish',
+      );
+      expect(call).toBeTruthy();
+      const body = JSON.parse(String((call![1] as RequestInit).body));
+      expect(body).toEqual({ announce: false });
+    });
+  });
+
+  it('cancelling with an empty/whitespace-only reason shows the inline error and issues no API call', async () => {
+    const published = makeEvent({
+      id: 'evt-1',
+      status: 'published',
+      bookedCount: 3,
+    });
+    stubApi([published]);
+    renderPage();
+    await screen.findByText('Sunset Yoga');
+    fireEvent.click(screen.getByText(en.events.list.actions.cancel));
+
+    const dialog = await screen.findByRole('dialog', {
+      name: en.events.cancel.title,
+    });
+    fireEvent.change(within(dialog).getByRole('textbox'), {
+      target: { value: '   ' },
+    });
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: en.events.cancel.confirm }),
+    );
+
+    expect(
+      await within(dialog).findByText(en.events.cancel.reasonRequired),
+    ).toBeTruthy();
+    expect(
+      apiMock.api.mock.calls.some(([p]) => String(p).includes('/cancel')),
+    ).toBe(false);
+  });
+
+  it('cancelling with a valid reason posts {reason} and shows the correct pluralized booked count', async () => {
+    const published = makeEvent({
+      id: 'evt-1',
+      status: 'published',
+      bookedCount: 2,
+    });
+    apiMock.api.mockImplementation(async (path: string, init?: RequestInit) => {
+      if (path.startsWith('/tenant/events?tab=')) return { data: [published] };
+      if (path === '/tenant/events/evt-1/cancel' && init?.method === 'POST')
+        return {};
+      throw new Error(`unmocked ${path} ${init?.method ?? 'GET'}`);
+    });
+    renderPage();
+    await screen.findByText('Sunset Yoga');
+    fireEvent.click(screen.getByText(en.events.list.actions.cancel));
+
+    const dialog = await screen.findByRole('dialog', {
+      name: en.events.cancel.title,
+    });
+    // bookedCount: 2 → the ICU "other" plural branch.
+    expect(
+      within(dialog).getByText(/2 guests have booked this event/),
+    ).toBeTruthy();
+
+    fireEvent.change(within(dialog).getByRole('textbox'), {
+      target: { value: 'Venue became unavailable' },
+    });
+    fireEvent.click(
+      within(dialog).getByRole('button', { name: en.events.cancel.confirm }),
+    );
+
+    await waitFor(() => {
+      const call = apiMock.api.mock.calls.find(
+        ([p]) => p === '/tenant/events/evt-1/cancel',
+      );
+      expect(call).toBeTruthy();
+      const body = JSON.parse(String((call![1] as RequestInit).body));
+      expect(body).toEqual({ reason: 'Venue became unavailable' });
+    });
   });
 });
