@@ -3,6 +3,7 @@
 import { CalendarDays, Plus, ShieldAlert } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
+import { EventModal } from '@/components/events/event-modal';
 import { EventStatusBadge } from '@/components/events/status-badge';
 import { PageIntro } from '@/components/guidance';
 import { useTenant } from '@/components/tenant-provider';
@@ -21,11 +22,10 @@ const TABS: EventListTab[] = ['upcoming', 'past', 'cancelled'];
  * Epic 21, Story 21.2 AC4 — events management list: upcoming / past /
  * cancelled tabs with booked/capacity counts.
  *
- * The create-event form (Task 13) and the publish/cancel confirm flows
- * (Task 14) don't exist yet. The CTA and per-row actions below are wired as
- * gated, visually complete, inert stubs (see the TODO-commented onClick
- * handlers) rather than throwaway modal/routing scaffolding those tasks
- * would just tear out.
+ * The publish/cancel confirm flows (Task 14) don't exist yet — those row
+ * actions stay gated, visually complete, inert stubs (see the TODO-commented
+ * onClick handlers) rather than throwaway scaffolding that task would just
+ * tear out. The create/edit form (Task 13) is wired in below.
  */
 export default function EventsPage() {
   const t = useTranslations('events');
@@ -40,6 +40,11 @@ export default function EventsPage() {
   const [tab, setTab] = useState<EventListTab>('upcoming');
   const [rows, setRows] = useState<TenantEventListItem[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  // Task 13 — modal state: open + which event (null = create mode).
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<TenantEventListItem | null>(
+    null,
+  );
 
   const load = useCallback(async () => {
     setLoadError(null);
@@ -86,7 +91,8 @@ export default function EventsPage() {
       disabled={readOnly}
       title={readOnly ? t('readOnlyHint') : undefined}
       onClick={() => {
-        // TODO(Task 13): open the create-event form once it exists.
+        setEditingEvent(null);
+        setModalOpen(true);
       }}
     >
       <Plus size={16} aria-hidden /> {t('list.createEvent')}
@@ -182,7 +188,8 @@ export default function EventsPage() {
                       disabled={readOnly}
                       title={readOnly ? t('readOnlyHint') : undefined}
                       onClick={() => {
-                        // TODO(Task 13): open the edit-event form once it exists.
+                        setEditingEvent(ev);
+                        setModalOpen(true);
                       }}
                     >
                       {t('list.actions.edit')}
@@ -217,6 +224,13 @@ export default function EventsPage() {
           </ul>
         )}
       </div>
+
+      <EventModal
+        event={editingEvent}
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSaved={() => void load()}
+      />
     </div>
   );
 }

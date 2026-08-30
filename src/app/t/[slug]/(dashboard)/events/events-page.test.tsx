@@ -9,6 +9,10 @@ import type { TenantEventListItem } from '@/lib/types';
 const tenant = vi.hoisted(() => ({
   me: { user: { id: 'u1' }, hotel: { currency: 'EGP', timezone: 'Africa/Cairo' } },
   hasPermission: vi.fn(() => true),
+  // The event modal (Task 13) checks this to decide whether to show/fetch
+  // the optional Hotel Info entry picker — the modal stays closed in these
+  // list-page tests, but its component body still runs on every render.
+  isModuleEnabled: vi.fn(() => false),
   readOnly: false,
 }));
 

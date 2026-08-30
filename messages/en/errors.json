@@ -103,6 +103,13 @@
     "ANNOUNCEMENT_INFO_ENTRY_NOT_FOUND": "The linked Hotel Info entry no longer exists.",
     "HOUSEKEEPING_INVALID_STATUS": "This action isn't possible in the room's current cleaning state — it may have just changed.",
     "HOUSEKEEPING_ROOM_DND": "The guest has switched on Do-Not-Disturb — cleaning can start after it lifts.",
-    "HOUSEKEEPING_ASSIGNEE_INVALID": "That staff member can't work the cleaning queue — their role needs the housekeeping permission."
+    "HOUSEKEEPING_ASSIGNEE_INVALID": "That staff member can't work the cleaning queue — their role needs the housekeeping permission.",
+    "EVENT_TITLES_REQUIRED": "Arabic and English titles are required.",
+    "EVENT_DESCRIPTIONS_REQUIRED": "Arabic and English descriptions are required.",
+    "EVENT_WINDOW_INVALID": "The end time must be after the start time.",
+    "EVENT_INFO_ENTRY_NOT_FOUND": "The linked Hotel Info entry no longer exists.",
+    "EVENT_NOT_SAFE_EDIT": "This event is live or finished, so its schedule, price and capacity can't be reduced or changed. Cancel it and create a new event instead.",
+    "EVENT_PHOTO_INVALID": "Choose a PNG, JPEG or WebP image up to 5 MB.",
+    "EVENT_NOT_FOUND": "This event no longer exists."
   }
 }

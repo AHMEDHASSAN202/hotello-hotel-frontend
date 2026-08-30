@@ -58,6 +58,7 @@ export function NameFields({
   values,
   onChange,
   withDescriptions = false,
+  descriptionsRequired = false,
   namespace = 'fnb.menus.names',
   maxLength,
   disabled = false,
@@ -65,6 +66,8 @@ export function NameFields({
   values: NameFieldValues;
   onChange: (key: string, value: string) => void;
   withDescriptions?: boolean;
+  /** Epic 21 (events) — descriptions are AR+EN required, unlike F&B/hotel-info. */
+  descriptionsRequired?: boolean;
   /** Translation namespace providing the name/description labels. */
   namespace?: string;
   /** Per-field character cap (Epic 18 welcome lines); undefined = uncapped. */
@@ -102,6 +105,7 @@ export function NameFields({
           <Field
             maxLength={maxLength}
             disabled={disabled}
+            required={descriptionsRequired}
             label={t('descriptionEn')}
             value={values.descriptionEn ?? ''}
             onChange={(e) => onChange('descriptionEn', e.target.value)}
@@ -109,6 +113,7 @@ export function NameFields({
           <Field
             maxLength={maxLength}
             disabled={disabled}
+            required={descriptionsRequired}
             label={t('descriptionAr')}
             dir="rtl"
             value={values.descriptionAr ?? ''}
