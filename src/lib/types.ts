@@ -706,6 +706,23 @@ export interface SettleFnbOrdersResponse {
   unsettledTotal: number;
 }
 
+/**
+ * GET /tenant/stays/:stayId/unsettled — Story 21.6 AC2's combined checkout
+ * total across every settlement source (F&B room-charge orders + event
+ * room-charge bookings). `byKey` is keyed by `SettlementSource.key` ('fnb',
+ * 'events') for the optional per-source breakdown.
+ */
+export interface StayUnsettledView {
+  total: number;
+  byKey: Record<string, number>;
+}
+
+/** POST /tenant/stays/:stayId/settle — settles every unsettled source at once. */
+export interface StaySettleResponse {
+  settled: number;
+  unsettledTotal: number;
+}
+
 /* ------------------------------------------------- Hotel Info (Epic 17) */
 
 export type HotelInfoSection =

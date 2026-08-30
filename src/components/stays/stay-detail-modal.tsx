@@ -22,8 +22,10 @@ import type {
   AvailableRoom,
   GuestLanguage,
   StayFnbOrdersResponse,
+  StaySettleResponse,
   StayType,
   Stay,
+  StayUnsettledView,
   StayWithCode,
 } from '@/lib/types';
 import { GUEST_LANGUAGES, STAY_TYPES } from '@/lib/types';
@@ -88,8 +90,18 @@ export function StayDetailModal({
   // Confirms + one-time code display
   const [confirming, setConfirming] = useState<'regenerate' | 'checkout' | 'settle' | null>(null);
   const [newCode, setNewCode] = useState<string | null>(null);
-  // Epic 16 (16.8) — the stay's F&B orders + unsettled room charges.
+  // Epic 16 (16.8) — the stay's F&B order list (display only, unchanged).
   const [fnbOrders, setFnbOrders] = useState<StayFnbOrdersResponse | null>(null);
+  // Story 21.6 AC2 — the combined checkout total (F&B + events) and the
+  // single settle action it drives; independent of the F&B module gate
+  // above since it needs only `stays.checkout` (backend's own precedent).
+  const [unsettled, setUnsettled] = useState<StayUnsettledView | null>(null);
+
+  const loadUnsettled = useCallback((stayId: string) => {
+    api<StayUnsettledView>(`/tenant/stays/${stayId}/unsettled`)
+      .then(setUnsettled)
+      .catch(() => setUnsettled(null));
+  }, []);
 
   useEffect(() => {
     setCurrent(stay);
@@ -98,10 +110,14 @@ export function StayDetailModal({
     setNewCode(null);
     setConfirming(null);
     setFnbOrders(null);
+    setUnsettled(null);
     if (stay && isModuleEnabled('fnb') && hasPermission('fnb_orders.read')) {
       api<StayFnbOrdersResponse>(`/tenant/fnb-orders/stay/${stay.id}`)
         .then(setFnbOrders)
         .catch(() => setFnbOrders(null));
+    }
+    if (stay && canCheckout) {
+      loadUnsettled(stay.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stay]);
@@ -235,15 +251,17 @@ export function StayDetailModal({
     if (!current) return;
     run(
       () =>
-        api<{ settled: number; unsettledTotal: number }>(
-          `/tenant/fnb-orders/stay/${current.id}/settle`,
-          { method: 'POST', body: JSON.stringify({}) },
-        ),
+        api<StaySettleResponse>(`/tenant/stays/${current.id}/settle`, {
+          method: 'POST',
+        }),
       () => {
         setConfirming(null);
-        api<StayFnbOrdersResponse>(`/tenant/fnb-orders/stay/${current.id}`)
-          .then(setFnbOrders)
-          .catch(() => {});
+        if (isModuleEnabled('fnb') && hasPermission('fnb_orders.read')) {
+          api<StayFnbOrdersResponse>(`/tenant/fnb-orders/stay/${current.id}`)
+            .then(setFnbOrders)
+            .catch(() => {});
+        }
+        loadUnsettled(current.id);
       },
     );
   }
@@ -252,12 +270,12 @@ export function StayDetailModal({
     if (!current) return;
     run(
       async () => {
-        // 16.8 AC2 — the interlock: settling rides the checkout confirm, so
-        // no order leaves unpaid without the desk seeing the amount.
-        if ((fnbOrders?.unsettledTotal ?? 0) > 0) {
-          await api(`/tenant/fnb-orders/stay/${current.id}/settle`, {
+        // 16.8 AC2 / 21.6 AC2 — the interlock: settling the combined F&B +
+        // events total rides the checkout confirm, so nothing leaves unpaid
+        // without the desk seeing the amount.
+        if ((unsettled?.total ?? 0) > 0) {
+          await api(`/tenant/stays/${current.id}/settle`, {
             method: 'POST',
-            body: JSON.stringify({}),
           });
         }
         return api<Stay>(`/tenant/stays/${current.id}/checkout`, {
@@ -404,14 +422,12 @@ export function StayDetailModal({
                   </li>
                 ))}
               </ul>
-              {fnbOrders.unsettledTotal > 0 && (
+              {/* 21.6 AC2 — the combined F&B + events unsettled total, not F&B-only. */}
+              {(unsettled?.total ?? 0) > 0 && (
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line/60 pt-3">
                   <p className="text-sm font-medium text-danger">
                     {tFnbStay('unsettled', {
-                      amount: formatCurrency(
-                        fnbOrders.unsettledTotal,
-                        fnbOrders.data[0]?.currency ?? 'EGP',
-                      ),
+                      amount: formatCurrency(unsettled!.total),
                     })}
                   </p>
                   {canCheckout && (
@@ -693,17 +709,24 @@ export function StayDetailModal({
         error={error}
       >
         <ConsequenceNote tone="danger">{tStays('checkout.note')}</ConsequenceNote>
-        {/* 16.8 AC2 — surface uncollected room charges inside the confirm. */}
-        {(fnbOrders?.unsettledTotal ?? 0) > 0 && (
+        {/* 16.8 AC2 / 21.6 AC2 — surface the combined F&B + events uncollected
+            total inside the confirm (one figure, not an F&B-only one). */}
+        {(unsettled?.total ?? 0) > 0 && (
           <div className="mt-2">
             <ConsequenceNote tone="danger">
               {tFnbStay('checkoutNote', {
-                amount: formatCurrency(
-                  fnbOrders!.unsettledTotal,
-                  fnbOrders!.data[0]?.currency ?? 'EGP',
-                ),
+                amount: formatCurrency(unsettled!.total),
               })}
             </ConsequenceNote>
+            {(unsettled?.byKey.fnb ?? 0) > 0 &&
+              (unsettled?.byKey.events ?? 0) > 0 && (
+                <p className="mt-1 text-xs text-ink-soft">
+                  {tFnbStay('breakdown', {
+                    fnb: formatCurrency(unsettled!.byKey.fnb ?? 0),
+                    events: formatCurrency(unsettled!.byKey.events ?? 0),
+                  })}
+                </p>
+              )}
           </div>
         )}
       </ConfirmModal>
@@ -719,10 +742,7 @@ export function StayDetailModal({
       >
         <ConsequenceNote tone="danger">
           {tFnbStay('settleNote', {
-            amount: formatCurrency(
-              fnbOrders?.unsettledTotal ?? 0,
-              fnbOrders?.data[0]?.currency ?? 'EGP',
-            ),
+            amount: formatCurrency(unsettled?.total ?? 0),
           })}
         </ConsequenceNote>
       </ConfirmModal>

@@ -274,10 +274,11 @@
     "unsettled": "Unsettled room charges: {amount}",
     "settle": "Mark as settled",
     "settleTitle": "Mark room charges as settled?",
-    "settleNote": "This records {amount} of room-charge orders as collected. It can't be undone.",
+    "settleNote": "This records {amount} of room charges as collected. It can't be undone.",
     "settleConfirm": "Mark as settled",
     "settled": "All room charges settled.",
-    "checkoutNote": "This stay has {amount} of uncollected room-charge orders. Checking out will mark them as settled — collect the amount first.",
+    "checkoutNote": "This stay has {amount} of uncollected room charges. Checking out will mark them as settled — collect the amount first.",
+    "breakdown": "F&B {fnb} · Events {events}",
     "empty": "No orders on this stay.",
     "loadError": "We couldn't load this stay's orders."
   },

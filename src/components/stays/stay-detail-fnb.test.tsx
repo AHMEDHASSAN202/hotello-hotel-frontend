@@ -85,12 +85,14 @@ beforeEach(() => {
   apiMock.api.mockImplementation(async (path: string) => {
     if (path.includes('/tenant/fnb-orders/stay/stay-1'))
       return { data: [RC_ORDER], unsettledTotal: 460 };
+    if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+      return { total: 460, byKey: { fnb: 460, events: 0 } };
     return {};
   });
 });
 
-describe('StayDetailModal — F&B orders (16.8)', () => {
-  it('AC1 — lists the orders and surfaces the unsettled room-charge sum', async () => {
+describe('StayDetailModal — F&B orders (16.8) + combined settlement (21.6 AC2)', () => {
+  it('AC1 — lists the orders and surfaces the combined unsettled sum', async () => {
     renderModal();
     expect(
       await screen.findByText(/Unsettled room charges:/),
@@ -99,21 +101,48 @@ describe('StayDetailModal — F&B orders (16.8)', () => {
     expect(screen.getByText('On the room bill')).toBeTruthy();
   });
 
-  it('AC2 — the checkout confirm includes the uncollected sum and settles before checkout', async () => {
+  it('21.6 AC2 — the unsettled total comes from the combined stays endpoint, not the F&B-only one', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.includes('/tenant/fnb-orders/stay/stay-1'))
+        return { data: [RC_ORDER], unsettledTotal: 1000 };
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        return { total: 610, byKey: { fnb: 460, events: 150 } };
+      return {};
+    });
+    renderModal();
+    // 610 (the combined total), not 1000 (the stale F&B-only figure).
+    expect(await screen.findByText(/Unsettled room charges: EGP\s*610/)).toBeTruthy();
+    expect(screen.queryByText(/1,?000/)).toBeNull();
+  });
+
+  it('AC2 — the checkout confirm includes the combined uncollected sum, the byKey breakdown, and settles before checkout', async () => {
+    // Mixed sources (F&B + events both unsettled) so the breakdown line renders.
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.includes('/tenant/fnb-orders/stay/stay-1'))
+        return { data: [RC_ORDER], unsettledTotal: 460 };
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        return { total: 610, byKey: { fnb: 460, events: 150 } };
+      return {};
+    });
     renderModal();
     await screen.findByText(/Unsettled room charges:/);
 
     fireEvent.click(screen.getByRole('button', { name: 'Check out' }));
     expect(
-      await screen.findByText(/uncollected room-charge orders/),
+      await screen.findByText(/uncollected room charges/),
     ).toBeTruthy();
+    // Mixed F&B + events sources → the breakdown line renders.
+    expect(await screen.findByText(/F&B EGP\s*460.*Events EGP\s*150/)).toBeTruthy();
 
     apiMock.api.mockImplementation(async (path: string, init?: RequestInit) => {
-      if (path.includes('/settle')) return { settled: 1, unsettledTotal: 0 };
+      if (path.endsWith('/tenant/stays/stay-1/settle'))
+        return { settled: 1, unsettledTotal: 0 };
       if (path.includes('/checkout') && init?.method === 'POST')
         return { ...STAY, status: 'checked_out' };
       if (path.includes('/tenant/fnb-orders/stay/stay-1'))
         return { data: [], unsettledTotal: 0 };
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        return { total: 0, byKey: { fnb: 0, events: 0 } };
       return {};
     });
     const confirmButtons = screen.getAllByRole('button', {
@@ -123,14 +152,14 @@ describe('StayDetailModal — F&B orders (16.8)', () => {
 
     await waitFor(() => {
       const paths = apiMock.api.mock.calls.map(([p]) => String(p));
-      const settleIdx = paths.findIndex((p) => p.includes('/settle'));
-      const checkoutIdx = paths.findIndex((p) => p.includes('/checkout'));
+      const settleIdx = paths.findIndex((p) => p.endsWith('/tenant/stays/stay-1/settle'));
+      const checkoutIdx = paths.findIndex((p) => p.endsWith('/tenant/stays/stay-1/checkout'));
       expect(settleIdx).toBeGreaterThan(-1);
       expect(checkoutIdx).toBeGreaterThan(settleIdx);
     });
   });
 
-  it('module off hides the orders section entirely and skips the fetch', async () => {
+  it('module off still fetches the combined unsettled total but hides the F&B order-list section', async () => {
     tenant.isModuleEnabled.mockReturnValue(false);
     renderModal();
     await screen.findByText('Ahmed Ali');
@@ -138,6 +167,24 @@ describe('StayDetailModal — F&B orders (16.8)', () => {
     expect(
       apiMock.api.mock.calls.every(
         ([p]) => !String(p).includes('/tenant/fnb-orders'),
+      ),
+    ).toBe(true);
+    await waitFor(() => {
+      expect(
+        apiMock.api.mock.calls.some(([p]) =>
+          String(p).endsWith('/tenant/stays/stay-1/unsettled'),
+        ),
+      ).toBe(true);
+    });
+  });
+
+  it('no checkout permission — the combined unsettled endpoint is never called', async () => {
+    tenant.hasPermission.mockImplementation((key: string) => key !== 'stays.checkout');
+    renderModal();
+    await screen.findByText('Ahmed Ali');
+    expect(
+      apiMock.api.mock.calls.every(
+        ([p]) => !String(p).endsWith('/tenant/stays/stay-1/unsettled'),
       ),
     ).toBe(true);
   });
