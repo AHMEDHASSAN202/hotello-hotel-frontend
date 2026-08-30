@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { EventStatusBadge } from '@/components/events/status-badge';
+import { paymentTone } from '@/components/fnb/order-card';
 import { InfoTip, PageIntro } from '@/components/guidance';
 import { useTenant } from '@/components/tenant-provider';
 import { Badge, Bdi, EmptyState, ErrorState, Skeleton } from '@/components/ui';
@@ -30,20 +31,23 @@ const BOOKING_STATUS_TONE: Record<EventBookingStatus, 'gold' | 'neutral'> = {
  * NOT carry a per-booking amount or settlement flag — those only exist in
  * the aggregate `totals` below (deliberately: `expectedRoomCharge` excludes
  * bookings already `settledAt`, a fact only knowable in aggregate here).
- * So this mirrors the F&B `PaymentChip` tone convention (gold=cash,
- * warning=room charge, success=included) rather than literally reusing it —
- * `PaymentChip` requires `order.totalAmount`/`order.settledAt`, which this
- * endpoint's response shape doesn't provide per row.
+ * So this shows the payment method only, no amount — but shares the F&B
+ * `PaymentChip`'s exact tone rule (`paymentTone`, `fnb/order-card.tsx`)
+ * rather than literally reusing the chip itself, since `PaymentChip`
+ * requires `order.totalAmount`/`order.settledAt`, which this endpoint's
+ * response shape doesn't provide per row (`settled` is always omitted here).
  */
 function AttendeePaymentBadge({ method }: { method: FnbPaymentMethod | null }) {
   const t = useTranslations('events');
-  if (method === null) {
-    return <Badge tone="success">{t('attendees.payment.included')}</Badge>;
+  const included = method === null;
+  const tone = paymentTone(method, included);
+  if (included) {
+    return <Badge tone={tone}>{t('attendees.payment.included')}</Badge>;
   }
   if (method === 'room_charge') {
-    return <Badge tone="warning">{t('attendees.payment.roomCharge')}</Badge>;
+    return <Badge tone={tone}>{t('attendees.payment.roomCharge')}</Badge>;
   }
-  return <Badge tone="gold">{t('attendees.payment.cash')}</Badge>;
+  return <Badge tone={tone}>{t('attendees.payment.cash')}</Badge>;
 }
 
 /**
@@ -190,7 +194,10 @@ export default function EventAttendeesPage() {
                 hint={t('attendees.empty.hint')}
               />
             ) : (
-              <div className="overflow-x-auto rounded-xl border border-line bg-white">
+              <div
+                data-testid="attendees-table"
+                className="overflow-x-auto rounded-xl border border-line bg-white"
+              >
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-line bg-paper text-start text-xs uppercase tracking-wider text-ink-soft">

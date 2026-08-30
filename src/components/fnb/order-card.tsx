@@ -4,7 +4,7 @@ import { MapPin, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Badge, Bdi } from '@/components/ui';
 import { useFormatters } from '@/i18n/use-format';
-import type { FnbOrderStatus, TenantFnbOrder } from '@/lib/types';
+import type { FnbOrderStatus, FnbPaymentMethod, TenantFnbOrder } from '@/lib/types';
 import { OPEN_FNB_ORDER_STATUSES } from '@/lib/types';
 import { slaState } from '../board/board-core';
 
@@ -40,22 +40,51 @@ export function destinationLabel(
   return `${location} · ${order.spot}`;
 }
 
+export type PaymentTone = 'success' | 'warning' | 'neutral' | 'gold';
+
+/**
+ * The shared payment-badge tone rule: included beats everything (success),
+ * room-charge is a warning unless it's already settled (neutral — nothing
+ * left to collect), cash is always gold. Shared by the F&B ticket chip
+ * (`PaymentChip`, full amount + settlement) and the events attendees badge
+ * (`AttendeePaymentBadge`, Story 21.6 — method only, no per-row amount or
+ * settlement in that endpoint's response, so `settled` is always omitted
+ * there) so the two badges can't drift on what each tone means.
+ */
+export function paymentTone(
+  paymentMethod: FnbPaymentMethod | null,
+  included: boolean,
+  settled = false,
+): PaymentTone {
+  if (included) return 'success';
+  if (paymentMethod === 'room_charge') return settled ? 'neutral' : 'warning';
+  return 'gold';
+}
+
 export function PaymentChip({ order }: { order: TenantFnbOrder }) {
   const t = useTranslations('fnb');
   const { locale, formatCurrency } = useFormatters();
   if (order.totalAmount === 0) {
-    return <Badge tone="success">{t('payment.included')}</Badge>;
+    return (
+      <Badge tone={paymentTone(order.paymentMethod, true)}>
+        {t('payment.included')}
+      </Badge>
+    );
   }
   const amount = formatCurrency(order.totalAmount, order.currency);
   if (order.paymentMethod === 'room_charge') {
     return (
-      <Badge tone={order.settledAt ? 'neutral' : 'warning'}>
+      <Badge tone={paymentTone('room_charge', false, Boolean(order.settledAt))}>
         {t('payment.roomChargeAmount', { amount })}
         {order.settledAt ? ` · ${t('payment.settled')}` : ''}
       </Badge>
     );
   }
-  return <Badge tone="gold">{t('payment.cash', { amount })}</Badge>;
+  return (
+    <Badge tone={paymentTone('cash', false)}>
+      {t('payment.cash', { amount })}
+    </Badge>
+  );
 }
 
 export function OrderCard({
