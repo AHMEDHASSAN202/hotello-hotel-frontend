@@ -15,6 +15,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Paintbrush,
+  Settings,
   ShieldCheck,
   Sparkles,
   UserCircle,
@@ -118,6 +119,15 @@ const NAV_ITEMS: NavItem[] = [
   { segment: 'staff', labelKey: 'staff', icon: Users, permission: 'staff.read' },
   { segment: 'roles', labelKey: 'roles', icon: ShieldCheck, permission: 'roles.read' },
   { segment: 'rooms', labelKey: 'rooms', icon: BedDouble, permission: 'rooms.read' },
+  // Epic 21 — hotel-level settings (payment methods lifted off F&B, Task 2).
+  // No `module` gate: this applies hotel-wide regardless of which paid
+  // module (F&B, Events, …) is enabled.
+  {
+    segment: 'settings/payment-methods',
+    labelKey: 'settings',
+    icon: Settings,
+    permission: 'fnb_settings.manage',
+  },
   { segment: 'profile', labelKey: 'profile', icon: UserCircle },
 ];
 

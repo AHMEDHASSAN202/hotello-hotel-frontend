@@ -613,8 +613,17 @@ export interface FnbLocationsResponse {
   locations: FnbLocation[];
 }
 
-/** GET/PATCH /tenant/fnb/settings (16.4). */
+/** GET/PATCH /tenant/fnb/settings (16.4) — now a thin delegate to the
+ * hotel-level payment settings below (Epic 21 Task 2). */
 export interface FnbSettings {
+  cashEnabled: true;
+  roomChargeEnabled: boolean;
+}
+
+/** GET/PATCH /tenant/settings/payment-methods (Epic 21 Task 2) — the
+ * hotel-level payment config every paid module (F&B, Events, …) reads.
+ * Same shape as `FnbSettings`, kept as a distinct type for the new surface. */
+export interface PaymentMethodsSettings {
   cashEnabled: true;
   roomChargeEnabled: boolean;
 }

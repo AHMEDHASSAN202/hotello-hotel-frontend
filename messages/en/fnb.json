@@ -264,16 +264,10 @@
     "loadError": "We couldn't load the locations."
   },
   "settings": {
-    "title": "Payment methods",
-    "intro": "How guests can pay for orders. Online payment is coming in a future update.",
-    "cashLabel": "Cash on delivery",
-    "cashHint": "Always on — the guest pays the waiter on delivery.",
-    "roomChargeLabel": "Room charge (pay at checkout)",
-    "roomChargeHint": "Orders go on the room bill; the front desk collects at checkout. Unsettled charges appear on the stay before checkout.",
-    "save": "Save",
-    "saving": "Saving…",
-    "saved": "Payment methods saved.",
-    "loadError": "We couldn't load F&B settings."
+    "title": "Payment methods have moved",
+    "body": "Cash and room-charge options now live on one hotel-wide settings page — not just for F&B, but for every paid module (Events too).",
+    "hint": "Manage them from Hotel settings.",
+    "cta": "Go to payment settings"
   },
   "stayOrders": {
     "title": "F&B orders",

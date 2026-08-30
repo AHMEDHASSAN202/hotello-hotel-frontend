@@ -132,6 +132,23 @@ describe('Epic 19 — announcements nav gating', () => {
   });
 });
 
+describe('Epic 21 — hotel settings (payment methods) nav', () => {
+  it('renders as a link even with no plan modules enabled — it is not module-gated', () => {
+    renderSidebar([]);
+    const item = screen.getByText(en.shell.nav.settings).closest('a');
+    expect(item?.getAttribute('href')).toBe(
+      '/t/sunrise/settings/payment-methods',
+    );
+  });
+
+  it('hidden without fnb_settings.manage', () => {
+    tenant.isModuleEnabled = () => true;
+    tenant.hasPermission = (k: string) => k !== 'fnb_settings.manage';
+    renderSidebar();
+    expect(screen.queryByText(en.shell.nav.settings)).toBeNull();
+  });
+});
+
 describe('Epic 18 — upsell vs permission distinction (18.3 AC1/AC3)', () => {
   it('branding stays visible with an Upgrade badge when the module is not in the plan', () => {
     // Every other module enabled (so their own Soon chips are irrelevant

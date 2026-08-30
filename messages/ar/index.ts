@@ -7,6 +7,7 @@ import events from './events.json';
 import fnb from './fnb.json';
 import guidance from './guidance.json';
 import hotelInfo from './hotelInfo.json';
+import hotelSettings from './hotelSettings.json';
 import housekeeping from './housekeeping.json';
 import profile from './profile.json';
 import requests from './requests.json';
@@ -28,6 +29,7 @@ const messages = {
   fnb,
   guidance,
   hotelInfo,
+  hotelSettings,
   housekeeping,
   profile,
   requests,

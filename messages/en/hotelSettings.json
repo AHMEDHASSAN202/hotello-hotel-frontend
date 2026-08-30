@@ -1,0 +1,19 @@
+{
+  "paymentMethods": {
+    "eyebrow": "Hotel settings",
+    "title": "Payment methods",
+    "intro": "How guests pay for paid extras across your hotel — F&B orders today, event bookings and more to come. Online payment is coming in a future update.",
+    "cashLabel": "Cash",
+    "cashHint": "Always on — the guest pays in person.",
+    "roomChargeLabel": "Room charge (pay at checkout)",
+    "roomChargeHint": "Charges go on the room bill; the front desk collects at checkout. Unsettled charges appear on the stay before checkout.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Payment methods saved.",
+    "loadError": "We couldn't load payment settings.",
+    "noAccess": {
+      "title": "You don't have access to payment settings",
+      "hint": "Ask a hotel admin to grant you the payment settings permission."
+    }
+  }
+}
