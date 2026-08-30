@@ -1,3 +1,41 @@
 {
-  "title": "Events & Workshops"
+  "eyebrow": "Events & Workshops",
+  "title": "Events & Workshops",
+  "readOnlyHint": "Your subscription is read-only — reactivate to manage events.",
+  "noAccess": {
+    "title": "You don't have access to events",
+    "hint": "Ask a manager to grant you the Events permission."
+  },
+  "list": {
+    "tabs": {
+      "upcoming": "Upcoming",
+      "past": "Past",
+      "cancelled": "Cancelled"
+    },
+    "createEvent": "Create event",
+    "start": "Starts {time}",
+    "capacity": {
+      "bounded": "{booked} / {capacity}",
+      "unlimited": "{booked} booked"
+    },
+    "actions": {
+      "edit": "Edit",
+      "publish": "Publish",
+      "cancel": "Cancel"
+    },
+    "empty": {
+      "upcomingTitle": "No upcoming events yet",
+      "upcomingHint": "Create your first event — guests will see it on their Events tile as soon as you publish it.",
+      "pastTitle": "No past events yet",
+      "pastHint": "Completed events will show up here automatically once their date passes.",
+      "cancelledTitle": "No cancelled events",
+      "cancelledHint": "Events you cancel will appear here along with the reason you gave."
+    }
+  },
+  "status": {
+    "draft": "Draft",
+    "published": "Published",
+    "completed": "Completed",
+    "cancelled": "Cancelled"
+  }
 }

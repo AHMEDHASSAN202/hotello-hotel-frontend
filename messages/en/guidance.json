@@ -155,7 +155,13 @@
     }
   },
   "events": {
-    "intro": "Host workshops, tastings and get-togethers — guests browse and reserve a spot right from their phones, and you track who's coming."
+    "intro": "Host workshops, tastings and get-togethers — guests browse and reserve a spot right from their phones, and you track who's coming.",
+    "status": {
+      "draft": "Not visible to guests yet. Finish the details, then publish.",
+      "published": "Live on the guest Events tile — guests can browse it and book a spot.",
+      "completed": "Its time passed — it's closed to new bookings now and kept for the record.",
+      "cancelled": "Cancelled — booked guests were notified and their bookings were released."
+    }
   },
   "housekeeping": {
     "status": {
