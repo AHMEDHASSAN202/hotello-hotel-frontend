@@ -161,6 +161,14 @@
       "published": "Live on the guest Events tile — guests can browse it and book a spot.",
       "completed": "Its time passed — it's closed to new bookings now and kept for the record.",
       "cancelled": "Cancelled — booked guests were notified and their bookings were released."
+    },
+    "attendees": {
+      "intro": "Live list of everyone who booked a spot, with totals that update as guests book or cancel. Read-only.",
+      "totals": {
+        "booked": "Sum of party sizes across active bookings. Cancelled bookings release their spot and stop counting immediately.",
+        "cash": "Active cash bookings' total value — collected in person, so every one of them stays expected until it's cancelled.",
+        "roomCharge": "Active room-charge bookings' total value. Once one posts to the guest's folio at checkout, it drops out of this figure so it isn't counted twice."
+      }
     }
   },
   "housekeeping": {

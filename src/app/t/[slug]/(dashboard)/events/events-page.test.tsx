@@ -18,6 +18,10 @@ const tenant = vi.hoisted(() => ({
 
 vi.mock('@/components/tenant-provider', () => ({ useTenant: () => tenant }));
 
+vi.mock('next/navigation', () => ({
+  useParams: () => ({ slug: 'sunrise' }),
+}));
+
 const apiMock = vi.hoisted(() => ({ api: vi.fn() }));
 
 vi.mock('@/lib/api', () => ({

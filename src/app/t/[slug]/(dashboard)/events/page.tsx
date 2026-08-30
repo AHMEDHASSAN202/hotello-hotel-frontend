@@ -1,6 +1,8 @@
 'use client';
 
-import { CalendarDays, Plus, ShieldAlert } from 'lucide-react';
+import { CalendarDays, Plus, ShieldAlert, Users } from 'lucide-react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { EventModal } from '@/components/events/event-modal';
@@ -37,6 +39,7 @@ export default function EventsPage() {
   const g = useTranslations('guidance.events');
   const locale = useLocale();
   const resolveError = useApiError();
+  const params = useParams<{ slug: string }>();
   const { hasPermission, readOnly } = useTenant();
 
   const canRead = hasPermission('events.read');
@@ -239,49 +242,64 @@ export default function EventsPage() {
                         })}
                   </span>
                 </div>
-                {canManage &&
-                (ev.status === 'draft' || ev.status === 'published') ? (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <Button
-                      variant="ghost"
-                      disabled={readOnly}
-                      title={readOnly ? t('readOnlyHint') : undefined}
-                      onClick={() => {
-                        setEditingEvent(ev);
-                        setModalOpen(true);
-                      }}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {ev.status !== 'draft' ? (
+                    // Story 21.6 AC1 — drill into the read-only attendee list +
+                    // live totals. Never shown for drafts: they can't have
+                    // bookings until published.
+                    <Link
+                      href={`/t/${params.slug}/events/${ev.id}/attendees`}
+                      data-testid={`event-attendees-link-${ev.id}`}
+                      className="inline-flex items-center justify-center gap-2 rounded-lg border border-line bg-transparent px-4 py-2 text-sm font-medium text-ink transition-colors hover:border-ink"
                     >
-                      {t('list.actions.edit')}
-                    </Button>
-                    {ev.status === 'draft' ? (
+                      <Users size={14} aria-hidden />
+                      {t('list.actions.attendees')}
+                    </Link>
+                  ) : null}
+                  {canManage &&
+                  (ev.status === 'draft' || ev.status === 'published') ? (
+                    <>
                       <Button
                         variant="ghost"
                         disabled={readOnly}
                         title={readOnly ? t('readOnlyHint') : undefined}
                         onClick={() => {
-                          setAnnounce(true);
-                          setPublishError(null);
-                          setPublishTarget(ev);
+                          setEditingEvent(ev);
+                          setModalOpen(true);
                         }}
                       >
-                        {t('list.actions.publish')}
+                        {t('list.actions.edit')}
                       </Button>
-                    ) : (
-                      <Button
-                        variant="danger"
-                        disabled={readOnly}
-                        title={readOnly ? t('readOnlyHint') : undefined}
-                        onClick={() => {
-                          setCancelReason('');
-                          setCancelError(null);
-                          setCancelTarget(ev);
-                        }}
-                      >
-                        {t('list.actions.cancel')}
-                      </Button>
-                    )}
-                  </div>
-                ) : null}
+                      {ev.status === 'draft' ? (
+                        <Button
+                          variant="ghost"
+                          disabled={readOnly}
+                          title={readOnly ? t('readOnlyHint') : undefined}
+                          onClick={() => {
+                            setAnnounce(true);
+                            setPublishError(null);
+                            setPublishTarget(ev);
+                          }}
+                        >
+                          {t('list.actions.publish')}
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="danger"
+                          disabled={readOnly}
+                          title={readOnly ? t('readOnlyHint') : undefined}
+                          onClick={() => {
+                            setCancelReason('');
+                            setCancelError(null);
+                            setCancelTarget(ev);
+                          }}
+                        >
+                          {t('list.actions.cancel')}
+                        </Button>
+                      )}
+                    </>
+                  ) : null}
+                </div>
               </li>
             ))}
           </ul>

@@ -21,7 +21,8 @@
     "actions": {
       "edit": "Edit",
       "publish": "Publish",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "attendees": "Attendees"
     },
     "empty": {
       "upcomingTitle": "No upcoming events yet",
@@ -91,5 +92,34 @@
     "consequence": "{count, plural, =0 {No guests have booked this event yet — cancelling won't notify anyone.} one {# guest has booked this event. Their booking will be cancelled and they'll be notified automatically.} other {# guests have booked this event. Their bookings will be cancelled and they'll be notified automatically.}} This can't be undone.",
     "reasonLabel": "Reason for cancelling",
     "reasonRequired": "Enter a reason before cancelling."
+  },
+  "attendees": {
+    "back": "Back to events",
+    "eyebrow": "Attendees",
+    "empty": {
+      "title": "No bookings yet",
+      "hint": "Once guests reserve a spot, they'll show up here with their room and payment method."
+    },
+    "totals": {
+      "bookedLabel": "Booked",
+      "cashLabel": "Expected cash",
+      "roomChargeLabel": "Expected room charge"
+    },
+    "table": {
+      "guest": "Guest",
+      "partySize": "Party size",
+      "payment": "Payment",
+      "status": "Status",
+      "bookedAt": "Booked at"
+    },
+    "payment": {
+      "included": "Included",
+      "cash": "Cash",
+      "roomCharge": "Room charge"
+    },
+    "bookingStatus": {
+      "booked": "Booked",
+      "cancelled": "Cancelled"
+    }
   }
 }
