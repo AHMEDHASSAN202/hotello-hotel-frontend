@@ -213,6 +213,64 @@ describe('EventModal (Task 13)', () => {
     expect(apiMock.api.mock.calls.some(([, init]) => init)).toBe(false);
   });
 
+  it('published + currently UNLIMITED — the toggle is locked and the only legal capacity (null) is what ships', async () => {
+    // `assertEditable`: on a published event capacity may change only to
+    // `null`, or — when the current capacity is FINITE — to a value >= it.
+    // Currently unlimited therefore admits exactly one value: unchanged. The
+    // old guard required `currentCapacity !== null`, so it never fired here
+    // and the form happily invited a finite capacity straight into a 409.
+    renderModal({ ...EVENT, capacity: null, status: 'published' });
+
+    const unlimited = screen.getByLabelText(
+      'Unlimited attendance',
+    ) as HTMLInputElement;
+    expect(unlimited.checked).toBe(true);
+    expect(unlimited.disabled).toBe(true);
+    // Explained where the control is, not as a generic banner after a 409.
+    expect(
+      screen.getByText(en.events.form.capacityFromUnlimitedError),
+    ).toBeTruthy();
+    // With the toggle locked there is no capacity input to fill in at all.
+    expect(screen.queryByLabelText(/^Capacity/)).toBeNull();
+
+    apiMock.api.mockResolvedValueOnce({ ...EVENT, capacity: null });
+    fireEvent.click(screen.getByRole('button', { name: 'Save event' }));
+
+    await waitFor(() => {
+      const patch = apiMock.api.mock.calls.find(
+        ([path, init]) =>
+          path === '/tenant/events/evt-1' &&
+          (init as RequestInit | undefined)?.method === 'PATCH',
+      );
+      expect(patch).toBeTruthy();
+      expect(JSON.parse(String((patch![1] as RequestInit).body)).capacity).toBe(
+        null,
+      );
+    });
+  });
+
+  it('published + FINITE capacity — the unlimited toggle stays open (finite → unlimited is legal)', () => {
+    renderModal({ ...EVENT, capacity: 50, status: 'published' });
+    expect(
+      (screen.getByLabelText('Unlimited attendance') as HTMLInputElement)
+        .disabled,
+    ).toBe(false);
+    expect(
+      screen.queryByText(en.events.form.capacityFromUnlimitedError),
+    ).toBeNull();
+  });
+
+  it('draft + unlimited — nothing is locked (the safe-edit matrix is published-only)', () => {
+    renderModal({ ...EVENT, capacity: null, status: 'draft' });
+    expect(
+      (screen.getByLabelText('Unlimited attendance') as HTMLInputElement)
+        .disabled,
+    ).toBe(false);
+    expect(
+      screen.queryByText(en.events.form.capacityFromUnlimitedError),
+    ).toBeNull();
+  });
+
   it('published edit — the PATCH body omits every restricted key, not just avoids a 409', async () => {
     // The safe-edit matrix keys off "field present in the DTO", so a payload
     // that carries an unchanged `price`/`startAtLocal` still 409s
@@ -294,12 +352,14 @@ describe('EventModal (Task 13)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Create event' }));
 
     await waitFor(() => expect(apiMock.apiUpload).toHaveBeenCalledTimes(1));
-    // The modal is still open in "create" mode — the dangerous state.
-    await screen.findByRole('button', { name: 'Create event' });
+    // The modal is still open — but the event now EXISTS, so the button must
+    // stop promising to create one (it PATCHes from here on).
+    await screen.findByRole('button', { name: 'Save event' });
+    expect(screen.queryByRole('button', { name: 'Create event' })).toBeNull();
 
     apiMock.api.mockResolvedValueOnce({ id: 'evt-new', photoThumbUrl: null });
     apiMock.apiUpload.mockResolvedValueOnce({});
-    fireEvent.click(screen.getByRole('button', { name: 'Create event' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save event' }));
 
     await waitFor(() => expect(apiMock.apiUpload).toHaveBeenCalledTimes(2));
     const posts = apiMock.api.mock.calls.filter(

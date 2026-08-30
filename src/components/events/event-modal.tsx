@@ -117,6 +117,16 @@ export function EventModal({
    */
   const isPublished = event?.status === 'published';
   const currentCapacity = event?.capacity ?? null;
+  /**
+   * The published half of the capacity rule, in full (`assertEditable`):
+   * capacity may change only to `null`, or — when the current capacity is
+   * FINITE — to a value >= it. A published event that is currently unlimited
+   * is not a free pass: `null` → a finite number is a reduction against an
+   * unbounded booked count, so the only legal value there is "unchanged".
+   * Hence the unlimited toggle itself locks, alongside the other published
+   * locks (schedule, location, price) rather than inviting a 409.
+   */
+  const capacityLockedUnlimited = isPublished && currentCapacity === null;
 
   const [names, setNames] = useState<NameFieldValues>({});
   /**
@@ -238,6 +248,13 @@ export function EventModal({
     if (checked) setCapacity('');
   }
 
+  /**
+   * What the next submit will actually do. After a create whose photo step
+   * failed, `createdId` holds a real event — every later submit PATCHes it,
+   * so the button must stop promising to create one.
+   */
+  const effectiveEventId = event?.id ?? createdId;
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -252,17 +269,19 @@ export function EventModal({
     // (`event.status === 'draft'` → everything editable), so blocking a
     // draft's capacity decrease invented a rule the backend doesn't have —
     // and told the user "this event is live" about an unpublished draft.
-    if (
-      isPublished &&
-      !unlimited &&
-      currentCapacity !== null &&
-      capacity !== '' &&
-      Number(capacity) < currentCapacity
-    ) {
-      setCapacityError(
-        t('capacityDecreaseError', { current: currentCapacity }),
-      );
-      return;
+    if (isPublished && !unlimited) {
+      // Currently unlimited → any finite capacity is illegal (the toggle
+      // above is locked for exactly this reason; this is the backstop).
+      if (currentCapacity === null) {
+        setCapacityError(t('capacityFromUnlimitedError'));
+        return;
+      }
+      if (capacity !== '' && Number(capacity) < currentCapacity) {
+        setCapacityError(
+          t('capacityDecreaseError', { current: currentCapacity }),
+        );
+        return;
+      }
     }
 
     setBusy(true);
@@ -284,7 +303,7 @@ export function EventModal({
       }
       // `createdId` makes the retry of a half-finished create an UPDATE of
       // the event we already created, never a duplicate POST.
-      const targetId = event?.id ?? createdId;
+      const targetId = effectiveEventId;
       const saved = targetId
         ? await api<TenantEvent>(`/tenant/events/${targetId}`, {
             method: 'PATCH',
@@ -454,11 +473,17 @@ export function EventModal({
           <label className="flex items-center gap-2 text-sm font-medium text-ink">
             <input
               type="checkbox"
+              disabled={capacityLockedUnlimited}
               checked={unlimited}
               onChange={(e) => toggleUnlimited(e.target.checked)}
             />
             {t('unlimitedLabel')}
           </label>
+          {capacityLockedUnlimited ? (
+            <p className="mt-1 text-xs text-ink-soft">
+              {t('capacityFromUnlimitedError')}
+            </p>
+          ) : null}
           {!unlimited ? (
             <div className="mt-2">
               <Field
@@ -549,7 +574,7 @@ export function EventModal({
             {tCommon('actions.cancel')}
           </Button>
           <Button type="submit" loading={busy} disabled={!requiredFilled}>
-            {event ? t('save') : t('create')}
+            {effectiveEventId ? t('save') : t('create')}
           </Button>
         </div>
       </form>

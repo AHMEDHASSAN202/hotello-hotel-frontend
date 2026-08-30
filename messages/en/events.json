@@ -71,6 +71,7 @@
     "unlimitedLabel": "Unlimited attendance",
     "capacityLabel": "Capacity",
     "capacityDecreaseError": "This event is live — capacity can only be raised, not lowered below {current}.",
+    "capacityFromUnlimitedError": "This event is live with unlimited attendance — a limit can't be added now, because guests may already be booked beyond it. Cancel this event and create a new one to cap attendance.",
     "priceLabel": "Price",
     "priceHint": "In your hotel currency. 0 is a valid free-event price.",
     "pricingLabel": "Pricing mode",
