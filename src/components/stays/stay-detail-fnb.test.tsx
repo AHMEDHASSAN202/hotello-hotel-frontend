@@ -6,7 +6,7 @@ import en from '../../../messages/en';
 /** Epic 16, Story 16.8 — room charge at checkout (visibility, not folio). */
 
 const tenant = vi.hoisted(() => ({
-  me: { user: { id: 'u1' }, hotel: { timezone: 'Africa/Cairo' } },
+  me: { user: { id: 'u1' }, hotel: { currency: 'EGP', timezone: 'Africa/Cairo' } },
   hasPermission: vi.fn(() => true),
   isModuleEnabled: vi.fn(() => true),
   readOnly: false,
@@ -81,6 +81,7 @@ beforeEach(() => {
   tenant.isModuleEnabled.mockReset();
   tenant.isModuleEnabled.mockReturnValue(true);
   tenant.readOnly = false;
+  tenant.me.hotel.currency = 'EGP';
   apiMock.api.mockReset();
   apiMock.api.mockImplementation(async (path: string) => {
     if (path.includes('/tenant/fnb-orders/stay/stay-1'))
@@ -159,16 +160,22 @@ describe('StayDetailModal — F&B orders (16.8) + combined settlement (21.6 AC2)
     });
   });
 
-  it('module off still fetches the combined unsettled total but hides the F&B order-list section', async () => {
+  it('module off hides the F&B order-list section but the combined unsettled banner still fetches and renders (final-review Important 1)', async () => {
     tenant.isModuleEnabled.mockReturnValue(false);
     renderModal();
     await screen.findByText('Ahmed Ali');
-    expect(screen.queryByText(/Unsettled room charges/)).toBeNull();
+    // The order-list card (F&B-module-gated) never appears.
     expect(
       apiMock.api.mock.calls.every(
         ([p]) => !String(p).includes('/tenant/fnb-orders'),
       ),
     ).toBe(true);
+    // But the combined unsettled banner is a sibling section gated only on
+    // the total itself, not on the F&B module — an events-only unsettled
+    // balance (this fixture's mock returns total: 460 regardless) must
+    // still be visible and actionable from the drawer body.
+    expect(await screen.findByText(/Unsettled room charges:/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Mark as settled' })).toBeTruthy();
     await waitFor(() => {
       expect(
         apiMock.api.mock.calls.some(([p]) =>
@@ -176,6 +183,36 @@ describe('StayDetailModal — F&B orders (16.8) + combined settlement (21.6 AC2)
         ),
       ).toBe(true);
     });
+  });
+
+  it('reads the amount currency from the hotel record, not a hardcoded EGP (final-review Important 2)', async () => {
+    tenant.me.hotel.currency = 'SAR';
+    renderModal();
+    // The unsettled banner and the checkout confirm both use the hotel's
+    // real currency — a regression this task fixes would show "EGP" here
+    // regardless of the hotel's actual currency.
+    expect(await screen.findByText(/Unsettled room charges:.*SAR/)).toBeTruthy();
+    expect(screen.queryByText(/Unsettled room charges:.*EGP/)).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Check out' }));
+    expect(await screen.findByText(/SAR.*uncollected room charges/)).toBeTruthy();
+  });
+
+  it('events-only unsettled balance with fnb disabled — banner renders with the events-only total (final-review Important 1)', async () => {
+    tenant.isModuleEnabled.mockReturnValue(false);
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        return { total: 150, byKey: { fnb: 0, events: 150 } };
+      return {};
+    });
+    renderModal();
+    await screen.findByText('Ahmed Ali');
+    expect(await screen.findByText(/Unsettled room charges: EGP\s*150/)).toBeTruthy();
+    expect(
+      apiMock.api.mock.calls.every(
+        ([p]) => !String(p).includes('/tenant/fnb-orders'),
+      ),
+    ).toBe(true);
   });
 
   it('no checkout permission — the combined unsettled endpoint is never called', async () => {

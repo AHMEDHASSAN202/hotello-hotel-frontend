@@ -59,13 +59,17 @@ export function StayDetailModal({
   const tFnbBoard = useTranslations('fnb.board');
   const resolveError = useApiError();
   const { locale, formatDate, formatDateTime, formatCurrency } = useFormatters();
-  const { hasPermission, isModuleEnabled, readOnly } = useTenant();
+  const { hasPermission, isModuleEnabled, readOnly, me } = useTenant();
 
   const canUpdate = hasPermission('stays.update');
   const canCheckout = hasPermission('stays.checkout');
   // Epic 16 (16.8) — room-charge visibility; hidden entirely without the module.
   const showFnbOrders =
     isModuleEnabled('fnb') && hasPermission('fnb_orders.read');
+  // Final-review fix (Important 2) — every amount in this drawer must show
+  // the hotel's real currency, not the `formatCurrency` no-arg EGP fallback.
+  // Matches `events/[id]/attendees/page.tsx`'s exact pattern.
+  const currency = me?.hotel.currency ?? 'EGP';
 
   const [current, setCurrent] = useState<Stay | null>(stay);
   const [mode, setMode] = useState<Mode>('view');
@@ -379,7 +383,7 @@ export function StayDetailModal({
             </div>
           )}
 
-          {/* Epic 16 (16.8 AC1) — the stay's F&B orders + unsettled charges. */}
+          {/* Epic 16 (16.8 AC1) — the stay's F&B orders (display only). */}
           {showFnbOrders && fnbOrders && fnbOrders.data.length > 0 && (
             <div className="mt-4 rounded-lg border border-line bg-paper p-4">
               <p className="text-xs font-medium uppercase tracking-widest text-ink-soft">
@@ -422,38 +426,41 @@ export function StayDetailModal({
                   </li>
                 ))}
               </ul>
-              {/*
-                21.6 AC2 — the combined F&B + events unsettled total, not
-                F&B-only. `unsettled` is populated only for `canCheckout`
-                holders (the backend's `stays.checkout` guard on
-                GET /tenant/stays/:id/unsettled — see the mount effect
-                above), so this banner is now invisible to staff who have
-                `fnb_orders.read` but not `stays.checkout`. That's a
-                deliberate tradeoff, not an oversight: this banner's own
-                button drives the combined settle action, so showing it
-                without `canCheckout` would offer no way to act on it, and
-                falling back to the old F&B-only `fnbOrders.unsettledTotal`
-                here would silently under-report a stay with unsettled
-                event bookings — exactly the bug this task fixes.
-              */}
-              {(unsettled?.total ?? 0) > 0 && (
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line/60 pt-3">
-                  <p className="text-sm font-medium text-danger">
-                    {tFnbStay('unsettled', {
-                      amount: formatCurrency(unsettled!.total),
-                    })}
-                  </p>
-                  {canCheckout && (
-                    <Button
-                      variant="ghost"
-                      onClick={() => setConfirming('settle')}
-                      disabled={readOnly}
-                      title={disabledHint}
-                    >
-                      {tFnbStay('settle')}
-                    </Button>
-                  )}
-                </div>
+            </div>
+          )}
+
+          {/*
+            Final-review fix (Important 1) — 21.6 AC2's combined F&B + events
+            unsettled total, in its own sibling section so it's reachable
+            regardless of the F&B module/order list above. Previously nested
+            inside the `showFnbOrders` block, this banner was unreachable for
+            a stay whose only unsettled balance came from events (`events`
+            enables independently of `fnb` per the backend's
+            `EventsFoundation` migration) — the total could be non-zero here
+            with no F&B orders in sight. Gated ONLY on the total itself.
+            `unsettled` is populated only for `canCheckout` holders (the
+            backend's `stays.checkout` guard on GET /tenant/stays/:id/unsettled
+            — see the mount effect above), so this banner stays invisible to
+            staff who lack `stays.checkout` — deliberate, since its own
+            button drives the combined settle action and there'd be nothing
+            to act on without that permission.
+          */}
+          {(unsettled?.total ?? 0) > 0 && (
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line bg-paper p-4">
+              <p className="text-sm font-medium text-danger">
+                {tFnbStay('unsettled', {
+                  amount: formatCurrency(unsettled!.total, currency),
+                })}
+              </p>
+              {canCheckout && (
+                <Button
+                  variant="ghost"
+                  onClick={() => setConfirming('settle')}
+                  disabled={readOnly}
+                  title={disabledHint}
+                >
+                  {tFnbStay('settle')}
+                </Button>
               )}
             </div>
           )}
@@ -728,15 +735,15 @@ export function StayDetailModal({
           <div className="mt-2">
             <ConsequenceNote tone="danger">
               {tFnbStay('checkoutNote', {
-                amount: formatCurrency(unsettled!.total),
+                amount: formatCurrency(unsettled!.total, currency),
               })}
             </ConsequenceNote>
             {(unsettled?.byKey.fnb ?? 0) > 0 &&
               (unsettled?.byKey.events ?? 0) > 0 && (
                 <p className="mt-1 text-xs text-ink-soft">
                   {tFnbStay('breakdown', {
-                    fnb: formatCurrency(unsettled!.byKey.fnb ?? 0),
-                    events: formatCurrency(unsettled!.byKey.events ?? 0),
+                    fnb: formatCurrency(unsettled!.byKey.fnb ?? 0, currency),
+                    events: formatCurrency(unsettled!.byKey.events ?? 0, currency),
                   })}
                 </p>
               )}
@@ -755,7 +762,7 @@ export function StayDetailModal({
       >
         <ConsequenceNote tone="danger">
           {tFnbStay('settleNote', {
-            amount: formatCurrency(unsettled?.total ?? 0),
+            amount: formatCurrency(unsettled?.total ?? 0, currency),
           })}
         </ConsequenceNote>
       </ConfirmModal>
