@@ -42,13 +42,20 @@ export function namesToFields(
  * (`*_REQUIRED`) if ar/en are blanked, and the forms require them anyway.
  * Callers that don't pass `previous` keep the old omit-everything-empty
  * behaviour exactly.
+ *
+ * `options.descriptionsRequired` makes the AR/EN descriptions behave exactly
+ * like the AR/EN names: always present, blank included, so a blanked
+ * required field is REJECTED by the backend (400 + field message) instead of
+ * being omitted — which the merge semantics read as "keep the stored value",
+ * silently ignoring the user's edit. Callers whose descriptions are optional
+ * (F&B, hotel-info) leave it off and keep the omit-when-blank behaviour.
  */
 export function fieldsToPayload(
   values: NameFieldValues,
   withDescriptions: boolean,
-  options: { previous?: NameFieldValues } = {},
+  options: { previous?: NameFieldValues; descriptionsRequired?: boolean } = {},
 ): Record<string, string> {
-  const { previous } = options;
+  const { previous, descriptionsRequired = false } = options;
   const wasCleared = (key: string) =>
     previous !== undefined &&
     (previous[key]?.trim() ?? '') !== '' &&
@@ -67,8 +74,11 @@ export function fieldsToPayload(
     for (const lang of ['En', 'Ar', ...EXTRA_LANGS]) {
       const key = `description${lang}`;
       const value = values[key];
+      const isRequired = descriptionsRequired && (lang === 'En' || lang === 'Ar');
       if (value !== undefined && value.trim() !== '') {
         payload[key] = value.trim();
+      } else if (isRequired) {
+        payload[key] = '';
       } else if (lang !== 'En' && lang !== 'Ar' && wasCleared(key)) {
         payload[key] = '';
       }

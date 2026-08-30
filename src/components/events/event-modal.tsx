@@ -78,7 +78,14 @@ function toEventContentPayload(
   names: NameFieldValues,
   previous: NameFieldValues,
 ): Record<string, string> {
-  const raw = fieldsToPayload(names, true, { previous });
+  // Events are the one caller whose AR/EN descriptions are REQUIRED
+  // (`descriptionsRequired` on `NameFields` below, `EVENT_DESCRIPTIONS_REQUIRED`
+  // server-side) — so they ride the payload blank-and-all, exactly like the
+  // titles, and a blanked one is rejected rather than quietly kept.
+  const raw = fieldsToPayload(names, true, {
+    previous,
+    descriptionsRequired: true,
+  });
   const payload: Record<string, string> = {};
   for (const [key, value] of Object.entries(raw)) {
     payload[key.startsWith('name') ? `title${key.slice(4)}` : key] = value;
