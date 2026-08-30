@@ -31,6 +31,16 @@ import type {
  */
 type PricingMode = 'free' | 'paid' | 'included';
 
+/**
+ * Mirrors `events.constants.ts` (`EVENT_TITLE_MAX` / `EVENT_DESCRIPTION_MAX` /
+ * `EVENT_LOCATION_TEXT_MAX`) — the `@MaxLength` caps on `CreateEventDto`.
+ * Capping the inputs turns a 400 round-trip into a field that simply stops
+ * accepting characters (the locationText/cancel-reason precedent).
+ */
+const TITLE_MAX = 120;
+const DESCRIPTION_MAX = 2000;
+const LOCATION_MAX = 200;
+
 /** 'YYYY-MM-DD HH:MM' stamp → the two inputs (the announcements ScheduleFields convention). */
 function stampToParts(stamp: string | null): { date: string; time: string } {
   if (!stamp) return { date: '', time: '' };
@@ -58,9 +68,17 @@ function flattenInfoEntries(overview: HotelInfoOverview): InfoEntryManage[] {
  * other `NameFields` caller (F&B, hotel-info, branding) is on the `name*`
  * convention and must stay untouched. `description*` keys already match the
  * backend as-is and pass through unchanged.
+ *
+ * `previous` (the values the modal opened with / last saved) lets
+ * `fieldsToPayload` emit `''` for an optional language the user just
+ * blanked, so the clear actually reaches `mergeTranslations` instead of
+ * being omitted — and therefore kept — server-side.
  */
-function toEventContentPayload(names: NameFieldValues): Record<string, string> {
-  const raw = fieldsToPayload(names, true);
+function toEventContentPayload(
+  names: NameFieldValues,
+  previous: NameFieldValues,
+): Record<string, string> {
+  const raw = fieldsToPayload(names, true, { previous });
   const payload: Record<string, string> = {};
   for (const [key, value] of Object.entries(raw)) {
     payload[key.startsWith('name') ? `title${key.slice(4)}` : key] = value;
@@ -101,6 +119,21 @@ export function EventModal({
   const currentCapacity = event?.capacity ?? null;
 
   const [names, setNames] = useState<NameFieldValues>({});
+  /**
+   * The titles/descriptions as last persisted — the comparison basis that
+   * lets a blanked optional language ride the payload as `''` (see
+   * `toEventContentPayload`). Refreshed after every successful save so a
+   * second save in the same modal session compares against the truth.
+   */
+  const [savedNames, setSavedNames] = useState<NameFieldValues>({});
+  /**
+   * Review fix (Important) — the create flow is two requests (POST the
+   * event, then upload its photo). If the upload failed, the modal stayed in
+   * create mode and pressing Create again POSTed a SECOND event. Once the
+   * POST has succeeded we remember its id and every later submit in this
+   * session PATCHes that event (and retries the photo) instead.
+   */
+  const [createdId, setCreatedId] = useState<string | null>(null);
   const [startDate, setStartDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -127,7 +160,10 @@ export function EventModal({
 
   useEffect(() => {
     if (!open) return;
-    setNames(namesToFields(event?.titles, event?.descriptions));
+    const initialNames = namesToFields(event?.titles, event?.descriptions);
+    setNames(initialNames);
+    setSavedNames(initialNames);
+    setCreatedId(null);
     const start = stampToParts(event?.startAtLocal ?? null);
     setStartDate(start.date);
     setStartTime(start.time);
@@ -211,7 +247,13 @@ export function EventModal({
       setError(t('endIncomplete'));
       return;
     }
+    // Review fix (Important) — this guard belongs to the PUBLISHED half of
+    // the safe-edit matrix only. `assertEditable` returns early for drafts
+    // (`event.status === 'draft'` → everything editable), so blocking a
+    // draft's capacity decrease invented a rule the backend doesn't have —
+    // and told the user "this event is live" about an unpublished draft.
     if (
+      isPublished &&
       !unlimited &&
       currentCapacity !== null &&
       capacity !== '' &&
@@ -224,9 +266,10 @@ export function EventModal({
     }
 
     setBusy(true);
+    let createdNow = false;
     try {
       const body: Record<string, unknown> = {
-        ...toEventContentPayload(names),
+        ...toEventContentPayload(names, savedNames),
         // Always capacity-safe server-side (increase-or-equal, or switching
         // to unlimited) — never gated behind isPublished.
         capacity: unlimited ? null : Number(capacity),
@@ -239,8 +282,11 @@ export function EventModal({
         body.price = pricingMode === 'free' ? 0 : Number(price);
         body.includedFor = pricingMode === 'included' ? includedFor : [];
       }
-      const saved = event
-        ? await api<TenantEvent>(`/tenant/events/${event.id}`, {
+      // `createdId` makes the retry of a half-finished create an UPDATE of
+      // the event we already created, never a duplicate POST.
+      const targetId = event?.id ?? createdId;
+      const saved = targetId
+        ? await api<TenantEvent>(`/tenant/events/${targetId}`, {
             method: 'PATCH',
             body: JSON.stringify(body),
           })
@@ -248,17 +294,26 @@ export function EventModal({
             method: 'POST',
             body: JSON.stringify(body),
           });
+      const savedId = saved.id ?? targetId;
+      if (!targetId) {
+        createdNow = true;
+        setCreatedId(savedId);
+      }
+      setSavedNames(names);
       if (photoFile) {
         const formData = new FormData();
         formData.append('file', photoFile);
-        await apiUpload(`/tenant/events/${saved.id}/photo`, formData);
+        await apiUpload(`/tenant/events/${savedId}/photo`, formData);
       } else if (removePhoto && event?.photoThumbUrl) {
-        await api(`/tenant/events/${saved.id}/photo`, { method: 'DELETE' });
+        await api(`/tenant/events/${savedId}/photo`, { method: 'DELETE' });
       }
       onSaved();
       onClose();
     } catch (err) {
       setError(resolveError(err));
+      // Create succeeded, the photo step didn't: the event DOES exist, so
+      // refresh the list — closing the modal now must not hide it.
+      if (createdNow) onSaved();
     } finally {
       setBusy(false);
     }
@@ -298,6 +353,8 @@ export function EventModal({
           onChange={(k, v) => setNames((s) => ({ ...s, [k]: v }))}
           withDescriptions
           descriptionsRequired
+          maxLength={TITLE_MAX}
+          descriptionMaxLength={DESCRIPTION_MAX}
           namespace="events.form.names"
         />
 
@@ -364,7 +421,7 @@ export function EventModal({
           label={t('locationLabel')}
           required
           disabled={isPublished}
-          maxLength={200}
+          maxLength={LOCATION_MAX}
           value={locationText}
           onChange={(e) => setLocationText(e.target.value)}
         />

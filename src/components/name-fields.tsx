@@ -29,25 +29,48 @@ export function namesToFields(
   return out;
 }
 
-/** Only non-empty values ride the payload; EN/AR always included. */
+/**
+ * Only non-empty values ride the payload; EN/AR always included.
+ *
+ * `options.previous` opts a caller into **clearing** an optional language:
+ * the backends merge translations by "key present in the DTO"
+ * (`mergeTranslations` in `tenant-events.service.ts`, `mergeNames` in
+ * `fnb-translations.util.ts`), so an omitted key keeps the stored value and
+ * blanking e.g. the Russian title is silently not persisted. Sending `''`
+ * for a language that HAD a value is what deletes it. Only the five optional
+ * languages are ever cleared this way — the backends throw
+ * (`*_REQUIRED`) if ar/en are blanked, and the forms require them anyway.
+ * Callers that don't pass `previous` keep the old omit-everything-empty
+ * behaviour exactly.
+ */
 export function fieldsToPayload(
   values: NameFieldValues,
   withDescriptions: boolean,
+  options: { previous?: NameFieldValues } = {},
 ): Record<string, string> {
+  const { previous } = options;
+  const wasCleared = (key: string) =>
+    previous !== undefined &&
+    (previous[key]?.trim() ?? '') !== '' &&
+    (values[key]?.trim() ?? '') === '';
+
   const payload: Record<string, string> = {
     nameEn: values.nameEn?.trim() ?? '',
     nameAr: values.nameAr?.trim() ?? '',
   };
   for (const lang of EXTRA_LANGS) {
-    if (values[`name${lang}`]?.trim()) {
-      payload[`name${lang}`] = values[`name${lang}`].trim();
-    }
+    const key = `name${lang}`;
+    if (values[key]?.trim()) payload[key] = values[key].trim();
+    else if (wasCleared(key)) payload[key] = '';
   }
   if (withDescriptions) {
     for (const lang of ['En', 'Ar', ...EXTRA_LANGS]) {
-      const value = values[`description${lang}`];
+      const key = `description${lang}`;
+      const value = values[key];
       if (value !== undefined && value.trim() !== '') {
-        payload[`description${lang}`] = value.trim();
+        payload[key] = value.trim();
+      } else if (lang !== 'En' && lang !== 'Ar' && wasCleared(key)) {
+        payload[key] = '';
       }
     }
   }
@@ -61,6 +84,7 @@ export function NameFields({
   descriptionsRequired = false,
   namespace = 'fnb.menus.names',
   maxLength,
+  descriptionMaxLength,
   disabled = false,
 }: {
   values: NameFieldValues;
@@ -70,13 +94,20 @@ export function NameFields({
   descriptionsRequired?: boolean;
   /** Translation namespace providing the name/description labels. */
   namespace?: string;
-  /** Per-field character cap (Epic 18 welcome lines); undefined = uncapped. */
+  /** Per-name-field character cap (Epic 18 welcome lines); undefined = uncapped. */
   maxLength?: number;
+  /**
+   * Description cap where it differs from the name cap (Epic 21 events:
+   * `EVENT_TITLE_MAX` 120 vs `EVENT_DESCRIPTION_MAX` 2000). Falls back to
+   * `maxLength` so existing callers keep their single-cap behaviour.
+   */
+  descriptionMaxLength?: number;
   /** Read-only rendering (Epic 18 locked upsell); keeps fields out of the tab order. */
   disabled?: boolean;
 }) {
   const t = useTranslations(namespace);
   const [expanded, setExpanded] = useState(false);
+  const descriptionCap = descriptionMaxLength ?? maxLength;
 
   return (
     <div className="space-y-3">
@@ -103,7 +134,7 @@ export function NameFields({
       {withDescriptions ? (
         <div className="grid grid-cols-2 gap-3">
           <Field
-            maxLength={maxLength}
+            maxLength={descriptionCap}
             disabled={disabled}
             required={descriptionsRequired}
             label={t('descriptionEn')}
@@ -111,7 +142,7 @@ export function NameFields({
             onChange={(e) => onChange('descriptionEn', e.target.value)}
           />
           <Field
-            maxLength={maxLength}
+            maxLength={descriptionCap}
             disabled={disabled}
             required={descriptionsRequired}
             label={t('descriptionAr')}
