@@ -139,12 +139,19 @@ export function EventModal({
     setUnlimited(event ? event.capacity === null : true);
     setCapacity(event?.capacity != null ? String(event.capacity) : '');
     setPrice(event ? String(event.price) : '0');
+    // Final-review fix (Minor) — check `includedFor` BEFORE `price === 0`:
+    // an event saved as "included for selected stay types" is allowed to
+    // have price 0 (the form permits it), and the old order re-derived that
+    // as 'free' on reopen, silently dropping the includedFor selection on
+    // the next save.
     setPricingMode(
-      !event || event.price === 0
+      !event
         ? 'free'
         : event.includedFor.length > 0
           ? 'included'
-          : 'paid',
+          : event.price === 0
+            ? 'free'
+            : 'paid',
     );
     setIncludedFor(event?.includedFor ?? []);
     setPhotoFile(null);

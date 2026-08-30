@@ -156,4 +156,24 @@ describe('EventModal (Task 13)', () => {
       expect(body).not.toHaveProperty('nameAr');
     });
   });
+
+  it('final-review fix (Minor) — reopening an "included" event with price 0 selects Included, not Free', () => {
+    // price === 0 AND includedFor non-empty: the includedFor check must win
+    // so the selection survives a reopen instead of silently reverting to
+    // 'free' (which would drop includedFor on the next save).
+    renderModal({
+      ...EVENT,
+      price: 0,
+      includedFor: ['room_only'],
+      status: 'published',
+    });
+    const included = screen.getByRole('radio', {
+      name: 'Included for selected stay types',
+    }) as HTMLInputElement;
+    const free = screen.getByRole('radio', {
+      name: 'Free for everyone',
+    }) as HTMLInputElement;
+    expect(included.checked).toBe(true);
+    expect(free.checked).toBe(false);
+  });
 });

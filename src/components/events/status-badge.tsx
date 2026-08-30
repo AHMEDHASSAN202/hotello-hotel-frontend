@@ -11,7 +11,11 @@ const STATUS_TONE: Record<
 > = {
   draft: 'neutral',
   published: 'success',
-  completed: 'gold',
+  // Final-review fix (Minor) — 'gold' means active/pending/awaiting-action
+  // everywhere else this app uses it (incl. the attendees page's own
+  // 'booked' badge); 'completed' is terminal/settled, which 'neutral'
+  // already means elsewhere, so it shares gold with 'booked' no longer.
+  completed: 'neutral',
   cancelled: 'danger',
 };
 
