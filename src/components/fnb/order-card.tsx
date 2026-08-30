@@ -40,7 +40,7 @@ export function destinationLabel(
   return `${location} · ${order.spot}`;
 }
 
-export type PaymentTone = 'success' | 'warning' | 'neutral' | 'gold';
+type PaymentTone = 'success' | 'warning' | 'neutral' | 'gold';
 
 /**
  * The shared payment-badge tone rule: included beats everything (success),
