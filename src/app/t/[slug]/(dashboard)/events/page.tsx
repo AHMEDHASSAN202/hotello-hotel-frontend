@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 import { EventModal } from '@/components/events/event-modal';
 import { EventStatusBadge } from '@/components/events/status-badge';
-import { PageIntro } from '@/components/guidance';
+import { ConfirmModal, ConsequenceNote, PageIntro } from '@/components/guidance';
 import { useTenant } from '@/components/tenant-provider';
 import { Button, EmptyState, ErrorState, Skeleton } from '@/components/ui';
 import { api } from '@/lib/api';
@@ -22,10 +22,15 @@ const TABS: EventListTab[] = ['upcoming', 'past', 'cancelled'];
  * Epic 21, Story 21.2 AC4 — events management list: upcoming / past /
  * cancelled tabs with booked/capacity counts.
  *
- * The publish/cancel confirm flows (Task 14) don't exist yet — those row
- * actions stay gated, visually complete, inert stubs (see the TODO-commented
- * onClick handlers) rather than throwaway scaffolding that task would just
- * tear out. The create/edit form (Task 13) is wired in below.
+ * Task 14 — publish (non-destructive, "announce to guests" defaulted on) and
+ * cancel (destructive, required reason) confirm flows, both reusing the
+ * Epic 12 `ConfirmModal`/`ConsequenceNote` kit (the announcements retract /
+ * F&B staff-cancel templates). The cancel consequence count reuses the row's
+ * already-loaded `bookedCount` (`EventListItemView`, a batch-loaded SUM of
+ * active booking party sizes) — the single-event GET the row data came from
+ * doesn't return it, only the list endpoint does, so there's nothing fresher
+ * to re-fetch right before opening the modal. The create/edit form (Task 13)
+ * is wired in below.
  */
 export default function EventsPage() {
   const t = useTranslations('events');
@@ -46,6 +51,20 @@ export default function EventsPage() {
     null,
   );
 
+  // Task 14 — publish confirm flow.
+  const [publishTarget, setPublishTarget] =
+    useState<TenantEventListItem | null>(null);
+  const [announce, setAnnounce] = useState(true);
+  const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
+
+  // Task 14 — cancel confirm flow.
+  const [cancelTarget, setCancelTarget] =
+    useState<TenantEventListItem | null>(null);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+
   const load = useCallback(async () => {
     setLoadError(null);
     try {
@@ -61,6 +80,46 @@ export default function EventsPage() {
   useEffect(() => {
     if (canRead) void load();
   }, [canRead, load]);
+
+  async function doPublish() {
+    if (!publishTarget) return;
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      await api(`/tenant/events/${publishTarget.id}/publish`, {
+        method: 'POST',
+        body: JSON.stringify({ announce }),
+      });
+      setPublishTarget(null);
+      await load();
+    } catch (err) {
+      setPublishError(resolveError(err));
+    } finally {
+      setPublishing(false);
+    }
+  }
+
+  async function doCancel() {
+    if (!cancelTarget) return;
+    if (!cancelReason.trim()) {
+      setCancelError(t('cancel.reasonRequired'));
+      return;
+    }
+    setCancelling(true);
+    setCancelError(null);
+    try {
+      await api(`/tenant/events/${cancelTarget.id}/cancel`, {
+        method: 'POST',
+        body: JSON.stringify({ reason: cancelReason.trim() }),
+      });
+      setCancelTarget(null);
+      await load();
+    } catch (err) {
+      setCancelError(resolveError(err));
+    } finally {
+      setCancelling(false);
+    }
+  }
 
   if (!canRead) {
     return (
@@ -200,7 +259,9 @@ export default function EventsPage() {
                         disabled={readOnly}
                         title={readOnly ? t('readOnlyHint') : undefined}
                         onClick={() => {
-                          // TODO(Task 14): open the publish confirm flow once it exists.
+                          setAnnounce(true);
+                          setPublishError(null);
+                          setPublishTarget(ev);
                         }}
                       >
                         {t('list.actions.publish')}
@@ -211,7 +272,9 @@ export default function EventsPage() {
                         disabled={readOnly}
                         title={readOnly ? t('readOnlyHint') : undefined}
                         onClick={() => {
-                          // TODO(Task 14): open the cancel confirm flow once it exists.
+                          setCancelReason('');
+                          setCancelError(null);
+                          setCancelTarget(ev);
                         }}
                       >
                         {t('list.actions.cancel')}
@@ -231,6 +294,55 @@ export default function EventsPage() {
         onClose={() => setModalOpen(false)}
         onSaved={() => void load()}
       />
+
+      <ConfirmModal
+        open={publishTarget !== null}
+        onClose={() => setPublishTarget(null)}
+        title={t('publish.title')}
+        confirmLabel={t('publish.confirm')}
+        onConfirm={() => void doPublish()}
+        loading={publishing}
+        error={publishError}
+      >
+        <p className="text-sm text-ink-soft">{t('publish.body')}</p>
+        <label className="flex items-center gap-2 text-sm font-medium text-ink">
+          <input
+            type="checkbox"
+            checked={announce}
+            onChange={(e) => setAnnounce(e.target.checked)}
+          />
+          {t('publish.announceLabel')}
+        </label>
+      </ConfirmModal>
+
+      <ConfirmModal
+        open={cancelTarget !== null}
+        onClose={() => setCancelTarget(null)}
+        title={t('cancel.title')}
+        confirmLabel={t('cancel.confirm')}
+        onConfirm={() => void doCancel()}
+        destructive
+        loading={cancelling}
+        error={cancelError}
+      >
+        <ConsequenceNote tone="danger">
+          {cancelTarget
+            ? t('cancel.consequence', { count: cancelTarget.bookedCount })
+            : null}
+        </ConsequenceNote>
+        <label className="mt-3 block">
+          <span className="mb-1 block text-sm font-medium text-ink">
+            {t('cancel.reasonLabel')} <span className="text-danger">*</span>
+          </span>
+          <textarea
+            className="w-full rounded-lg border border-line p-2 text-sm"
+            rows={3}
+            maxLength={500}
+            value={cancelReason}
+            onChange={(e) => setCancelReason(e.target.value)}
+          />
+        </label>
+      </ConfirmModal>
     </div>
   );
 }

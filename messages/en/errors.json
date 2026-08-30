@@ -110,6 +110,9 @@
     "EVENT_INFO_ENTRY_NOT_FOUND": "The linked Hotel Info entry no longer exists.",
     "EVENT_NOT_SAFE_EDIT": "This event is live or finished, so its schedule, price and capacity can't be reduced or changed. Cancel it and create a new event instead.",
     "EVENT_PHOTO_INVALID": "Choose a PNG, JPEG or WebP image up to 5 MB.",
-    "EVENT_NOT_FOUND": "This event no longer exists."
+    "EVENT_NOT_FOUND": "This event no longer exists.",
+    "EVENT_NOT_PUBLISHABLE": "Only draft events can be published.",
+    "EVENT_START_IN_PAST": "The event's start time must be in the future to publish it — edit the schedule first.",
+    "EVENT_NOT_CANCELLABLE": "Only published events can be cancelled."
   }
 }
