@@ -4,6 +4,7 @@ import {
   BarChart3,
   BedDouble,
   BookOpen,
+  CalendarDays,
   Car,
   ConciergeBell,
   DoorOpen,
@@ -103,6 +104,14 @@ const NAV_ITEMS: NavItem[] = [
     icon: Megaphone,
     module: 'announcements',
     permission: 'announcements.manage',
+  },
+  // Epic 21 — create/publish events & workshops and track attendees/payments.
+  {
+    segment: 'events',
+    labelKey: 'events',
+    icon: CalendarDays,
+    module: 'events',
+    permission: 'events.read',
   },
   // Front-desk daily driver — listed before the setup-ish sections (Epic 13).
   { segment: 'stays', labelKey: 'stays', icon: DoorOpen, permission: 'stays.read' },

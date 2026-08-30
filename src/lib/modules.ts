@@ -22,6 +22,7 @@ export const MODULE_PAGES: Record<ModuleKey, ModulePageDef> = {
   requests: { segment: 'requests', built: true },
   hotel_info: { segment: 'hotel-info', built: true },
   announcements: { segment: 'announcements', built: true },
+  events: { segment: 'events', built: true },
 };
 
 export function isModuleBuilt(key: ModuleKey): boolean {

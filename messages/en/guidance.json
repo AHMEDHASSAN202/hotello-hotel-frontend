@@ -154,6 +154,9 @@
       "expired": "Its active-until time passed and it left guest inboxes automatically."
     }
   },
+  "events": {
+    "intro": "Host workshops, tastings and get-togethers — guests browse and reserve a spot right from their phones, and you track who's coming."
+  },
   "housekeeping": {
     "status": {
       "clean": "Nothing to do here — the room was cleaned and nothing has flagged it since. New rooms start clean.",

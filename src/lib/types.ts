@@ -16,7 +16,8 @@ export type ModuleKey =
   | 'analytics'
   | 'requests'
   | 'hotel_info'
-  | 'announcements';
+  | 'announcements'
+  | 'events';
 
 /* ------------------------------------------------- Public tenant context */
 
@@ -861,3 +862,79 @@ export interface HousekeepingSettings {
 
 /** GET /tenant/housekeeping/assignees — options-endpoint shape (20.3 AC1). */
 export type HousekeepingAssignee = RequestAssignee;
+
+/* ---- Events & Workshops (Epic 21) ---- */
+
+export type EventStatus = 'draft' | 'published' | 'completed' | 'cancelled';
+
+export type EventBookingStatus = 'booked' | 'cancelled';
+
+/** GET /tenant/events?tab=... — the three management tabs (mirrors `EventListTab`). */
+export type EventListTab = 'upcoming' | 'past' | 'cancelled';
+
+/**
+ * The full management view — GET/POST/PATCH /tenant/events(/:id) and the
+ * publish/cancel responses all return this shape (`EventManageView` on the
+ * backend). `titles`/`descriptions` are 7-locale maps, the F&B/Announcements
+ * convention; `createdAt`/`updatedAt` arrive as ISO strings over JSON.
+ */
+export interface TenantEvent {
+  id: string;
+  titles: RequestTranslationMap;
+  descriptions: RequestTranslationMap;
+  /** API-relative `files/{key}` paths — prefix with assetUrl(). */
+  photoThumbUrl: string | null;
+  photoDetailUrl: string | null;
+  /** Hotel-local 'YYYY-MM-DD HH:MM' strings (never UTC). */
+  startAtLocal: string;
+  endAtLocal: string | null;
+  locationText: string;
+  /** Optional "details in Hotel Info" deep-link chip. */
+  infoEntryId: string | null;
+  /** Null = unlimited attendance. */
+  capacity: number | null;
+  price: number;
+  /** `[]` = paid for everyone; non-empty = included for those stay types. */
+  includedFor: StayType[];
+  status: EventStatus;
+  cancelReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** GET /tenant/events — one row (`EventListItemView`); adds the live booked-party-size count. */
+export interface TenantEventListItem extends TenantEvent {
+  /** SUM(partySize) of `status='booked'` bookings — never exceeds `capacity` when set. */
+  bookedCount: number;
+}
+
+/** GET /tenant/events?tab=... response. */
+export interface TenantEventsListResponse {
+  data: TenantEventListItem[];
+}
+
+/** One row of GET /tenant/events/:eventId/attendees — resolved live, not snapshotted. */
+export interface TenantEventBooking {
+  guestName: string;
+  roomNumber: string;
+  partySize: number;
+  /** Null = fully-included booking, no payment step. */
+  paymentMethod: FnbPaymentMethod | null;
+  bookedAt: string;
+  status: EventBookingStatus;
+}
+
+/** GET /tenant/events/:eventId/attendees — read-only list + live totals. */
+export interface EventAttendeesResponse {
+  event: TenantEvent;
+  bookings: TenantEventBooking[];
+  totals: {
+    /** SUM(partySize) of `status='booked'` bookings. */
+    booked: number;
+    capacity: number | null;
+    /** Active, unsettled cash bookings' totalAmount sum. */
+    expectedCash: number;
+    /** Active, unsettled room-charge bookings' totalAmount sum. */
+    expectedRoomCharge: number;
+  };
+}

@@ -3,6 +3,7 @@ import auth from './auth.json';
 import branding from './branding.json';
 import common from './common.json';
 import errors from './errors.json';
+import events from './events.json';
 import fnb from './fnb.json';
 import guidance from './guidance.json';
 import hotelInfo from './hotelInfo.json';
@@ -23,6 +24,7 @@ const messages = {
   branding,
   common,
   errors,
+  events,
   fnb,
   guidance,
   hotelInfo,
