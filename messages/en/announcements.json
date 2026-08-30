@@ -15,6 +15,7 @@
     "sentAt": "Sent {time}",
     "scheduledFor": "Scheduled for {time}",
     "audienceColumn": "Audience",
+    "autoBadge": "Auto · event",
     "actions": {
       "view": "Details",
       "edit": "Edit",

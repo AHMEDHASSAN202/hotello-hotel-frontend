@@ -793,6 +793,9 @@ export type AnnouncementStatus =
   | 'retracted'
   | 'expired';
 
+/** Epic 21 — set when an event publish/cancel auto-created this announcement. */
+export type AnnouncementSource = 'event_publish' | 'event_cancel';
+
 /**
  * The stored audience FILTER (19.1 AC3 — dynamic, never a snapshot). Empty
  * object = all current guests; `stayId` is exclusive with the other
@@ -826,6 +829,8 @@ export interface TenantAnnouncement {
   audienceStay: { guestName: string; roomNumber: string } | null;
   /** "قرأه 34 من 62" — reads / currently-matching audience, live-computed. */
   stats: { reads: number; audienceNow: number };
+  /** null = manually composed; set = auto-created by an event publish/cancel (Epic 21). */
+  source: AnnouncementSource | null;
 }
 
 /* ---- Housekeeping (Epic 20) ---- */

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import en from '../../../../../../messages/en';
@@ -53,6 +53,7 @@ const makeAnnouncement = (o: Partial<TenantAnnouncement> = {}): TenantAnnounceme
   updatedAt: '2026-01-15T09:00:00.000Z',
   audienceStay: null,
   stats: { reads: 34, audienceNow: 62 },
+  source: null,
   ...o,
 });
 
@@ -156,6 +157,25 @@ describe('AnnouncementsPage', () => {
     const compose = screen.getByText(en.announcements.list.compose).closest('button');
     expect(compose?.hasAttribute('disabled')).toBe(true);
     expect(compose?.getAttribute('title')).toBe(en.announcements.readOnlyHint);
+  });
+
+  it('Task 18 (21) — badges auto-generated event announcements, not manual ones', async () => {
+    stubApi([
+      makeAnnouncement({
+        id: 'ann-auto',
+        source: 'event_publish',
+        titles: { en: 'Cooking class starts soon', ar: 'درس الطبخ يبدأ قريبًا' },
+      }),
+      makeAnnouncement({ id: 'ann-manual', source: null }),
+    ]);
+    renderPage();
+    await screen.findByText('Cooking class starts soon');
+    await screen.findByText('Pool closed tomorrow');
+    expect(screen.getAllByText(en.announcements.list.autoBadge).length).toBe(1);
+    const autoRow = screen.getByTestId('announcement-row-ann-auto');
+    const manualRow = screen.getByTestId('announcement-row-ann-manual');
+    expect(within(autoRow).queryByText(en.announcements.list.autoBadge)).toBeTruthy();
+    expect(within(manualRow).queryByText(en.announcements.list.autoBadge)).toBeNull();
   });
 
   it('empty state renders the designed empty with CTA', async () => {

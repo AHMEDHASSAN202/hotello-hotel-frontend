@@ -15,6 +15,7 @@
     "sentAt": "أُرسل {time}",
     "scheduledFor": "مجدول في {time}",
     "audienceColumn": "الجمهور",
+    "autoBadge": "تلقائي · فعالية",
     "actions": {
       "view": "التفاصيل",
       "edit": "تعديل",

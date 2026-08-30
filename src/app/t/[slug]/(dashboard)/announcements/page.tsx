@@ -10,7 +10,7 @@ import { audienceSummary } from '@/components/announcements/audience-summary';
 import { AnnouncementStatusBadge } from '@/components/announcements/status-badge';
 import { ConfirmModal, ConsequenceNote, HintCard, InfoTip, PageIntro } from '@/components/guidance';
 import { useTenant } from '@/components/tenant-provider';
-import { Button, EmptyState, ErrorState, Skeleton } from '@/components/ui';
+import { Badge, Button, EmptyState, ErrorState, Skeleton } from '@/components/ui';
 import { api } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
 import { useFormatters } from '@/i18n/use-format';
@@ -187,6 +187,7 @@ export default function AnnouncementsPage() {
                     </span>
                   ) : null}
                   <AnnouncementStatusBadge status={a.status} />
+                  {a.source ? <Badge tone="neutral">{t('list.autoBadge')}</Badge> : null}
                 </div>
                 <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-soft">
                   <span>
