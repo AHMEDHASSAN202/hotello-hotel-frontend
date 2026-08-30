@@ -131,6 +131,11 @@
     "checkedOutAt": "Checked out",
     "notSet": "—",
     "loadError": "We couldn't load this stay.",
+    "unsettledCheck": {
+      "failedTitle": "We couldn't check for unpaid charges",
+      "failedBody": "This stay may still have uncollected room charges. Check-out is on hold until we can confirm the amount.",
+      "blockedHint": "Check-out stays unavailable until the unpaid charges are verified."
+    },
     "actions": {
       "edit": "Edit details",
       "extend": "Change dates",

@@ -215,6 +215,52 @@ describe('StayDetailModal — F&B orders (16.8) + combined settlement (21.6 AC2)
     ).toBe(true);
   });
 
+  it('failed unsettled fetch — warns, holds checkout, and recovers on retry (final-review money-correctness)', async () => {
+    // A swallowed failure used to look exactly like "nothing owed": no
+    // banner, and `checkout()` skipping the settle step — a transient 500
+    // could check a stay out with uncollected room charges.
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        throw new Error('boom');
+      if (path.includes('/tenant/fnb-orders/stay/stay-1'))
+        return { data: [RC_ORDER], unsettledTotal: 460 };
+      return {};
+    });
+    renderModal();
+
+    expect(
+      await screen.findByText("We couldn't check for unpaid charges"),
+    ).toBeTruthy();
+    const checkoutButton = screen.getByRole('button', {
+      name: 'Check out',
+    }) as HTMLButtonElement;
+    expect(checkoutButton.disabled).toBe(true);
+
+    // Retry succeeds → the warning clears, the real total shows, and
+    // checkout is available again.
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.endsWith('/tenant/stays/stay-1/unsettled'))
+        return { total: 610, byKey: { fnb: 460, events: 150 } };
+      if (path.includes('/tenant/fnb-orders/stay/stay-1'))
+        return { data: [RC_ORDER], unsettledTotal: 460 };
+      return {};
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+
+    expect(
+      await screen.findByText(/Unsettled room charges: EGP\s*610/),
+    ).toBeTruthy();
+    await waitFor(() => {
+      expect(
+        screen.queryByText("We couldn't check for unpaid charges"),
+      ).toBeNull();
+      expect(
+        (screen.getByRole('button', { name: 'Check out' }) as HTMLButtonElement)
+          .disabled,
+      ).toBe(false);
+    });
+  });
+
   it('no checkout permission — the combined unsettled endpoint is never called', async () => {
     tenant.hasPermission.mockImplementation((key: string) => key !== 'stays.checkout');
     renderModal();

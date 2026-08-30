@@ -8,6 +8,7 @@ import { RoomPicker } from '@/components/stays/room-picker';
 import { useTenant } from '@/components/tenant-provider';
 import {
   Badge,
+  Banner,
   Button,
   Code,
   ErrorState,
@@ -100,11 +101,27 @@ export function StayDetailModal({
   // single settle action it drives; independent of the F&B module gate
   // above since it needs only `stays.checkout` (backend's own precedent).
   const [unsettled, setUnsettled] = useState<StayUnsettledView | null>(null);
+  /**
+   * Final-review fix (money-correctness) — a failed unsettled fetch used to
+   * be swallowed into `null`, which reads exactly like "nothing owed": the
+   * banner disappeared AND the checkout interlock silently stopped
+   * settling, so a transient 500 could check a stay out with uncollected
+   * room charges. A failure is now its own state: we say we couldn't verify,
+   * offer a retry, and hold checkout until a fetch succeeds.
+   */
+  const [unsettledFailed, setUnsettledFailed] = useState(false);
 
   const loadUnsettled = useCallback((stayId: string) => {
+    setUnsettledFailed(false);
     api<StayUnsettledView>(`/tenant/stays/${stayId}/unsettled`)
-      .then(setUnsettled)
-      .catch(() => setUnsettled(null));
+      .then((result) => {
+        setUnsettled(result);
+        setUnsettledFailed(false);
+      })
+      .catch(() => {
+        setUnsettled(null);
+        setUnsettledFailed(true);
+      });
   }, []);
 
   useEffect(() => {
@@ -115,6 +132,7 @@ export function StayDetailModal({
     setConfirming(null);
     setFnbOrders(null);
     setUnsettled(null);
+    setUnsettledFailed(false);
     if (stay && isModuleEnabled('fnb') && hasPermission('fnb_orders.read')) {
       api<StayFnbOrdersResponse>(`/tenant/fnb-orders/stay/${stay.id}`)
         .then(setFnbOrders)
@@ -271,7 +289,10 @@ export function StayDetailModal({
   }
 
   function checkout() {
-    if (!current) return;
+    // The interlock, enforced at the action itself and not only on the
+    // button: without a verified total we cannot settle what's owed, so we
+    // don't check out either.
+    if (!current || unsettledFailed) return;
     run(
       async () => {
         // 16.8 AC2 / 21.6 AC2 — the interlock: settling the combined F&B +
@@ -465,6 +486,31 @@ export function StayDetailModal({
             </div>
           )}
 
+          {/*
+            The unsettled check failed — say so instead of rendering the
+            "nothing owed" silence, and keep checkout on hold (below) until a
+            retry succeeds. Money-correctness beats convenience: the desk can
+            still edit/extend/move the stay meanwhile.
+          */}
+          {unsettledFailed && canCheckout && (
+            <div className="mt-4">
+              <Banner
+                variant="warning"
+                title={t('unsettledCheck.failedTitle')}
+                action={
+                  <Button
+                    variant="ghost"
+                    onClick={() => loadUnsettled(current.id)}
+                  >
+                    {tCommon('actions.retry')}
+                  </Button>
+                }
+              >
+                {t('unsettledCheck.failedBody')}
+              </Banner>
+            </div>
+          )}
+
           {error && (
             <p role="alert" className="mt-3 text-sm text-danger">
               {error}
@@ -513,8 +559,12 @@ export function StayDetailModal({
                 <Button
                   variant="danger"
                   onClick={() => setConfirming('checkout')}
-                  disabled={readOnly}
-                  title={disabledHint}
+                  disabled={readOnly || unsettledFailed}
+                  title={
+                    unsettledFailed
+                      ? t('unsettledCheck.blockedHint')
+                      : disabledHint
+                  }
                 >
                   {t('actions.checkout')}
                 </Button>
