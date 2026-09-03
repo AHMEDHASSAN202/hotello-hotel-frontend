@@ -105,7 +105,7 @@
   },
   "balances": {
     "outstandingTab": "المستحقات الحالية",
-    "leakageTab": "المفقودة",
+    "leakageTab": "المستحقات المشطوبة",
     "departingToday": "المغادرون اليوم وعليهم مستحقات",
     "departingTodayTotal": "المبلغ المستحق على المغادرين اليوم",
     "room": "الغرفة",
@@ -120,7 +120,7 @@
     "confirmBody": "سيتم تسجيل {amount} كمبلغ مُحصَّل لهذه الإقامة. لا يمكن التراجع عن هذا الإجراء.",
     "settleError": "تعذّرت تسوية هذا المستحق. حاول مرة أخرى.",
     "totalLost": "إجمالي المبلغ المشطوب",
-    "checkedOutAt": "تاريخ المغادرة",
+    "checkedOutAt": "وقت المغادرة",
     "type": "النوع",
     "checkoutType": {
       "manual": "يدوي",
