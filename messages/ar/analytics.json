@@ -26,6 +26,7 @@
     "avgCompletion": "متوسط زمن الإنجاز",
     "byCategory": "حسب الفئة",
     "byItem": "حسب العنصر",
+    "volumeByDay": "الطلبات يوميًا",
     "completionBuckets": "توزيع زمن الإنجاز",
     "cancellations": "الإلغاءات",
     "table": {

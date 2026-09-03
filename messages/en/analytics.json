@@ -26,6 +26,7 @@
     "avgCompletion": "Avg. completion time",
     "byCategory": "By category",
     "byItem": "By item",
+    "volumeByDay": "Requests per day",
     "completionBuckets": "Completion time breakdown",
     "cancellations": "Cancellations",
     "table": {
