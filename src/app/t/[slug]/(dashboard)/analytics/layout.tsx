@@ -22,6 +22,9 @@ import { DEMO_ANALYTICS } from '@/lib/demo-analytics';
  */
 const TABS: { segment: string; labelKey: string }[] = [
   { segment: '', labelKey: 'overview' },
+  { segment: 'guests', labelKey: 'guests' },
+  { segment: 'services', labelKey: 'services' },
+  { segment: 'housekeeping', labelKey: 'housekeeping' },
 ];
 
 export default function AnalyticsLayout({ children }: { children: ReactNode }) {

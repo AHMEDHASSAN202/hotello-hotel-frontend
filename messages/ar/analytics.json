@@ -3,7 +3,55 @@
   "intro": "الإشغال، وأداء الخدمة، والتدبير المنزلي، والإيرادات — كل ما جرى في نوبة الأمس، في شاشة واحدة.",
   "tabsLabel": "تبويبات التقرير",
   "tabs": {
-    "overview": "نظرة عامة"
+    "overview": "نظرة عامة",
+    "guests": "الضيوف",
+    "services": "الخدمات",
+    "housekeeping": "التدبير المنزلي"
+  },
+  "guests": {
+    "arrivals": "الوافدون",
+    "departures": "المغادرون",
+    "inHouseNow": "المقيمون حاليًا",
+    "avgLengthOfStay": "متوسط مدة الإقامة (أيام)",
+    "roomChanges": "تغييرات الغرف",
+    "occupied": "المشغولة",
+    "totalRooms": "إجمالي الغرف",
+    "stayTypes": "حسب نوع الإقامة",
+    "languages": "حسب اللغة"
+  },
+  "services": {
+    "received": "الطلبات الواردة",
+    "completed": "الطلبات المكتملة",
+    "slaBreachRate": "نسبة تجاوز اتفاقية مستوى الخدمة",
+    "avgCompletion": "متوسط زمن الإنجاز",
+    "byCategory": "حسب الفئة",
+    "byItem": "حسب العنصر",
+    "completionBuckets": "توزيع زمن الإنجاز",
+    "cancellations": "الإلغاءات",
+    "table": {
+      "category": "الفئة",
+      "count": "العدد",
+      "slaCompliance": "الالتزام باتفاقية مستوى الخدمة",
+      "avgCompletion": "متوسط الإنجاز (دقيقة)",
+      "item": "العنصر"
+    },
+    "cancellationReasons": "أسباب الإلغاء"
+  },
+  "housekeeping": {
+    "avgFlagToClean": "متوسط الزمن من التعليم إلى التنظيف",
+    "dndCleared": "رُفع عنها عدم الإزعاج",
+    "dndNow": "عدم الإزعاج الآن",
+    "cleanedByDay": "المنظَّفة حسب اليوم",
+    "checkout": "المغادرة",
+    "daily": "اليومية",
+    "attendants": "أفراد التدبير المنزلي",
+    "attendantsGuidance": "توزيع عبء العمل — وليس ترتيبًا تنافسيًا",
+    "table": {
+      "attendant": "الاسم",
+      "completed": "المكتملة",
+      "perDay": "في اليوم"
+    },
+    "dataSince": "البيانات مُجمَّعة منذ {date}"
   },
   "overview": {
     "occupancy": {

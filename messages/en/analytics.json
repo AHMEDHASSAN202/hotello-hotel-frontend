@@ -3,7 +3,55 @@
   "intro": "Occupancy, service performance, housekeeping, and revenue — everything from last night's shift in one view.",
   "tabsLabel": "Report tabs",
   "tabs": {
-    "overview": "Overview"
+    "overview": "Overview",
+    "guests": "Guests",
+    "services": "Services",
+    "housekeeping": "Housekeeping"
+  },
+  "guests": {
+    "arrivals": "Arrivals",
+    "departures": "Departures",
+    "inHouseNow": "In-house now",
+    "avgLengthOfStay": "Avg. length of stay (days)",
+    "roomChanges": "Room changes",
+    "occupied": "Occupied",
+    "totalRooms": "Total rooms",
+    "stayTypes": "By stay type",
+    "languages": "By language"
+  },
+  "services": {
+    "received": "Requests received",
+    "completed": "Requests completed",
+    "slaBreachRate": "SLA breach rate",
+    "avgCompletion": "Avg. completion time",
+    "byCategory": "By category",
+    "byItem": "By item",
+    "completionBuckets": "Completion time breakdown",
+    "cancellations": "Cancellations",
+    "table": {
+      "category": "Category",
+      "count": "Count",
+      "slaCompliance": "SLA compliance",
+      "avgCompletion": "Avg. completion (min)",
+      "item": "Item"
+    },
+    "cancellationReasons": "Cancellation reasons"
+  },
+  "housekeeping": {
+    "avgFlagToClean": "Avg. flag-to-clean time",
+    "dndCleared": "DND cleared",
+    "dndNow": "DND now",
+    "cleanedByDay": "Cleaned by day",
+    "checkout": "Checkout",
+    "daily": "Daily",
+    "attendants": "Attendants",
+    "attendantsGuidance": "Workload distribution — not a ranking",
+    "table": {
+      "attendant": "Attendant",
+      "completed": "Completed",
+      "perDay": "Per day"
+    },
+    "dataSince": "Data collected since {date}"
   },
   "overview": {
     "occupancy": {
