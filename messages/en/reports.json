@@ -1,0 +1,21 @@
+{
+  "period": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "last7": "Last 7 days",
+    "last30": "Last 30 days",
+    "custom": "Custom range",
+    "from": "From",
+    "to": "To"
+  },
+  "delta": {
+    "vsPrevious": "vs previous period",
+    "vsYesterday": "vs same time yesterday"
+  },
+  "basis": {
+    "delivered_only": "Delivered orders only",
+    "events_starting_in_period": "Events starting in this period",
+    "delivered_booked": "Delivered orders and booked events"
+  },
+  "sampleDataLabel": "Sample data"
+}

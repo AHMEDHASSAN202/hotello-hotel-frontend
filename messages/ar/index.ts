@@ -10,6 +10,7 @@ import hotelInfo from './hotelInfo.json';
 import hotelSettings from './hotelSettings.json';
 import housekeeping from './housekeeping.json';
 import profile from './profile.json';
+import reports from './reports.json';
 import requests from './requests.json';
 import roles from './roles.json';
 import rooms from './rooms.json';
@@ -32,6 +33,7 @@ const messages = {
   hotelSettings,
   housekeeping,
   profile,
+  reports,
   requests,
   roles,
   rooms,

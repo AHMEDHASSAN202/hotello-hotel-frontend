@@ -17,6 +17,7 @@ import { RequestDetailModal } from '@/components/requests/request-detail-modal';
 import { isOpen, orderBoard, slaState } from '@/components/requests/board-logic';
 import { playRequestChime } from '@/components/requests/chime';
 import { useRequestsFeed } from '@/components/requests/requests-feed-provider';
+import { StatTile } from '@/components/reports/stat-tile';
 import { useTenant } from '@/components/tenant-provider';
 import {
   Badge,
@@ -248,22 +249,17 @@ export default function RequestsPage() {
               ['overdueNow', counts.overdueNow, 'danger'],
             ] as const
           ).map(([key, value, tone]) => (
-            <div
+            <StatTile
               key={key}
-              className="rounded-xl border border-line bg-white px-4 py-3"
-            >
-              <p className="flex items-center gap-1 text-xs text-ink-soft">
-                {t(`stats.${key}`)}
-                <InfoTip label={t(`stats.${key}`)}>{tG(`stats.${key}`)}</InfoTip>
-              </p>
-              <p
-                className={`mt-1 font-display text-xl font-semibold tabular-nums ${
-                  tone === 'danger' && value > 0 ? 'text-danger' : 'text-ink'
-                }`}
-              >
-                {value}
-              </p>
-            </div>
+              label={
+                <>
+                  {t(`stats.${key}`)}
+                  <InfoTip label={t(`stats.${key}`)}>{tG(`stats.${key}`)}</InfoTip>
+                </>
+              }
+              value={value}
+              tone={tone}
+            />
           ))}
         </div>
       ) : null}
