@@ -29,12 +29,23 @@ export const DEMO_ANALYTICS: OverviewReport = {
     openNow: 6,
     avgCompletionMinutes: { value: 24.5, deltaPct: -9.2, previous: 27 },
     slaBreachRatePct: { value: 4.2, deltaPct: -1.5, previous: 5.7 },
+    // Task F4 — both languages populated: this fixture is shown to EVERY
+    // hotel considering the upgrade, in both languages (same locale-aware
+    // `nameFor` resolution as the live report data).
     topItems: [
-      { itemId: 'towels', names: { en: 'Extra towels' }, count: 28 },
-      { itemId: 'housekeeping-clean', names: { en: 'Room cleaning' }, count: 22 },
-      { itemId: 'wake-up', names: { en: 'Wake-up call' }, count: 17 },
-      { itemId: 'maintenance', names: { en: 'Maintenance' }, count: 11 },
-      { itemId: 'transport', names: { en: 'Airport transfer' }, count: 9 },
+      { itemId: 'towels', names: { en: 'Extra towels', ar: 'مناشف إضافية' }, count: 28 },
+      {
+        itemId: 'housekeeping-clean',
+        names: { en: 'Room cleaning', ar: 'تنظيف الغرفة' },
+        count: 22,
+      },
+      { itemId: 'wake-up', names: { en: 'Wake-up call', ar: 'خدمة الإيقاظ' }, count: 17 },
+      { itemId: 'maintenance', names: { en: 'Maintenance', ar: 'الصيانة' }, count: 11 },
+      {
+        itemId: 'transport',
+        names: { en: 'Airport transfer', ar: 'التوصيل من المطار' },
+        count: 9,
+      },
     ],
   },
   housekeeping: { cleanedToday: 21, needingCleaning: 5, inProgress: 3, dnd: 2 },

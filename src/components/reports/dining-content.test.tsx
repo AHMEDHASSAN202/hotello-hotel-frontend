@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it } from 'vitest';
+import ar from '../../../messages/ar';
 import en from '../../../messages/en';
 import type { DiningReport } from '@/lib/types';
 import { DiningContent } from './dining-content';
@@ -19,7 +20,7 @@ const FIXTURE: DiningReport = {
   revenueTotal: 9300,
   avgOrderValue: 232.5,
   topItems: [
-    { itemId: 'item-1', names: { en: 'Grilled Chicken' }, qty: 15, revenue: 3000 },
+    { itemId: 'item-1', names: { en: 'Grilled Chicken', ar: 'دجاج مشوي' }, qty: 15, revenue: 3000 },
     { itemId: 'item-2', names: { en: 'Caesar Salad' }, qty: 10, revenue: 1200 },
   ],
   includedConsumption: [
@@ -27,7 +28,13 @@ const FIXTURE: DiningReport = {
   ],
   byZone: [
     { destinationType: 'room', locationKey: null, names: null, revenue: 6000, orders: 25 },
-    { destinationType: 'location', locationKey: 'pool', names: { en: 'Pool Bar' }, revenue: 3300, orders: 15 },
+    {
+      destinationType: 'location',
+      locationKey: 'pool',
+      names: { en: 'Pool Bar', ar: 'بار المسبح' },
+      revenue: 3300,
+      orders: 15,
+    },
   ],
   paymentSplit: { cash: 4000, roomCharge: 5300 },
   cancellations: { count: 3, reasons: [{ reason: 'duplicate', count: 2 }] },
@@ -37,6 +44,14 @@ const FIXTURE: DiningReport = {
 function renderContent(report: DiningReport = FIXTURE) {
   return render(
     <NextIntlClientProvider locale="en" messages={en} timeZone="Africa/Cairo">
+      <DiningContent report={report} />
+    </NextIntlClientProvider>,
+  );
+}
+
+function renderContentAr(report: DiningReport = FIXTURE) {
+  return render(
+    <NextIntlClientProvider locale="ar" messages={ar} timeZone="Africa/Cairo">
       <DiningContent report={report} />
     </NextIntlClientProvider>,
   );
@@ -96,12 +111,30 @@ describe('DiningContent (Task F2c, Part 2)', () => {
     expect(screen.getByText(en.analytics.dining.includedConsumption)).toBeTruthy();
   });
 
-  it('byZone table renders "Room" for destinationType==="room" and the English-preferred zone name otherwise', () => {
+  it('byZone table renders "Room" for destinationType==="room" and the locale-resolved zone name otherwise', () => {
     renderContent();
     expect(screen.getByText(en.analytics.dining.zoneRoom)).toBeTruthy();
     expect(screen.getByText('Pool Bar')).toBeTruthy();
     expect(screen.getByText('EGP 6,000.00')).toBeTruthy();
     expect(screen.getByText('EGP 3,300.00')).toBeTruthy();
+  });
+
+  it(
+    'Task F4 — an Arabic-locale render shows Arabic item/zone names (not English), matching the ' +
+      'locale-aware resolution used by the guests/services tabs',
+    () => {
+      renderContentAr();
+      expect(screen.getByText('دجاج مشوي')).toBeTruthy();
+      expect(screen.queryByText('Grilled Chicken')).toBeNull();
+      expect(screen.getByText('بار المسبح')).toBeTruthy();
+      expect(screen.queryByText('Pool Bar')).toBeNull();
+    },
+  );
+
+  it('Task F4 — falls back to English when an Arabic name is absent for the active locale', () => {
+    renderContentAr();
+    // item-2 ('Caesar Salad') has no `ar` key in the fixture.
+    expect(screen.getByText('Caesar Salad')).toBeTruthy();
   });
 
   it('cancellations renders the count stat tile and translated reason labels', () => {

@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { BasisFootnote } from './basis-footnote';
 import { StatTile } from './stat-tile';
 import { useFormatters } from '@/i18n/use-format';
@@ -10,12 +10,14 @@ export interface EventsContentProps {
 }
 
 /**
- * English-preferred name fallback — same convention as Dining's by-zone
- * table (this epic's backend report-adapter convention), deliberately not
- * the locale-aware `nameFor` used by the guests/services tabs.
+ * Locale-aware name resolution — same convention as `OverviewContent`'s and
+ * `ServicesContent`'s `nameFor`: prefer the active locale, fall back to
+ * English. The backend sends both languages for event titles, so an
+ * Arabic-locale viewer must see Arabic titles here too (Task F4 — this used
+ * to be English-only, unlike the guests/services tabs).
  */
-function nameFor(titles: Record<string, string>): string {
-  return titles.en ?? Object.values(titles)[0] ?? '';
+function nameFor(titles: Record<string, string>, locale: string): string {
+  return (locale === 'ar' ? titles.ar : titles.en) ?? titles.en ?? '';
 }
 
 /**
@@ -33,6 +35,7 @@ function nameFor(titles: Record<string, string>): string {
 export function EventsContent({ report }: EventsContentProps) {
   const t = useTranslations('analytics.events');
   const { formatCurrency, formatNumber } = useFormatters();
+  const locale = useLocale();
 
   const sortedEvents: EventPerformance[] = [...report.events].sort(
     (a, b) => b.revenue - a.revenue,
@@ -77,7 +80,7 @@ export function EventsContent({ report }: EventsContentProps) {
               <tbody className="divide-y divide-line">
                 {sortedEvents.map((row) => (
                   <tr key={row.eventId}>
-                    <td className="px-4 py-3 font-medium text-ink">{nameFor(row.titles)}</td>
+                    <td className="px-4 py-3 font-medium text-ink">{nameFor(row.titles, locale)}</td>
                     <td className="px-4 py-3">{row.startAtLocal}</td>
                     <td className="px-4 py-3 tabular-nums">{formatNumber(row.booked)}</td>
                     {/* 22.3 AC2 — capacity is nullable (unlimited events). */}

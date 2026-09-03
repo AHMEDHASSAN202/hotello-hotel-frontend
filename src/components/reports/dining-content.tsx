@@ -1,5 +1,5 @@
 'use client';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { BarsByDay } from './charts/bars-by-day';
 import { SplitDonut } from './charts/split-donut';
 import { TrendLine } from './charts/trend-line';
@@ -13,14 +13,14 @@ export interface DiningContentProps {
 }
 
 /**
- * English-preferred name fallback — the same convention this epic's backend
- * report adapters use for free-form catalog names (`names.en ?? first value
- * ?? ''`), deliberately NOT the locale-aware `nameFor` used by the
- * guests/services tabs (Task F2b). No shared helper for this one call site
- * per the task brief.
+ * Locale-aware name resolution — same convention as `OverviewContent`'s and
+ * `ServicesContent`'s `nameFor`: prefer the active locale, fall back to
+ * English. The backend sends both languages for these catalog names, so an
+ * Arabic-locale viewer must see Arabic names here too (Task F4 — this used
+ * to be English-only, unlike the guests/services tabs).
  */
-function nameFor(names: Record<string, string>): string {
-  return names.en ?? Object.values(names)[0] ?? '';
+function nameFor(names: Record<string, string>, locale: string): string {
+  return (locale === 'ar' ? names.ar : names.en) ?? names.en ?? '';
 }
 
 /**
@@ -40,6 +40,7 @@ export function DiningContent({ report }: DiningContentProps) {
   const tCancelReason = useTranslations('requests.cancelReason');
   const tPaymentMethod = useTranslations('reports.paymentMethod');
   const { formatCurrency, formatNumber } = useFormatters();
+  const locale = useLocale();
 
   return (
     <div className="space-y-8">
@@ -89,7 +90,7 @@ export function DiningContent({ report }: DiningContentProps) {
               <tbody className="divide-y divide-line">
                 {report.topItems.map((row) => (
                   <tr key={row.itemId}>
-                    <td className="px-4 py-3">{nameFor(row.names)}</td>
+                    <td className="px-4 py-3">{nameFor(row.names, locale)}</td>
                     <td className="px-4 py-3 tabular-nums">{formatNumber(row.qty)}</td>
                     <td className="px-4 py-3 tabular-nums">
                       {formatCurrency(row.revenue, report.currency)}
@@ -125,7 +126,7 @@ export function DiningContent({ report }: DiningContentProps) {
               <tbody className="divide-y divide-line">
                 {report.includedConsumption.map((row) => (
                   <tr key={row.itemId}>
-                    <td className="px-4 py-3">{nameFor(row.names)}</td>
+                    <td className="px-4 py-3">{nameFor(row.names, locale)}</td>
                     <td className="px-4 py-3 tabular-nums">{formatNumber(row.qty)}</td>
                   </tr>
                 ))}
@@ -153,7 +154,7 @@ export function DiningContent({ report }: DiningContentProps) {
                     <td className="px-4 py-3">
                       {row.destinationType === 'room'
                         ? t('zoneRoom')
-                        : (row.names && nameFor(row.names)) || ''}
+                        : (row.names && nameFor(row.names, locale)) || ''}
                     </td>
                     <td className="px-4 py-3 tabular-nums">
                       {formatCurrency(row.revenue, report.currency)}

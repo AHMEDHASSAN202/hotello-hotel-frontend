@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it } from 'vitest';
+import ar from '../../../messages/ar';
 import en from '../../../messages/en';
 import type { EventsReport } from '@/lib/types';
 import { EventsContent } from './events-content';
@@ -12,7 +13,7 @@ const FIXTURE: EventsReport = {
   events: [
     {
       eventId: 'ev-1',
-      titles: { en: 'Poolside Party' },
+      titles: { en: 'Poolside Party', ar: 'حفلة المسبح' },
       startAtLocal: '2026-08-28 19:00',
       capacity: 60,
       booked: 40,
@@ -54,6 +55,14 @@ const FIXTURE: EventsReport = {
 function renderContent(report: EventsReport = FIXTURE) {
   return render(
     <NextIntlClientProvider locale="en" messages={en} timeZone="Africa/Cairo">
+      <EventsContent report={report} />
+    </NextIntlClientProvider>,
+  );
+}
+
+function renderContentAr(report: EventsReport = FIXTURE) {
+  return render(
+    <NextIntlClientProvider locale="ar" messages={ar} timeZone="Africa/Cairo">
       <EventsContent report={report} />
     </NextIntlClientProvider>,
   );
@@ -117,12 +126,20 @@ describe('EventsContent (Task F2c, Part 3)', () => {
     expect(names).toEqual(['Wine Tasting', 'Poolside Party', 'Kids Movie Night']);
   });
 
-  it('event titles use the English-preferred fallback (same convention as the by-zone table)', () => {
-    renderContent({
-      ...FIXTURE,
-      events: [{ ...FIXTURE.events[0], titles: { ar: 'حفلة المسبح' } }],
-    });
-    expect(screen.getByText('حفلة المسبح')).toBeTruthy();
+  it(
+    'Task F4 — an Arabic-locale render shows Arabic event titles (not English), matching the ' +
+      'locale-aware resolution used by the guests/services tabs',
+    () => {
+      renderContentAr();
+      expect(screen.getByText('حفلة المسبح')).toBeTruthy();
+      expect(screen.queryByText('Poolside Party')).toBeNull();
+    },
+  );
+
+  it('Task F4 — falls back to English when an Arabic title is absent for the active locale', () => {
+    renderContentAr();
+    // ev-2 ('Wine Tasting') has no `ar` key in the fixture.
+    expect(screen.getByText('Wine Tasting')).toBeTruthy();
   });
 
   it('renders the events_starting_in_period BasisFootnote', () => {
