@@ -192,6 +192,7 @@
     "settingsIntro": "Each morning at this hour, occupied rooms flag themselves for daily service and Do-Not-Disturb lifts — in your hotel's local time."
   },
   "reports": {
-    "housekeepingWorkload": "Shown to understand today's workload distribution across the team — not a performance ranking."
+    "housekeepingWorkload": "Shown to understand today's workload distribution across the team — not a performance ranking.",
+    "busiestHoursTip": "Shows how guest requests are distributed across the day, in your hotel's local time — use it to staff shifts around your peak hours."
   }
 }

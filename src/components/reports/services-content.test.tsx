@@ -101,4 +101,23 @@ describe('ServicesContent (Task F2b, Part 3)', () => {
     expect(screen.getByText('5')).toBeTruthy();
     expect(screen.getByText(en.requests.cancelReason.duplicate)).toBeTruthy();
   });
+
+  it('Task F5 — the busiest-hours strip has a real section heading and a translated (non-hardcoded) aria-label', () => {
+    renderContent();
+    expect(screen.getByText(en.analytics.services.busiestHours)).toBeTruthy();
+    expect(
+      screen.getByRole('img', { name: en.analytics.services.busiestHours }),
+    ).toBeTruthy();
+  });
+
+  it('Task F5 — the peak hour is visible as text near the heading, not locked behind hover-only tooltips', () => {
+    renderContent();
+    const expected = en.analytics.services.busiestHoursPeak.replace('{range}', '12:00–13:00');
+    expect(screen.getByText(expected)).toBeTruthy();
+  });
+
+  it('Task F5 — no peak-hour callout renders when every bucket is zero', () => {
+    renderContent({ ...FIXTURE, busiestHours: Array(24).fill(0) });
+    expect(screen.queryByText(/Busiest:/)).toBeNull();
+  });
 });

@@ -37,6 +37,8 @@
     "byCategory": "By category",
     "byItem": "By item",
     "volumeByDay": "Requests per day",
+    "busiestHours": "Busiest hours",
+    "busiestHoursPeak": "Busiest: {range}",
     "completionBuckets": "Completion time breakdown",
     "cancellations": "Cancellations",
     "table": {

@@ -5,9 +5,24 @@ import { BarsByDay } from './charts/bars-by-day';
 import { HeatStrip } from './charts/heat-strip';
 import { MiniBar } from './charts/mini-bar';
 import { StatTile } from './stat-tile';
+import { InfoTip } from '@/components/guidance';
 import { useFormatters } from '@/i18n/use-format';
 import { requestsReportLink } from '@/lib/report-links';
 import type { RequestsReport } from '@/lib/types';
+
+/**
+ * The single busiest hour, formatted as an "HH:00–HH:00" range — Task F5:
+ * the KEY information from the heat strip must be visible as text, not
+ * locked behind the per-bar hover-only tooltip. `null` when every bucket is
+ * zero (nothing to call out).
+ */
+function peakHourRange(hours: number[]): string | null {
+  const max = Math.max(...hours);
+  if (max <= 0) return null;
+  const hour = hours.indexOf(max);
+  const pad = (h: number) => String(h % 24).padStart(2, '0');
+  return `${pad(hour)}:00–${pad(hour + 1)}:00`;
+}
 
 export interface ServicesContentProps {
   report: RequestsReport;
@@ -31,6 +46,7 @@ function nameFor(names: Record<string, string>, locale: string): string {
 export function ServicesContent({ report, slug }: ServicesContentProps) {
   const t = useTranslations('analytics.services');
   const tCancelReason = useTranslations('requests.cancelReason');
+  const tGuidance = useTranslations('guidance.reports');
   const locale = useLocale();
   const { formatNumber } = useFormatters();
 
@@ -38,6 +54,8 @@ export function ServicesContent({ report, slug }: ServicesContentProps) {
     label: b.label,
     value: b.count,
   }));
+
+  const peakRange = peakHourRange(report.busiestHours);
 
   return (
     <div className="space-y-8">
@@ -70,7 +88,20 @@ export function ServicesContent({ report, slug }: ServicesContentProps) {
       </section>
 
       <section>
-        <HeatStrip hours={report.busiestHours} />
+        {/* Task F5 — a proper heading + InfoTip (matching the sub-section
+            heading pattern used elsewhere on this page, e.g. byCategory),
+            plus a visible peak-hour callout so the key information isn't
+            locked behind the strip's hover-only per-bar tooltip. */}
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <h3 className="text-xs font-medium text-ink-soft">{t('busiestHours')}</h3>
+          <InfoTip label={t('busiestHours')}>{tGuidance('busiestHoursTip')}</InfoTip>
+          {peakRange && (
+            <span className="text-xs text-ink-soft">
+              {t('busiestHoursPeak', { range: peakRange })}
+            </span>
+          )}
+        </div>
+        <HeatStrip hours={report.busiestHours} label={t('busiestHours')} />
       </section>
 
       {report.byCategory.length > 0 && (
