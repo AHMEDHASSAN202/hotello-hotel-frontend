@@ -242,6 +242,11 @@ export interface Room {
    * lacks `stays.read` (field absent), `null` when vacant.
    */
   currentStay?: RoomOccupancy | null;
+  /**
+   * Epic 22, 22.4 AC4 — same hasBalance-aware decoration as `Stay`; absent
+   * unless the list was fetched with it, `0` renders no badge.
+   */
+  unsettledTotal?: number;
 }
 
 /** The occupancy chip on the rooms list/detail (Epic 13). */
@@ -361,6 +366,12 @@ export interface Stay {
   checkoutType: CheckoutType | null;
   checkedOutAt: string | null;
   createdAt: string;
+  /**
+   * Epic 22, 22.4 AC4 — present only when the list was fetched with the
+   * hasBalance-aware endpoint decoration; absent (not undefined) otherwise.
+   * When present, `0` means "no balance" — only `> 0` should render a badge.
+   */
+  unsettledTotal?: number;
 }
 
 /** GET /tenant/stays?view=active — the whole board, room natural order. */

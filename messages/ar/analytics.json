@@ -9,7 +9,8 @@
     "housekeeping": "التدبير المنزلي",
     "dining": "المطاعم",
     "events": "الفعاليات",
-    "totals": "الإجماليات"
+    "totals": "الإجماليات",
+    "balances": "المستحقات"
   },
   "revenue": {
     "noAccess": {
@@ -101,6 +102,38 @@
     "dining": "المطاعم",
     "events": "الفعاليات",
     "total": "الإجمالي"
+  },
+  "balances": {
+    "outstandingTab": "المستحقات الحالية",
+    "leakageTab": "المفقودة",
+    "departingToday": "المغادرون اليوم وعليهم مستحقات",
+    "departingTodayTotal": "المبلغ المستحق على المغادرين اليوم",
+    "room": "الغرفة",
+    "guest": "الضيف",
+    "checkoutDate": "تاريخ المغادرة",
+    "total": "الإجمالي",
+    "dining": "المطاعم",
+    "events": "الفعاليات",
+    "settle": "تسوية",
+    "confirmTitle": "هل تريد تسوية هذا المستحق؟",
+    "confirm": "تسوية",
+    "confirmBody": "سيتم تسجيل {amount} كمبلغ مُحصَّل لهذه الإقامة. لا يمكن التراجع عن هذا الإجراء.",
+    "settleError": "تعذّرت تسوية هذا المستحق. حاول مرة أخرى.",
+    "totalLost": "إجمالي المبلغ المشطوب",
+    "checkedOutAt": "تاريخ المغادرة",
+    "type": "النوع",
+    "checkoutType": {
+      "manual": "يدوي",
+      "automatic": "تلقائي"
+    },
+    "departsTodayBadge": "يغادر اليوم",
+    "loadError": "تعذّر تحميل تقرير المستحقات.",
+    "empty": {
+      "outstandingTitle": "لا توجد مستحقات حالية",
+      "outstandingHint": "جميع الإقامات الحالية مُسوّاة بالكامل.",
+      "leakageTitle": "لا توجد مبالغ مشطوبة في هذه الفترة",
+      "leakageHint": "لم تغادر أي إقامة خلال هذه الفترة بمستحق غير محصَّل."
+    }
   },
   "overview": {
     "occupancy": {

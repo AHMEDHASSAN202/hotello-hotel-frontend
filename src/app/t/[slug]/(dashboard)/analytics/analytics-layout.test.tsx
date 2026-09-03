@@ -83,7 +83,7 @@ describe('Analytics layout — locked composition (Story 22.6 AC1)', () => {
    * link out of the subnav so nobody navigates there in the first place.
    */
   describe('revenue tab visibility (Task F2c, Part 1)', () => {
-    it('a user WITHOUT reports.revenue sees only the 4 non-revenue tabs — dining/events/totals links absent from the DOM', () => {
+    it('a user WITHOUT reports.revenue sees only the 5 non-revenue tabs — dining/events/totals links absent from the DOM', () => {
       tenant.isModuleEnabled.mockReturnValue(true);
       tenant.hasPermission.mockImplementation((key: string) => key !== 'reports.revenue');
       renderLayout();
@@ -92,13 +92,16 @@ describe('Analytics layout — locked composition (Story 22.6 AC1)', () => {
       expect(screen.getByText(en.analytics.tabs.guests)).toBeTruthy();
       expect(screen.getByText(en.analytics.tabs.services)).toBeTruthy();
       expect(screen.getByText(en.analytics.tabs.housekeeping)).toBeTruthy();
+      // Task F2d — Balances is an operational report (Front Desk's primary
+      // audience), gated only by reports.read like guests/services/housekeeping.
+      expect(screen.getByText(en.analytics.tabs.balances)).toBeTruthy();
       expect(screen.queryByText(en.analytics.tabs.dining)).toBeNull();
       expect(screen.queryByText(en.analytics.tabs.events)).toBeNull();
       expect(screen.queryByText(en.analytics.tabs.totals)).toBeNull();
-      expect(nav.querySelectorAll('a').length).toBe(4);
+      expect(nav.querySelectorAll('a').length).toBe(5);
     });
 
-    it('a user WITH reports.revenue (or a wildcard admin permission) sees all 7 tabs, including dining/events/totals', () => {
+    it('a user WITH reports.revenue (or a wildcard admin permission) sees all 8 tabs, including dining/events/totals', () => {
       tenant.isModuleEnabled.mockReturnValue(true);
       tenant.hasPermission.mockReturnValue(true);
       renderLayout();
@@ -106,7 +109,7 @@ describe('Analytics layout — locked composition (Story 22.6 AC1)', () => {
       expect(screen.getByText(en.analytics.tabs.dining)).toBeTruthy();
       expect(screen.getByText(en.analytics.tabs.events)).toBeTruthy();
       expect(screen.getByText(en.analytics.tabs.totals)).toBeTruthy();
-      expect(nav.querySelectorAll('a').length).toBe(7);
+      expect(nav.querySelectorAll('a').length).toBe(8);
     });
   });
 });

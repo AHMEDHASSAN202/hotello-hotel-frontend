@@ -31,6 +31,7 @@ const TABS: { segment: string; labelKey: string; revenueOnly?: boolean }[] = [
   { segment: 'guests', labelKey: 'guests' },
   { segment: 'services', labelKey: 'services' },
   { segment: 'housekeeping', labelKey: 'housekeeping' },
+  { segment: 'balances', labelKey: 'balances' },
   { segment: 'dining', labelKey: 'dining', revenueOnly: true },
   { segment: 'events', labelKey: 'events', revenueOnly: true },
   { segment: 'totals', labelKey: 'totals', revenueOnly: true },

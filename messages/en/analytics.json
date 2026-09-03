@@ -9,7 +9,8 @@
     "housekeeping": "Housekeeping",
     "dining": "Dining",
     "events": "Events",
-    "totals": "Totals"
+    "totals": "Totals",
+    "balances": "Balances"
   },
   "revenue": {
     "noAccess": {
@@ -101,6 +102,38 @@
     "dining": "Dining",
     "events": "Events",
     "total": "Total"
+  },
+  "balances": {
+    "outstandingTab": "Outstanding",
+    "leakageTab": "Leakage",
+    "departingToday": "Departing today with a balance",
+    "departingTodayTotal": "Amount owed, departing today",
+    "room": "Room",
+    "guest": "Guest",
+    "checkoutDate": "Checkout date",
+    "total": "Total",
+    "dining": "Dining",
+    "events": "Events",
+    "settle": "Settle",
+    "confirmTitle": "Settle this balance?",
+    "confirm": "Settle",
+    "confirmBody": "This marks {amount} as collected for this stay. This can't be undone.",
+    "settleError": "We couldn't settle this balance. Please try again.",
+    "totalLost": "Total written off",
+    "checkedOutAt": "Checked out",
+    "type": "Type",
+    "checkoutType": {
+      "manual": "Manual",
+      "automatic": "Automatic"
+    },
+    "departsTodayBadge": "Departs today",
+    "loadError": "We couldn't load the balances report.",
+    "empty": {
+      "outstandingTitle": "No outstanding balances",
+      "outstandingHint": "Every current stay is fully settled.",
+      "leakageTitle": "No written-off balances in this period",
+      "leakageHint": "No stay checked out in this period with an uncollected balance."
+    }
   },
   "overview": {
     "occupancy": {
