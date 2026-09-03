@@ -97,6 +97,7 @@
     "collected": "Collected",
     "outstanding": "Outstanding",
     "byDay": "Revenue by day",
+    "byMethod": "Payment split",
     "dining": "Dining",
     "events": "Events",
     "total": "Total"
