@@ -91,7 +91,12 @@
     "booked": "Booked",
     "cancellationRate": "Cancellation rate",
     "event": "Event",
-    "start": "Start"
+    "start": "Start",
+    "capacity": "Capacity",
+    "seatsBreakdown": "Paid / free / included",
+    "paidSeats": "Paid",
+    "freeSeats": "Free",
+    "includedSeats": "Included"
   },
   "totals": {
     "grandTotal": "Grand total",

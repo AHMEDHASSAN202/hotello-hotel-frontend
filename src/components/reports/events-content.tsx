@@ -63,6 +63,8 @@ export function EventsContent({ report }: EventsContentProps) {
                   <th className="px-4 py-3 font-medium">{t('event')}</th>
                   <th className="px-4 py-3 font-medium">{t('start')}</th>
                   <th className="px-4 py-3 font-medium">{t('booked')}</th>
+                  <th className="px-4 py-3 font-medium">{t('capacity')}</th>
+                  <th className="px-4 py-3 font-medium">{t('seatsBreakdown')}</th>
                   <th className="px-4 py-3 font-medium">{t('revenue')}</th>
                   <th className="px-4 py-3 font-medium">{t('cancellationRate')}</th>
                 </tr>
@@ -78,6 +80,23 @@ export function EventsContent({ report }: EventsContentProps) {
                     <td className="px-4 py-3 font-medium text-ink">{nameFor(row.titles)}</td>
                     <td className="px-4 py-3">{row.startAtLocal}</td>
                     <td className="px-4 py-3 tabular-nums">{formatNumber(row.booked)}</td>
+                    {/* 22.3 AC2 — capacity is nullable (unlimited events). */}
+                    <td className="px-4 py-3 tabular-nums">
+                      {row.capacity === null ? '—' : formatNumber(row.capacity)}
+                    </td>
+                    {/* 22.3 AC2 — the paid/free/included breakdown must all be
+                        visible together, not folded into a single total. */}
+                    <td className="px-4 py-3 text-xs text-ink-soft">
+                      <span className="me-2">
+                        {t('paidSeats')}: {formatNumber(row.paidSeats)}
+                      </span>
+                      <span className="me-2">
+                        {t('freeSeats')}: {formatNumber(row.freeSeats)}
+                      </span>
+                      <span>
+                        {t('includedSeats')}: {formatNumber(row.includedSeats)}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 tabular-nums">
                       {formatCurrency(row.revenue, report.currency)}
                     </td>

@@ -71,12 +71,34 @@ describe('EventsContent (Task F2c, Part 3)', () => {
     expect(within(stats).getByText('5.7%')).toBeTruthy();
   });
 
-  it('renders one row per event with Event | Start | Booked | Revenue | Cancellation rate %', () => {
+  it('renders one row per event with Event | Start | Booked | Capacity | seats breakdown | Revenue | Cancellation rate %', () => {
     renderContent();
     expect(screen.getByText('Poolside Party')).toBeTruthy();
     expect(screen.getByText('2026-08-28 19:00')).toBeTruthy();
     expect(screen.getByText('EGP 8,000.00')).toBeTruthy();
     expect(screen.getByText('5%')).toBeTruthy();
+  });
+
+  it('22.3 AC2 — renders capacity, and shows — for a null (unlimited) capacity', () => {
+    renderContent({
+      ...FIXTURE,
+      events: [{ ...FIXTURE.events[0], eventId: 'ev-unlimited', capacity: null }],
+    });
+    const rows = screen.getAllByRole('row').slice(1);
+    const row = rows[0];
+    expect(within(row).getByText('—')).toBeTruthy();
+  });
+
+  it('22.3 AC2 — renders the paid/free/included seats breakdown for each event', () => {
+    renderContent();
+    const rows = screen.getAllByRole('row').slice(1);
+    // Wine Tasting sorts first (highest revenue): paidSeats 28, freeSeats 0, includedSeats 0.
+    expect(within(rows[0]).getByText(`${en.analytics.events.paidSeats}: 28`)).toBeTruthy();
+    expect(within(rows[0]).getByText(`${en.analytics.events.freeSeats}: 0`)).toBeTruthy();
+    expect(within(rows[0]).getByText(`${en.analytics.events.includedSeats}: 0`)).toBeTruthy();
+    // Poolside Party sorts second: paidSeats 35, freeSeats 5, includedSeats 0.
+    expect(within(rows[1]).getByText(`${en.analytics.events.paidSeats}: 35`)).toBeTruthy();
+    expect(within(rows[1]).getByText(`${en.analytics.events.freeSeats}: 5`)).toBeTruthy();
   });
 
   /**

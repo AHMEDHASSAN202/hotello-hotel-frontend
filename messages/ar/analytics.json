@@ -91,7 +91,12 @@
     "booked": "المحجوز",
     "cancellationRate": "نسبة الإلغاء",
     "event": "الفعالية",
-    "start": "البداية"
+    "start": "البداية",
+    "capacity": "السعة",
+    "seatsBreakdown": "المقاعد: مدفوعة / مجانية / مُدرَجة",
+    "paidSeats": "مدفوعة",
+    "freeSeats": "مجانية",
+    "includedSeats": "مُدرَجة"
   },
   "totals": {
     "grandTotal": "الإجمالي الكلي",
