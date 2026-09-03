@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { ExportButton } from '@/components/reports/export-button';
 import { PeriodSelector } from '@/components/reports/period-selector';
 import { SettleAction } from '@/components/reports/settle-action';
 import { useTenant } from '@/components/tenant-provider';
@@ -94,23 +95,35 @@ export default function AnalyticsBalancesPage() {
 
   return (
     <div>
-      <div className="flex max-w-xs gap-2 rounded-lg border border-line p-1">
-        <button
-          type="button"
-          aria-pressed={view === 'outstanding'}
-          className={tabClass('outstanding')}
-          onClick={() => setView('outstanding')}
-        >
-          {t('outstandingTab')}
-        </button>
-        <button
-          type="button"
-          aria-pressed={view === 'leakage'}
-          className={tabClass('leakage')}
-          onClick={() => setView('leakage')}
-        >
-          {t('leakageTab')}
-        </button>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex max-w-xs gap-2 rounded-lg border border-line p-1">
+          <button
+            type="button"
+            aria-pressed={view === 'outstanding'}
+            className={tabClass('outstanding')}
+            onClick={() => setView('outstanding')}
+          >
+            {t('outstandingTab')}
+          </button>
+          <button
+            type="button"
+            aria-pressed={view === 'leakage'}
+            className={tabClass('leakage')}
+            onClick={() => setView('leakage')}
+          >
+            {t('leakageTab')}
+          </button>
+        </div>
+        {/* Task F3, Part 2 — outstanding has NO on-screen period selector (a
+            live snapshot); its export still needs SOME resolved period for
+            the backend's filename/header line even though the data itself
+            ignores it (verified against ReportsExportService.exportReport's
+            `balances` case), so a fixed `today` preset is passed. Leakage
+            reuses the shared `period` state its own PeriodSelector controls. */}
+        <ExportButton
+          report={view === 'outstanding' ? 'balances' : 'leakage'}
+          period={view === 'outstanding' ? { preset: 'today' } : period}
+        />
       </div>
 
       {view === 'outstanding' ? (

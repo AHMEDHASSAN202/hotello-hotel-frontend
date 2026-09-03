@@ -21,5 +21,9 @@
     "cash": "Cash",
     "roomCharge": "Room charge"
   },
-  "sampleDataLabel": "Sample data"
+  "sampleDataLabel": "Sample data",
+  "export": "Export",
+  "exportRawData": "Export raw data",
+  "exportError": "We couldn't export this report. Please try again.",
+  "exportRowLimit": "This export is too large ({limit} rows or more). Narrow the date range and try again."
 }

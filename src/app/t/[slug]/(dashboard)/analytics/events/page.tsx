@@ -4,6 +4,7 @@ import { useParams } from 'next/navigation';
 import { ShieldAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { EventsContent } from '@/components/reports/events-content';
+import { ExportButton } from '@/components/reports/export-button';
 import { PeriodSelector } from '@/components/reports/period-selector';
 import { usePeriodSelection } from '@/lib/use-period-selection';
 import { EmptyState, ErrorState, Skeleton } from '@/components/ui';
@@ -21,6 +22,7 @@ import type { EventsReport } from '@/lib/types';
 export default function AnalyticsEventsPage() {
   const { slug } = useParams<{ slug: string }>();
   const t = useTranslations('analytics');
+  const tReports = useTranslations('reports');
   const resolveError = useApiError();
   const [period, setPeriod] = usePeriodSelection(`hotello:${slug}:reports-period`);
   const [report, setReport] = useState<EventsReport | null>(null);
@@ -67,7 +69,13 @@ export default function AnalyticsEventsPage() {
 
   return (
     <div>
-      <PeriodSelector value={period} onChange={setPeriod} />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <PeriodSelector value={period} onChange={setPeriod} />
+        <div className="flex flex-wrap items-center gap-2">
+          <ExportButton report="events" period={period} />
+          <ExportButton report="bookings-feed" period={period} label={tReports('exportRawData')} />
+        </div>
+      </div>
       <div className="mt-6">
         {loading ? (
           <Skeleton className="h-64" />

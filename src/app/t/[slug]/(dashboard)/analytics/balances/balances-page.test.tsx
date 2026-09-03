@@ -64,9 +64,11 @@ const tenant = vi.hoisted(() => ({
 vi.mock('@/components/tenant-provider', () => ({ useTenant: () => tenant }));
 vi.mock('next/navigation', () => ({ useParams: () => ({ slug: 'sunrise' }) }));
 
-const apiMock = vi.hoisted(() => ({ api: vi.fn() }));
+const apiMock = vi.hoisted(() => ({ api: vi.fn(), apiBlob: vi.fn(), saveBlob: vi.fn() }));
 vi.mock('@/lib/api', () => ({
   api: apiMock.api,
+  apiBlob: apiMock.apiBlob,
+  saveBlob: apiMock.saveBlob,
   ApiError: class ApiError extends Error {
     constructor(
       public readonly status: number,
@@ -91,6 +93,8 @@ function renderPage() {
 
 beforeEach(() => {
   apiMock.api.mockReset();
+  apiMock.apiBlob.mockReset();
+  apiMock.saveBlob.mockReset();
   tenant.hasPermission.mockReset();
   tenant.hasPermission.mockReturnValue(true);
   tenant.readOnly = false;
@@ -196,5 +200,34 @@ describe('AnalyticsBalancesPage (22.4)', () => {
     // Appears twice: the totalLost header stat and this single row's total.
     expect(screen.getAllByText('EGP 1,200.00').length).toBe(2);
     expect(screen.queryByRole('button', { name: en.analytics.balances.settle })).toBeNull();
+  });
+
+  it('outstanding view: the Export button calls apiBlob against the balances export endpoint with a fixed "today" preset (Task F3)', async () => {
+    apiMock.api.mockResolvedValue(OUTSTANDING);
+    apiMock.apiBlob.mockResolvedValue({ blob: new Blob(['x']), filename: 'sunrise-balances.xlsx' });
+    renderPage();
+    await screen.findByText('Ahmed Ali');
+    fireEvent.click(screen.getByRole('button', { name: en.reports.export }));
+    await waitFor(() =>
+      expect(apiMock.apiBlob).toHaveBeenCalledWith('/tenant/reports/balances/export?preset=today'),
+    );
+  });
+
+  it('leakage view: the Export button calls apiBlob against the leakage export endpoint with the current period (Task F3)', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/reports/balances/leakage')) return LEAKAGE;
+      return OUTSTANDING;
+    });
+    apiMock.apiBlob.mockResolvedValue({ blob: new Blob(['x']), filename: 'sunrise-leakage.xlsx' });
+    renderPage();
+    await screen.findByText('Ahmed Ali');
+
+    fireEvent.click(screen.getByRole('button', { name: en.analytics.balances.leakageTab }));
+    await screen.findByText('Sara Adel');
+
+    fireEvent.click(screen.getByRole('button', { name: en.reports.export }));
+    await waitFor(() =>
+      expect(apiMock.apiBlob).toHaveBeenCalledWith('/tenant/reports/leakage/export?preset=last7'),
+    );
   });
 });

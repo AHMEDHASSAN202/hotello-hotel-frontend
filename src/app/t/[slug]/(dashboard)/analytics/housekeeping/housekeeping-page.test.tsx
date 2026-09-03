@@ -25,9 +25,11 @@ const FIXTURE: HousekeepingReport = {
 vi.mock('@/components/tenant-provider', () => ({ useTenant: () => ({ hasPermission: () => true }) }));
 vi.mock('next/navigation', () => ({ useParams: () => ({ slug: 'sunrise' }) }));
 
-const apiMock = vi.hoisted(() => ({ api: vi.fn() }));
+const apiMock = vi.hoisted(() => ({ api: vi.fn(), apiBlob: vi.fn(), saveBlob: vi.fn() }));
 vi.mock('@/lib/api', () => ({
   api: apiMock.api,
+  apiBlob: apiMock.apiBlob,
+  saveBlob: apiMock.saveBlob,
   ApiError: class ApiError extends Error {
     constructor(
       public readonly status: number,
@@ -100,6 +102,17 @@ describe('AnalyticsHousekeepingPage', () => {
     fireEvent.click(screen.getByText(en.reports.period.last30));
     await waitFor(() =>
       expect(apiMock.api).toHaveBeenCalledWith('/tenant/reports/housekeeping?preset=last30'),
+    );
+  });
+
+  it('the Export button calls apiBlob against the housekeeping export endpoint (Task F3)', async () => {
+    apiMock.api.mockResolvedValue(FIXTURE);
+    apiMock.apiBlob.mockResolvedValue({ blob: new Blob(['x']), filename: 'sunrise-housekeeping.xlsx' });
+    renderPage();
+    await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole('button', { name: en.reports.export }));
+    await waitFor(() =>
+      expect(apiMock.apiBlob).toHaveBeenCalledWith('/tenant/reports/housekeeping/export?preset=last7'),
     );
   });
 });

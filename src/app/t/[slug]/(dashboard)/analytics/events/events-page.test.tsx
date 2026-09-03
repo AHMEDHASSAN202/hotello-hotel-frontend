@@ -34,9 +34,11 @@ const FIXTURE: EventsReport = {
 vi.mock('@/components/tenant-provider', () => ({ useTenant: () => ({ hasPermission: () => true }) }));
 vi.mock('next/navigation', () => ({ useParams: () => ({ slug: 'sunrise' }) }));
 
-const apiMock = vi.hoisted(() => ({ api: vi.fn() }));
+const apiMock = vi.hoisted(() => ({ api: vi.fn(), apiBlob: vi.fn(), saveBlob: vi.fn() }));
 vi.mock('@/lib/api', () => ({
   api: apiMock.api,
+  apiBlob: apiMock.apiBlob,
+  saveBlob: apiMock.saveBlob,
   ApiError: class ApiError extends Error {
     constructor(
       public readonly status: number,
@@ -128,5 +130,27 @@ describe('AnalyticsEventsPage', () => {
     renderPage();
     expect(await screen.findByText(en.common.actions.retry)).toBeTruthy();
     expect(screen.queryByText(en.analytics.revenue.noAccess.title)).toBeNull();
+  });
+
+  it('the primary Export button calls apiBlob against the events export endpoint (Task F3)', async () => {
+    apiMock.api.mockResolvedValue(FIXTURE);
+    apiMock.apiBlob.mockResolvedValue({ blob: new Blob(['x']), filename: 'sunrise-events.xlsx' });
+    renderPage();
+    await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole('button', { name: en.reports.export }));
+    await waitFor(() =>
+      expect(apiMock.apiBlob).toHaveBeenCalledWith('/tenant/reports/events/export?preset=last7'),
+    );
+  });
+
+  it('the secondary "export raw data" button calls apiBlob against the bookings-feed export endpoint (Task F3)', async () => {
+    apiMock.api.mockResolvedValue(FIXTURE);
+    apiMock.apiBlob.mockResolvedValue({ blob: new Blob(['x']), filename: 'sunrise-bookings-feed.csv' });
+    renderPage();
+    await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole('button', { name: en.reports.exportRawData }));
+    await waitFor(() =>
+      expect(apiMock.apiBlob).toHaveBeenCalledWith('/tenant/reports/bookings-feed/export?preset=last7'),
+    );
   });
 });

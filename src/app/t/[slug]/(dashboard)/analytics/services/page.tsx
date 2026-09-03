@@ -1,6 +1,8 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { ExportButton } from '@/components/reports/export-button';
 import { ServicesContent } from '@/components/reports/services-content';
 import { PeriodSelector } from '@/components/reports/period-selector';
 import { usePeriodSelection } from '@/lib/use-period-selection';
@@ -18,6 +20,7 @@ import type { RequestsReport } from '@/lib/types';
  */
 export default function AnalyticsServicesPage() {
   const { slug } = useParams<{ slug: string }>();
+  const t = useTranslations('reports');
   const resolveError = useApiError();
   const [period, setPeriod] = usePeriodSelection(`hotello:${slug}:reports-period`);
   const [report, setReport] = useState<RequestsReport | null>(null);
@@ -48,7 +51,13 @@ export default function AnalyticsServicesPage() {
 
   return (
     <div>
-      <PeriodSelector value={period} onChange={setPeriod} />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <PeriodSelector value={period} onChange={setPeriod} />
+        <div className="flex flex-wrap items-center gap-2">
+          <ExportButton report="requests" period={period} />
+          <ExportButton report="requests-feed" period={period} label={t('exportRawData')} />
+        </div>
+      </div>
       <div className="mt-6">
         {loading ? (
           <Skeleton className="h-64" />

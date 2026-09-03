@@ -12,9 +12,11 @@ const tenant = vi.hoisted(() => ({
 vi.mock('@/components/tenant-provider', () => ({ useTenant: () => tenant }));
 vi.mock('next/navigation', () => ({ useParams: () => ({ slug: 'sunrise' }) }));
 
-const apiMock = vi.hoisted(() => ({ api: vi.fn() }));
+const apiMock = vi.hoisted(() => ({ api: vi.fn(), apiBlob: vi.fn(), saveBlob: vi.fn() }));
 vi.mock('@/lib/api', () => ({
   api: apiMock.api,
+  apiBlob: apiMock.apiBlob,
+  saveBlob: apiMock.saveBlob,
   ApiError: class ApiError extends Error {
     constructor(
       public readonly status: number,
@@ -96,6 +98,17 @@ describe('AnalyticsOverviewPage (unlocked)', () => {
     fireEvent.click(screen.getByText(en.reports.period.last30));
     await waitFor(() =>
       expect(apiMock.api).toHaveBeenCalledWith('/tenant/reports/overview?preset=last30'),
+    );
+  });
+
+  it('the Export button calls apiBlob against the overview export endpoint (Task F3)', async () => {
+    apiMock.api.mockResolvedValue(DEMO_ANALYTICS);
+    apiMock.apiBlob.mockResolvedValue({ blob: new Blob(['x']), filename: 'sunrise-overview.xlsx' });
+    renderPage();
+    await waitFor(() => expect(apiMock.api).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole('button', { name: en.reports.export }));
+    await waitFor(() =>
+      expect(apiMock.apiBlob).toHaveBeenCalledWith('/tenant/reports/overview/export?preset=last7'),
     );
   });
 });

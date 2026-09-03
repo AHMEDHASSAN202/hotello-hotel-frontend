@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { ExportButton } from '@/components/reports/export-button';
 import { OverviewContent } from '@/components/reports/overview-content';
 import { PeriodSelector } from '@/components/reports/period-selector';
 import { usePeriodSelection } from '@/lib/use-period-selection';
@@ -45,7 +46,10 @@ export default function AnalyticsOverviewPage() {
 
   return (
     <div>
-      <PeriodSelector value={period} onChange={setPeriod} />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <PeriodSelector value={period} onChange={setPeriod} />
+        <ExportButton report="overview" period={period} />
+      </div>
       <div className="mt-6">
         {loading ? (
           <Skeleton className="h-64" />
