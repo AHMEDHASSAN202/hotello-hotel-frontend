@@ -190,5 +190,8 @@
     },
     "dnd": "The guest asked not to be disturbed today. Do-Not-Disturb lifts automatically at the next daily service hour (or at checkout) — you can still assign the room or park a flag for later.",
     "settingsIntro": "Each morning at this hour, occupied rooms flag themselves for daily service and Do-Not-Disturb lifts — in your hotel's local time."
+  },
+  "reports": {
+    "housekeepingWorkload": "Shown to understand today's workload distribution across the team — not a performance ranking."
   }
 }
