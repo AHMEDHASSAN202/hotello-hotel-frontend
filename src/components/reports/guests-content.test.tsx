@@ -63,9 +63,12 @@ describe('GuestsContent (Task F2b, Part 2)', () => {
     expect(screen.getByText(en.stays.languages.ar)).toBeTruthy();
   });
 
-  it('renders the occupancy trend chart legend with translated series labels', () => {
+  // Task F6 — TrendLine is now next/dynamic(ssr:false), so it mounts
+  // asynchronously; findBy* (not getBy*) waits for the lazy import to
+  // resolve before asserting on its rendered legend.
+  it('renders the occupancy trend chart legend with translated series labels', async () => {
     renderContent();
-    expect(screen.getByText(en.analytics.guests.occupied)).toBeTruthy();
+    expect(await screen.findByText(en.analytics.guests.occupied)).toBeTruthy();
     expect(screen.getByText(en.analytics.guests.totalRooms)).toBeTruthy();
   });
 });

@@ -1,12 +1,23 @@
 'use client';
+import dynamic from 'next/dynamic';
 import { useLocale, useTranslations } from 'next-intl';
-import { BarsByDay } from './charts/bars-by-day';
-import { SplitDonut } from './charts/split-donut';
-import { TrendLine } from './charts/trend-line';
 import { BasisFootnote } from './basis-footnote';
 import { StatTile } from './stat-tile';
 import { useFormatters } from '@/i18n/use-format';
 import type { DiningReport } from '@/lib/types';
+
+// Task F6 — all three charts on this tab are Recharts-backed; load them via
+// next/dynamic(ssr:false) instead of a static import so they never land in
+// the server bundle.
+const BarsByDay = dynamic(() => import('./charts/bars-by-day').then((m) => m.BarsByDay), {
+  ssr: false,
+});
+const SplitDonut = dynamic(() => import('./charts/split-donut').then((m) => m.SplitDonut), {
+  ssr: false,
+});
+const TrendLine = dynamic(() => import('./charts/trend-line').then((m) => m.TrendLine), {
+  ssr: false,
+});
 
 export interface DiningContentProps {
   report: DiningReport;

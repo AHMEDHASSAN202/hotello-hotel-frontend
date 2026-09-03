@@ -1,11 +1,20 @@
 'use client';
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
-import { BarsByDay } from './charts/bars-by-day';
-import { SplitDonut } from './charts/split-donut';
 import { BasisFootnote } from './basis-footnote';
 import { StatTile } from './stat-tile';
 import { useFormatters } from '@/i18n/use-format';
 import type { TotalsReport } from '@/lib/types';
+
+// Task F6 — both charts on this tab are Recharts-backed; load them via
+// next/dynamic(ssr:false) instead of a static import so they never land in
+// the server bundle.
+const BarsByDay = dynamic(() => import('./charts/bars-by-day').then((m) => m.BarsByDay), {
+  ssr: false,
+});
+const SplitDonut = dynamic(() => import('./charts/split-donut').then((m) => m.SplitDonut), {
+  ssr: false,
+});
 
 export interface TotalsContentProps {
   report: TotalsReport;

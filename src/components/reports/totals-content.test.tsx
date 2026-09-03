@@ -53,9 +53,11 @@ describe('TotalsContent (Task F2c, Part 4)', () => {
     expect(scale.indexOf(grandTotalSizeClass!)).toBeGreaterThan(scale.indexOf(collectedSizeClass!));
   });
 
-  it('renders a cash/room-charge SplitDonut for byMethod', () => {
+  // Task F6 — SplitDonut is now next/dynamic(ssr:false), so it mounts
+  // asynchronously; findBy* waits for the lazy import to resolve.
+  it('renders a cash/room-charge SplitDonut for byMethod', async () => {
     renderContent();
-    expect(screen.getByText(en.reports.paymentMethod.cash)).toBeTruthy();
+    expect(await screen.findByText(en.reports.paymentMethod.cash)).toBeTruthy();
     expect(screen.getByText(en.reports.paymentMethod.roomCharge)).toBeTruthy();
   });
 

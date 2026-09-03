@@ -1,11 +1,19 @@
 'use client';
+import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { MiniBar } from './charts/mini-bar';
-import { TrendLine } from './charts/trend-line';
 import { DeltaChip } from './delta-chip';
 import { StatTile } from './stat-tile';
 import { useFormatters } from '@/i18n/use-format';
 import type { GuestsReport } from '@/lib/types';
+
+// Task F6 — Recharts-backed charts are client-only and heavy; load them via
+// next/dynamic(ssr:false) at each call site instead of a static import, so
+// they never get pulled into the server bundle. MiniBar is plain flexbox/
+// CSS (no Recharts dependency), so it stays a regular static import.
+const TrendLine = dynamic(() => import('./charts/trend-line').then((m) => m.TrendLine), {
+  ssr: false,
+});
 
 export interface GuestsContentProps {
   report: GuestsReport;

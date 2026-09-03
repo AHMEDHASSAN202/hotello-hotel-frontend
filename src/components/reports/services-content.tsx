@@ -1,7 +1,7 @@
 'use client';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
-import { BarsByDay } from './charts/bars-by-day';
 import { HeatStrip } from './charts/heat-strip';
 import { MiniBar } from './charts/mini-bar';
 import { StatTile } from './stat-tile';
@@ -9,6 +9,13 @@ import { InfoTip } from '@/components/guidance';
 import { useFormatters } from '@/i18n/use-format';
 import { requestsReportLink } from '@/lib/report-links';
 import type { RequestsReport } from '@/lib/types';
+
+// Task F6 — Recharts-backed; load via next/dynamic(ssr:false) instead of a
+// static import so it never lands in the server bundle. MiniBar and
+// HeatStrip are plain flexbox/CSS (no Recharts dependency) and stay static.
+const BarsByDay = dynamic(() => import('./charts/bars-by-day').then((m) => m.BarsByDay), {
+  ssr: false,
+});
 
 /**
  * The single busiest hour, formatted as an "HH:00–HH:00" range — Task F5:
