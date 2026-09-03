@@ -9,7 +9,7 @@ import { OverviewContent } from './overview-content';
 function renderContent(canReadRevenue: boolean, report = DEMO_ANALYTICS) {
   return render(
     <NextIntlClientProvider locale="en" messages={en} timeZone="Africa/Cairo">
-      <OverviewContent report={report} canReadRevenue={canReadRevenue} />
+      <OverviewContent report={report} canReadRevenue={canReadRevenue} slug="sunrise" />
     </NextIntlClientProvider>,
   );
 }
@@ -47,6 +47,13 @@ describe('OverviewContent (Story 22.1)', () => {
     expect(screen.getByText('EGP 9,840.00')).toBeTruthy();
     expect(screen.getByText('EGP 12,780.00')).toBeTruthy();
     expect(screen.getByText('EGP 3,120.00')).toBeTruthy();
+  });
+
+  it('Task F2d — the unsettled-total stat tile links to the stays list filtered by hasBalance', () => {
+    renderContent(true);
+    const link = screen.getByText('EGP 3,120.00').closest('a');
+    expect(link).not.toBeNull();
+    expect(link!.getAttribute('href')).toBe('/t/sunrise/stays?hasBalance=1');
   });
 
   it('a MetricWithDelta with no deltaPct renders the stat tile without a delta chip next to it', () => {

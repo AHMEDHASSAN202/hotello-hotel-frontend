@@ -89,7 +89,7 @@ export default function AnalyticsLayout({ children }: { children: ReactNode }) {
             </p>
             <PeriodSelector value={{ preset: 'last7' }} onChange={() => {}} />
             <div className="mt-6">
-              <OverviewContent report={DEMO_ANALYTICS} canReadRevenue={canReadRevenue} />
+              <OverviewContent report={DEMO_ANALYTICS} canReadRevenue={canReadRevenue} slug={slug} />
             </div>
           </ModuleUpsell>
         ) : (

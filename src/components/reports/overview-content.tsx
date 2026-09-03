@@ -1,16 +1,21 @@
 'use client';
+import Link from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 import { BasisFootnote } from './basis-footnote';
 import { MiniBar } from './charts/mini-bar';
 import { DeltaChip } from './delta-chip';
 import { StatTile } from './stat-tile';
 import { useFormatters } from '@/i18n/use-format';
+import { staysReportLink } from '@/lib/report-links';
 import type { OverviewReport, RequestTranslationMap } from '@/lib/types';
 
 export interface OverviewContentProps {
   report: OverviewReport;
   /** Story 22.6 AC2 — hidden even in the sample preview for a non-revenue viewer. */
   canReadRevenue: boolean;
+  /** Task F2d — the one drill-through this task adds: the unsettled-total
+   * stat tile links to the stays list pre-filtered to `hasBalance=true`. */
+  slug: string;
 }
 
 /**
@@ -29,7 +34,7 @@ function nameFor(names: RequestTranslationMap, locale: string): string {
  * nothing about which one it's rendering; the "inert sample" treatment and
  * the sample-data label are entirely the caller's responsibility.
  */
-export function OverviewContent({ report, canReadRevenue }: OverviewContentProps) {
+export function OverviewContent({ report, canReadRevenue, slug }: OverviewContentProps) {
   const t = useTranslations('analytics.overview');
   const tStayTypes = useTranslations('stays.stayTypes');
   const locale = useLocale();
@@ -139,7 +144,14 @@ export function OverviewContent({ report, canReadRevenue }: OverviewContentProps
             />
             <StatTile label={t('revenue.cash')} value={formatCurrency(report.revenue.cash, report.currency)} />
             <StatTile label={t('revenue.roomCharge')} value={formatCurrency(report.revenue.roomCharge, report.currency)} />
-            <StatTile label={t('revenue.unsettled')} value={formatCurrency(report.revenue.unsettledTotal, report.currency)} />
+            <StatTile
+              label={t('revenue.unsettled')}
+              value={
+                <Link href={staysReportLink(slug, { hasBalance: true })} className="hover:underline">
+                  {formatCurrency(report.revenue.unsettledTotal, report.currency)}
+                </Link>
+              }
+            />
           </div>
           <BasisFootnote basis={report.revenue.basis} />
         </section>

@@ -52,7 +52,7 @@ export default function AnalyticsOverviewPage() {
         ) : error ? (
           <ErrorState message={error} onRetry={load} />
         ) : report ? (
-          <OverviewContent report={report} canReadRevenue={canReadRevenue} />
+          <OverviewContent report={report} canReadRevenue={canReadRevenue} slug={slug} />
         ) : null}
       </div>
     </div>
