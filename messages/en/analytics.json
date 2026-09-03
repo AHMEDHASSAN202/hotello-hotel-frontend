@@ -6,7 +6,16 @@
     "overview": "Overview",
     "guests": "Guests",
     "services": "Services",
-    "housekeeping": "Housekeeping"
+    "housekeeping": "Housekeeping",
+    "dining": "Dining",
+    "events": "Events",
+    "totals": "Totals"
+  },
+  "revenue": {
+    "noAccess": {
+      "title": "You don't have access to revenue reports",
+      "hint": "Ask an administrator to grant you the revenue permission."
+    }
   },
   "guests": {
     "arrivals": "Arrivals",

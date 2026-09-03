@@ -19,12 +19,21 @@ import { DEMO_ANALYTICS } from '@/lib/demo-analytics';
  * navigate to.
  *
  * Tabs grow across Tasks F2b-d — this array is the single place to add one.
+ *
+ * `revenueOnly` (Task F2c, Part 1) hides a tab's subnav link from a viewer
+ * without `reports.revenue` (the Front Desk case). This is CSS-adjacent UX
+ * only — the backend independently 403s `REPORTS_REVENUE_FORBIDDEN` on the
+ * route itself regardless of whether the link was visible, so a direct URL
+ * visit is still handled (see each revenue page's `forbidden` state).
  */
-const TABS: { segment: string; labelKey: string }[] = [
+const TABS: { segment: string; labelKey: string; revenueOnly?: boolean }[] = [
   { segment: '', labelKey: 'overview' },
   { segment: 'guests', labelKey: 'guests' },
   { segment: 'services', labelKey: 'services' },
   { segment: 'housekeeping', labelKey: 'housekeeping' },
+  { segment: 'dining', labelKey: 'dining', revenueOnly: true },
+  { segment: 'events', labelKey: 'events', revenueOnly: true },
+  { segment: 'totals', labelKey: 'totals', revenueOnly: true },
 ];
 
 export default function AnalyticsLayout({ children }: { children: ReactNode }) {
@@ -40,6 +49,7 @@ export default function AnalyticsLayout({ children }: { children: ReactNode }) {
   const locked = !isModuleEnabled('analytics');
   const canReadRevenue = hasPermission('reports.revenue');
   const base = `/t/${slug}/analytics`;
+  const visibleTabs = TABS.filter((tab) => !tab.revenueOnly || canReadRevenue);
 
   return (
     <div>
@@ -48,7 +58,7 @@ export default function AnalyticsLayout({ children }: { children: ReactNode }) {
 
       {!locked && (
         <nav className="mt-4 flex gap-1 border-b border-line" aria-label={t('tabsLabel')}>
-          {TABS.map((tab) => {
+          {visibleTabs.map((tab) => {
             const href = tab.segment ? `${base}/${tab.segment}` : base;
             const active = pathname === href;
             return (

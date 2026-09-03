@@ -75,4 +75,38 @@ describe('Analytics layout — locked composition (Story 22.6 AC1)', () => {
     expect(screen.queryByTestId('sample-data-label')).toBeNull();
     expect(apiMock.api).not.toHaveBeenCalled();
   });
+
+  /**
+   * Task F2c, Part 1 — the revenue tabs (dining/events/totals) are CSS-adjacent
+   * UX only: the backend independently 403s a `reports.revenue`-less viewer
+   * regardless (see the page-level `forbidden` tests), this just keeps the
+   * link out of the subnav so nobody navigates there in the first place.
+   */
+  describe('revenue tab visibility (Task F2c, Part 1)', () => {
+    it('a user WITHOUT reports.revenue sees only the 4 non-revenue tabs — dining/events/totals links absent from the DOM', () => {
+      tenant.isModuleEnabled.mockReturnValue(true);
+      tenant.hasPermission.mockImplementation((key: string) => key !== 'reports.revenue');
+      renderLayout();
+      const nav = screen.getByLabelText(en.analytics.tabsLabel);
+      expect(screen.getByText(en.analytics.tabs.overview)).toBeTruthy();
+      expect(screen.getByText(en.analytics.tabs.guests)).toBeTruthy();
+      expect(screen.getByText(en.analytics.tabs.services)).toBeTruthy();
+      expect(screen.getByText(en.analytics.tabs.housekeeping)).toBeTruthy();
+      expect(screen.queryByText(en.analytics.tabs.dining)).toBeNull();
+      expect(screen.queryByText(en.analytics.tabs.events)).toBeNull();
+      expect(screen.queryByText(en.analytics.tabs.totals)).toBeNull();
+      expect(nav.querySelectorAll('a').length).toBe(4);
+    });
+
+    it('a user WITH reports.revenue (or a wildcard admin permission) sees all 7 tabs, including dining/events/totals', () => {
+      tenant.isModuleEnabled.mockReturnValue(true);
+      tenant.hasPermission.mockReturnValue(true);
+      renderLayout();
+      const nav = screen.getByLabelText(en.analytics.tabsLabel);
+      expect(screen.getByText(en.analytics.tabs.dining)).toBeTruthy();
+      expect(screen.getByText(en.analytics.tabs.events)).toBeTruthy();
+      expect(screen.getByText(en.analytics.tabs.totals)).toBeTruthy();
+      expect(nav.querySelectorAll('a').length).toBe(7);
+    });
+  });
 });
