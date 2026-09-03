@@ -63,6 +63,44 @@
     },
     "dataSince": "Data collected since {date}"
   },
+  "dining": {
+    "ordersCount": "Orders",
+    "revenueTotal": "Revenue",
+    "avgOrderValue": "Avg. order value",
+    "revenueByDay": "Revenue by day",
+    "ordersByDay": "Orders by day",
+    "topItems": "Top sellers",
+    "includedConsumption": "Included consumption",
+    "includedConsumptionCaption": "Complimentary items served under All-Inclusive plans — a cost to the hotel, not a sale. Not counted in the revenue figures above.",
+    "byZone": "By zone",
+    "zoneRoom": "Room",
+    "paymentSplit": "Payment split",
+    "cancellations": "Cancellations",
+    "cancellationReasons": "Cancellation reasons",
+    "table": {
+      "item": "Item",
+      "qty": "Qty",
+      "revenue": "Revenue",
+      "zone": "Zone",
+      "orders": "Orders"
+    }
+  },
+  "events": {
+    "revenue": "Revenue",
+    "booked": "Booked",
+    "cancellationRate": "Cancellation rate",
+    "event": "Event",
+    "start": "Start"
+  },
+  "totals": {
+    "grandTotal": "Grand total",
+    "collected": "Collected",
+    "outstanding": "Outstanding",
+    "byDay": "Revenue by day",
+    "dining": "Dining",
+    "events": "Events",
+    "total": "Total"
+  },
   "overview": {
     "occupancy": {
       "heading": "Occupancy & guests",

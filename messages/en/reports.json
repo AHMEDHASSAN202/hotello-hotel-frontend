@@ -17,5 +17,9 @@
     "events_starting_in_period": "Events starting in this period",
     "delivered_booked": "Delivered orders and booked events"
   },
+  "paymentMethod": {
+    "cash": "Cash",
+    "roomCharge": "Room charge"
+  },
   "sampleDataLabel": "Sample data"
 }

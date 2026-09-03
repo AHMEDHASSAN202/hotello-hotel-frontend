@@ -63,6 +63,44 @@
     },
     "dataSince": "البيانات مُجمَّعة منذ {date}"
   },
+  "dining": {
+    "ordersCount": "الطلبات",
+    "revenueTotal": "الإيرادات",
+    "avgOrderValue": "متوسط قيمة الطلب",
+    "revenueByDay": "الإيرادات حسب اليوم",
+    "ordersByDay": "الطلبات حسب اليوم",
+    "topItems": "الأكثر مبيعًا",
+    "includedConsumption": "الاستهلاك المُدرَج",
+    "includedConsumptionCaption": "أصناف مُقدَّمة ضمن باقات الإقامة الشاملة — تُعد تكلفة على الفندق، لا مبيعًا، وغير محتسبة ضمن أرقام الإيرادات أعلاه.",
+    "byZone": "حسب المنطقة",
+    "zoneRoom": "الغرفة",
+    "paymentSplit": "توزيع طرق الدفع",
+    "cancellations": "الإلغاءات",
+    "cancellationReasons": "أسباب الإلغاء",
+    "table": {
+      "item": "الصنف",
+      "qty": "الكمية",
+      "revenue": "الإيرادات",
+      "zone": "المنطقة",
+      "orders": "الطلبات"
+    }
+  },
+  "events": {
+    "revenue": "الإيرادات",
+    "booked": "المحجوز",
+    "cancellationRate": "نسبة الإلغاء",
+    "event": "الفعالية",
+    "start": "البداية"
+  },
+  "totals": {
+    "grandTotal": "الإجمالي الكلي",
+    "collected": "المُحصَّل",
+    "outstanding": "المستحق",
+    "byDay": "الإيرادات حسب اليوم",
+    "dining": "المطاعم",
+    "events": "الفعاليات",
+    "total": "الإجمالي"
+  },
   "overview": {
     "occupancy": {
       "heading": "الإشغال والضيوف",

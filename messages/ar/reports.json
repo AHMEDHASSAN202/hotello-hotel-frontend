@@ -17,5 +17,9 @@
     "events_starting_in_period": "الفعاليات التي تبدأ خلال هذه الفترة",
     "delivered_booked": "الطلبات المُسلَّمة والفعاليات المحجوزة"
   },
+  "paymentMethod": {
+    "cash": "نقدًا",
+    "roomCharge": "على حساب الغرفة"
+  },
   "sampleDataLabel": "بيانات توضيحية"
 }
