@@ -6,10 +6,10 @@ import type { PeriodSelection } from '@/lib/use-period-selection';
 import { PeriodSelector } from './period-selector';
 
 /** Task F1b, Part 5 — the aria-pressed pill-row idiom + custom date inputs. */
-function renderSelector(value: PeriodSelection, onChange = vi.fn()) {
+function renderSelector(value: PeriodSelection, onChange = vi.fn(), disabled?: boolean) {
   render(
     <NextIntlClientProvider locale="en" messages={en}>
-      <PeriodSelector value={value} onChange={onChange} />
+      <PeriodSelector value={value} onChange={onChange} disabled={disabled} />
     </NextIntlClientProvider>,
   );
   return onChange;
@@ -65,5 +65,25 @@ describe('PeriodSelector', () => {
     const onChange = renderSelector({ preset: 'custom', from: '2026-01-01', to: '2026-01-05' });
     fireEvent.change(screen.getByLabelText('To'), { target: { value: '2026-01-20' } });
     expect(onChange).toHaveBeenCalledWith({ preset: 'custom', from: '2026-01-01', to: '2026-01-20' });
+  });
+
+  // Task F8 — the locked-state composition passes disabled explicitly rather
+  // than relying entirely on the parent's pointer-events-none wrapper.
+  it('disabled=true sets disabled on every preset button', () => {
+    renderSelector({ preset: 'last7' }, vi.fn(), true);
+    expect(screen.getByRole('button', { name: 'Today' }).hasAttribute('disabled')).toBe(true);
+    expect(screen.getByRole('button', { name: 'Last 7 days' }).hasAttribute('disabled')).toBe(true);
+    expect(screen.getByRole('button', { name: 'Custom range' }).hasAttribute('disabled')).toBe(true);
+  });
+
+  it('disabled=true sets disabled on the custom-range date inputs', () => {
+    renderSelector({ preset: 'custom', from: '2026-01-01', to: '2026-01-05' }, vi.fn(), true);
+    expect((screen.getByLabelText('From') as HTMLInputElement).disabled).toBe(true);
+    expect((screen.getByLabelText('To') as HTMLInputElement).disabled).toBe(true);
+  });
+
+  it('disabled defaults to false/undefined — real (unlocked) usages are never disabled', () => {
+    renderSelector({ preset: 'last7' });
+    expect(screen.getByRole('button', { name: 'Today' }).hasAttribute('disabled')).toBe(false);
   });
 });

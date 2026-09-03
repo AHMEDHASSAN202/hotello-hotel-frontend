@@ -87,7 +87,9 @@ export default function AnalyticsLayout({ children }: { children: ReactNode }) {
             >
               {tReports('sampleDataLabel')}
             </p>
-            <PeriodSelector value={{ preset: 'last7' }} onChange={() => {}} />
+            {/* Task F8 — explicitly disabled, not just visually inert via
+                ModuleUpsell's pointer-events-none wrapper. */}
+            <PeriodSelector value={{ preset: 'last7' }} onChange={() => {}} disabled />
             <div className="mt-6">
               <OverviewContent report={DEMO_ANALYTICS} canReadRevenue={canReadRevenue} slug={slug} />
             </div>
