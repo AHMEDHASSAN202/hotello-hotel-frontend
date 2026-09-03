@@ -33,6 +33,10 @@ export function GuestsContent({ report }: GuestsContentProps) {
   const tLanguages = useTranslations('stays.languages');
   const { formatNumber } = useFormatters();
 
+  // Same "vs same time yesterday" honesty labeling as OverviewContent — the
+  // backend elapsed-caps yesterday's window when the period is "today".
+  const deltaLabel = report.period.preset === 'today' ? ('vsYesterday' as const) : undefined;
+
   const stayTypeBars = Object.entries(report.stayTypes).map(([key, value]) => ({
     label: tStayTypes.has(key) ? tStayTypes(key) : key,
     value,
@@ -47,11 +51,11 @@ export function GuestsContent({ report }: GuestsContentProps) {
       <section>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <StatTile
-            label={<>{t('arrivals')} <DeltaChip deltaPct={report.arrivals.deltaPct} /></>}
+            label={<>{t('arrivals')} <DeltaChip labelKey={deltaLabel} deltaPct={report.arrivals.deltaPct} /></>}
             value={formatNumber(report.arrivals.value)}
           />
           <StatTile
-            label={<>{t('departures')} <DeltaChip deltaPct={report.departures.deltaPct} /></>}
+            label={<>{t('departures')} <DeltaChip labelKey={deltaLabel} deltaPct={report.departures.deltaPct} /></>}
             value={formatNumber(report.departures.value)}
           />
           <StatTile label={t('inHouseNow')} value={formatNumber(report.inHouseNow)} />

@@ -40,6 +40,10 @@ export function OverviewContent({ report, canReadRevenue, slug }: OverviewConten
   const locale = useLocale();
   const { formatCurrency, formatNumber } = useFormatters();
   const showRevenue = canReadRevenue && Boolean(report.revenue);
+  // A "today" period's deltas compare against yesterday truncated to the same
+  // elapsed minute (the backend's previousWindow cap) — say so, or a 9 a.m.
+  // "-40%" reads as a collapse instead of a partial-day comparison.
+  const deltaLabel = report.period.preset === 'today' ? ('vsYesterday' as const) : undefined;
 
   const stayTypeBars = Object.entries(report.occupancy.stayTypeBreakdown).map(
     ([key, value]) => ({
@@ -84,20 +88,20 @@ export function OverviewContent({ report, canReadRevenue, slug }: OverviewConten
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <StatTile
-            label={<>{t('service.received')} <DeltaChip deltaPct={report.service.received.deltaPct} /></>}
+            label={<>{t('service.received')} <DeltaChip labelKey={deltaLabel} deltaPct={report.service.received.deltaPct} /></>}
             value={formatNumber(report.service.received.value)}
           />
           <StatTile
-            label={<>{t('service.completed')} <DeltaChip deltaPct={report.service.completed.deltaPct} /></>}
+            label={<>{t('service.completed')} <DeltaChip labelKey={deltaLabel} deltaPct={report.service.completed.deltaPct} /></>}
             value={formatNumber(report.service.completed.value)}
           />
           <StatTile label={t('service.openNow')} value={formatNumber(report.service.openNow)} />
           <StatTile
-            label={<>{t('service.avgCompletion')} <DeltaChip deltaPct={report.service.avgCompletionMinutes.deltaPct} /></>}
+            label={<>{t('service.avgCompletion')} <DeltaChip labelKey={deltaLabel} deltaPct={report.service.avgCompletionMinutes.deltaPct} /></>}
             value={`${formatNumber(report.service.avgCompletionMinutes.value)}m`}
           />
           <StatTile
-            label={<>{t('service.slaBreachRate')} <DeltaChip deltaPct={report.service.slaBreachRatePct.deltaPct} /></>}
+            label={<>{t('service.slaBreachRate')} <DeltaChip labelKey={deltaLabel} deltaPct={report.service.slaBreachRatePct.deltaPct} /></>}
             value={`${formatNumber(report.service.slaBreachRatePct.value)}%`}
             tone="danger"
           />
@@ -131,15 +135,15 @@ export function OverviewContent({ report, canReadRevenue, slug }: OverviewConten
           </h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <StatTile
-              label={<>{t('revenue.dining')} <DeltaChip deltaPct={report.revenue.dining.deltaPct} /></>}
+              label={<>{t('revenue.dining')} <DeltaChip labelKey={deltaLabel} deltaPct={report.revenue.dining.deltaPct} /></>}
               value={formatCurrency(report.revenue.dining.value, report.currency)}
             />
             <StatTile
-              label={<>{t('revenue.events')} <DeltaChip deltaPct={report.revenue.events.deltaPct} /></>}
+              label={<>{t('revenue.events')} <DeltaChip labelKey={deltaLabel} deltaPct={report.revenue.events.deltaPct} /></>}
               value={formatCurrency(report.revenue.events.value, report.currency)}
             />
             <StatTile
-              label={<>{t('revenue.total')} <DeltaChip deltaPct={report.revenue.total.deltaPct} /></>}
+              label={<>{t('revenue.total')} <DeltaChip labelKey={deltaLabel} deltaPct={report.revenue.total.deltaPct} /></>}
               value={formatCurrency(report.revenue.total.value, report.currency)}
             />
             <StatTile label={t('revenue.cash')} value={formatCurrency(report.revenue.cash, report.currency)} />

@@ -56,6 +56,15 @@ describe('OverviewContent (Story 22.1)', () => {
     expect(link!.getAttribute('href')).toBe('/t/sunrise/stays?hasBalance=true');
   });
 
+  it('delta chips say "vs same time yesterday" when the period preset is today, "vs previous period" otherwise', () => {
+    renderContent(true, {
+      ...DEMO_ANALYTICS,
+      period: { ...DEMO_ANALYTICS.period, preset: 'today' as const },
+    });
+    expect(screen.getAllByText(en.reports.delta.vsYesterday).length).toBeGreaterThan(0);
+    expect(screen.queryByText(en.reports.delta.vsPrevious)).toBeNull();
+  });
+
   it('a MetricWithDelta with no deltaPct renders the stat tile without a delta chip next to it', () => {
     const noDeltaReport = {
       ...DEMO_ANALYTICS,

@@ -134,7 +134,9 @@ export default function AnalyticsBalancesPage() {
             <ErrorState message={outstandingError} onRetry={loadOutstanding} />
           ) : outstanding ? (
             <div>
-              {/* Story 22.4 AC2 — "3 rooms departing today have balances" framing, flagged amber. */}
+              {/* Story 22.4 AC2 — "3 rooms departing today have balances" framing, flagged amber.
+                  The hotel-wide total sits alongside in neutral styling: it's context, the
+                  amber departing-today pair is the action signal. */}
               <div className="flex flex-wrap gap-3">
                 <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
                   <p className="text-xs font-medium text-amber-700">{t('departingToday')}</p>
@@ -146,6 +148,12 @@ export default function AnalyticsBalancesPage() {
                   <p className="text-xs font-medium text-amber-700">{t('departingTodayTotal')}</p>
                   <p className="mt-1 font-display text-xl font-semibold tabular-nums text-amber-800">
                     {formatCurrency(outstanding.departingTodayTotal, outstanding.currency)}
+                  </p>
+                </div>
+                <div className="rounded-xl border border-line bg-white px-4 py-3">
+                  <p className="text-xs text-ink-soft">{t('totalOutstanding')}</p>
+                  <p className="mt-1 font-display text-xl font-semibold tabular-nums text-ink">
+                    {formatCurrency(outstanding.totalOutstanding, outstanding.currency)}
                   </p>
                 </div>
               </div>
@@ -164,6 +172,7 @@ export default function AnalyticsBalancesPage() {
                           <th className="px-4 py-3 font-medium">{t('total')}</th>
                           <th className="px-4 py-3 font-medium">{t('dining')}</th>
                           <th className="px-4 py-3 font-medium">{t('events')}</th>
+                          <th className="px-4 py-3 font-medium">{t('oldestUnsettled')}</th>
                           <th className="px-4 py-3 font-medium">
                             <span className="sr-only">{t('settle')}</span>
                           </th>
@@ -190,6 +199,11 @@ export default function AnalyticsBalancesPage() {
                             </td>
                             <td className="px-4 py-3 tabular-nums text-ink-soft">
                               {formatCurrency(row.byKey.events ?? 0, outstanding.currency)}
+                            </td>
+                            {/* The aging signal (22.4 AC1) — an hour-old bar tab and a
+                                four-day-old uncollected balance are different problems. */}
+                            <td className="px-4 py-3 text-ink-soft">
+                              {formatDateTime(row.oldestUnsettledAt)}
                             </td>
                             <td className="px-4 py-3">
                               <div className="flex justify-end">

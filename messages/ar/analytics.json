@@ -115,6 +115,8 @@
     "leakageTab": "المستحقات المشطوبة",
     "departingToday": "المغادرون اليوم وعليهم مستحقات",
     "departingTodayTotal": "المبلغ المستحق على المغادرين اليوم",
+    "totalOutstanding": "إجمالي المستحقات (كل الغرف)",
+    "oldestUnsettled": "أقدم بند غير مسدد",
     "room": "الغرفة",
     "guest": "الضيف",
     "checkoutDate": "تاريخ المغادرة",

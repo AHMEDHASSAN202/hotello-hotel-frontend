@@ -115,6 +115,8 @@
     "leakageTab": "Leakage",
     "departingToday": "Departing today with a balance",
     "departingTodayTotal": "Amount owed, departing today",
+    "totalOutstanding": "Total outstanding (all rooms)",
+    "oldestUnsettled": "Oldest unpaid item",
     "room": "Room",
     "guest": "Guest",
     "checkoutDate": "Checkout date",

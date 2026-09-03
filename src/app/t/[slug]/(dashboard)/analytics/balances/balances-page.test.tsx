@@ -123,6 +123,24 @@ describe('AnalyticsBalancesPage (22.4)', () => {
     expect(within(otherRow).getByText('Sep 5, 2026')).toBeTruthy();
   });
 
+  it('renders the hotel-wide total-outstanding stat (visible without reports.revenue)', async () => {
+    apiMock.api.mockResolvedValue(OUTSTANDING);
+    renderPage();
+    await screen.findByText('Ahmed Ali');
+    expect(screen.getByText(en.analytics.balances.totalOutstanding)).toBeTruthy();
+    expect(screen.getByText('EGP 900.00')).toBeTruthy();
+  });
+
+  it('renders the oldest-unpaid-item aging column per row (22.4 AC1)', async () => {
+    apiMock.api.mockResolvedValue(OUTSTANDING);
+    renderPage();
+    await screen.findByText('Ahmed Ali');
+    expect(screen.getByText(en.analytics.balances.oldestUnsettled)).toBeTruthy();
+    const row = screen.getByText('Ahmed Ali').closest('tr') as HTMLElement;
+    // 2026-09-01T10:00:00Z rendered hotel-local (Africa/Cairo) as a datetime.
+    expect(within(row).getByText(/Sep 1, 2026/)).toBeTruthy();
+  });
+
   it('renders dining/events/total columns per row', async () => {
     apiMock.api.mockResolvedValue(OUTSTANDING);
     renderPage();
