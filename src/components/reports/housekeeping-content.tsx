@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { StatTile } from './stat-tile';
 import { InfoTip } from '@/components/guidance';
+import { Skeleton } from '@/components/ui';
 import { useFormatters } from '@/i18n/use-format';
 import type { HousekeepingReport } from '@/lib/types';
 
@@ -10,6 +11,7 @@ import type { HousekeepingReport } from '@/lib/types';
 // static import so it never lands in the server bundle.
 const BarsByDay = dynamic(() => import('./charts/bars-by-day').then((m) => m.BarsByDay), {
   ssr: false,
+  loading: () => <Skeleton className="h-60" />,
 });
 
 export interface HousekeepingContentProps {

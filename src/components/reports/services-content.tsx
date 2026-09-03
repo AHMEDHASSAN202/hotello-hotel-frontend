@@ -6,6 +6,7 @@ import { HeatStrip } from './charts/heat-strip';
 import { MiniBar } from './charts/mini-bar';
 import { StatTile } from './stat-tile';
 import { InfoTip } from '@/components/guidance';
+import { Bdi, Skeleton } from '@/components/ui';
 import { useFormatters } from '@/i18n/use-format';
 import { requestsReportLink } from '@/lib/report-links';
 import type { RequestsReport } from '@/lib/types';
@@ -15,6 +16,7 @@ import type { RequestsReport } from '@/lib/types';
 // HeatStrip are plain flexbox/CSS (no Recharts dependency) and stay static.
 const BarsByDay = dynamic(() => import('./charts/bars-by-day').then((m) => m.BarsByDay), {
   ssr: false,
+  loading: () => <Skeleton className="h-60" />,
 });
 
 /**
@@ -104,7 +106,13 @@ export function ServicesContent({ report, slug }: ServicesContentProps) {
           <InfoTip label={t('busiestHours')}>{tGuidance('busiestHoursTip')}</InfoTip>
           {peakRange && (
             <span className="text-xs text-ink-soft">
-              {t('busiestHoursPeak', { range: peakRange })}
+              {/* The <r> tag bidi-isolates the numeric range: without it, the
+                  en dash between the two times is direction-neutral, so under
+                  an RTL paragraph the range visually reverses (13:00–12:00). */}
+              {t.rich('busiestHoursPeak', {
+                range: peakRange,
+                r: (chunks) => <Bdi>{chunks}</Bdi>,
+              })}
             </span>
           )}
         </div>

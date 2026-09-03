@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { MiniBar } from './charts/mini-bar';
 import { DeltaChip } from './delta-chip';
 import { StatTile } from './stat-tile';
+import { Skeleton } from '@/components/ui';
 import { useFormatters } from '@/i18n/use-format';
 import type { GuestsReport } from '@/lib/types';
 
@@ -13,6 +14,7 @@ import type { GuestsReport } from '@/lib/types';
 // CSS (no Recharts dependency), so it stays a regular static import.
 const TrendLine = dynamic(() => import('./charts/trend-line').then((m) => m.TrendLine), {
   ssr: false,
+  loading: () => <Skeleton className="h-60" />,
 });
 
 export interface GuestsContentProps {

@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic';
 import { useTranslations } from 'next-intl';
 import { BasisFootnote } from './basis-footnote';
 import { StatTile } from './stat-tile';
+import { Skeleton } from '@/components/ui';
 import { useFormatters } from '@/i18n/use-format';
 import type { TotalsReport } from '@/lib/types';
 
@@ -11,9 +12,11 @@ import type { TotalsReport } from '@/lib/types';
 // the server bundle.
 const BarsByDay = dynamic(() => import('./charts/bars-by-day').then((m) => m.BarsByDay), {
   ssr: false,
+  loading: () => <Skeleton className="h-60" />,
 });
 const SplitDonut = dynamic(() => import('./charts/split-donut').then((m) => m.SplitDonut), {
   ssr: false,
+  loading: () => <Skeleton className="h-[180px]" />,
 });
 
 export interface TotalsContentProps {

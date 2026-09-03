@@ -112,8 +112,19 @@ describe('ServicesContent (Task F2b, Part 3)', () => {
 
   it('Task F5 — the peak hour is visible as text near the heading, not locked behind hover-only tooltips', () => {
     renderContent();
-    const expected = en.analytics.services.busiestHoursPeak.replace('{range}', '12:00–13:00');
-    expect(screen.getByText(expected)).toBeTruthy();
+    // The range is wrapped in <bdi> (via the message's <r> tag), so the
+    // callout's text spans two nodes — assert on the container's textContent.
+    const range = screen.getByText('12:00–13:00');
+    const expected = en.analytics.services.busiestHoursPeak
+      .replace('<r>{range}</r>', '12:00–13:00');
+    expect(range.closest('span')?.textContent).toBe(expected);
+  });
+
+  it('the peak-hour range is bidi-isolated so it cannot visually reverse under RTL', () => {
+    renderContent();
+    // Without <bdi>, the direction-neutral en dash makes "12:00–13:00"
+    // render as "13:00–12:00" inside an Arabic (RTL) paragraph.
+    expect(screen.getByText('12:00–13:00').tagName).toBe('BDI');
   });
 
   it('Task F5 — no peak-hour callout renders when every bucket is zero', () => {

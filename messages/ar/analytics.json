@@ -38,7 +38,7 @@
     "byItem": "حسب العنصر",
     "volumeByDay": "الطلبات يوميًا",
     "busiestHours": "أكثر الساعات ازدحامًا",
-    "busiestHoursPeak": "الذروة: {range}",
+    "busiestHoursPeak": "الذروة: <r>{range}</r>",
     "completionBuckets": "توزيع زمن الإنجاز",
     "cancellations": "الإلغاءات",
     "table": {
