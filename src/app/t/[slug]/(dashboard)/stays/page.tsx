@@ -227,6 +227,8 @@ export default function StaysPage() {
           />
           {t('hasBalanceFilter')}
         </label>
+        {/* Task F7 — every filter on this page ships with its guidance. */}
+        <InfoTip label={t('hasBalanceFilter')}>{tG('balance')}</InfoTip>
       </div>
 
       {hasFilters && (
@@ -349,9 +351,12 @@ export default function StaysPage() {
                               {tG(`status.${stay.status}`)}
                             </InfoTip>
                             {stay.unsettledTotal !== undefined && stay.unsettledTotal > 0 && (
-                              <Badge tone="danger">
-                                {formatCurrency(stay.unsettledTotal, hotelCurrency)}
-                              </Badge>
+                              <span className="flex items-center gap-1">
+                                <Badge tone="danger">
+                                  {formatCurrency(stay.unsettledTotal, hotelCurrency)}
+                                </Badge>
+                                <InfoTip label={t('balanceLabel')}>{tG('balance')}</InfoTip>
+                              </span>
                             )}
                           </span>
                         </td>
@@ -384,9 +389,12 @@ export default function StaysPage() {
                               )}
                             </InfoTip>
                             {stay.unsettledTotal !== undefined && stay.unsettledTotal > 0 && (
-                              <Badge tone="danger">
-                                {formatCurrency(stay.unsettledTotal, hotelCurrency)}
-                              </Badge>
+                              <span className="flex items-center gap-1">
+                                <Badge tone="danger">
+                                  {formatCurrency(stay.unsettledTotal, hotelCurrency)}
+                                </Badge>
+                                <InfoTip label={t('balanceLabel')}>{tG('balance')}</InfoTip>
+                              </span>
                             )}
                           </span>
                         </td>

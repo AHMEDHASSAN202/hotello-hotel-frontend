@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ConfirmModal } from '@/components/guidance';
+import { ConfirmModal, ConsequenceNote } from '@/components/guidance';
 import { Button } from '@/components/ui';
 import { api, ApiError } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
@@ -64,9 +64,11 @@ export function SettleAction({ stayId, amount, currency, disabled, onSettled }: 
         loading={settling}
         error={error}
       >
-        <p className="text-sm text-ink">
+        {/* Task F7 — settling is irreversible, so this uses ConsequenceNote
+            (like the stay checkout confirmation) instead of a plain <p>. */}
+        <ConsequenceNote tone="danger">
           {t('confirmBody', { amount: formatCurrency(amount, currency) })}
-        </p>
+        </ConsequenceNote>
       </ConfirmModal>
     </>
   );

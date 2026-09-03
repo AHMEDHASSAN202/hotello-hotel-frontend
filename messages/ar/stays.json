@@ -12,6 +12,7 @@
     "floorAria": "تصفية حسب الطابق",
     "floorPlaceholder": "الطابق",
     "hasBalanceFilter": "عليها مستحقات",
+    "balanceLabel": "مستحقات غير مسددة",
     "columns": {
       "room": "الغرفة",
       "guest": "الضيف",

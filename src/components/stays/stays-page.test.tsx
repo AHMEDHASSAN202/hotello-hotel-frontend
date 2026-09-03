@@ -251,7 +251,7 @@ describe('StaysPage (13.2)', () => {
     apiMock.api.mockClear();
     mockApi({ 'view=active': { data: [], total: 0 } });
 
-    fireEvent.click(screen.getByLabelText('Has balance'));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Has balance' }));
 
     await waitFor(() =>
       expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=true')),
@@ -263,7 +263,7 @@ describe('StaysPage (13.2)', () => {
     renderPage();
     await screen.findByText('Ahmed Ali');
 
-    fireEvent.click(screen.getByLabelText('Has balance'));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Has balance' }));
     fireEvent.click(screen.getByRole('button', { name: 'History' }));
 
     await waitFor(() =>
@@ -290,12 +290,45 @@ describe('StaysPage (13.2)', () => {
     expect(screen.getAllByText('EGP 250.00').length).toBe(1);
   });
 
+  // Task F7 — every filter and status badge on this page ships with guidance;
+  // the "has balance" filter and its balance badge were the two exceptions.
+  it('Task F7 — the "Has balance" filter has an InfoTip explaining unsettled room-charge balances', async () => {
+    mockApi({ 'view=active': { data: [], total: 0 } });
+    renderPage();
+    await screen.findByText('No guests are checked in right now');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Has balance' }));
+    expect(
+      screen.getByText(
+        "An unsettled room-charge balance — orders and requests billed to the room that haven't been paid or settled yet. Cash orders are already paid and never count here.",
+      ),
+    ).toBeTruthy();
+  });
+
+  it('Task F7 — the balance badge has an InfoTip, matching the adjacent status badge', async () => {
+    mockApi({
+      'view=active': {
+        data: [{ ...STAY, id: 's1', unsettledTotal: 250 }],
+        total: 1,
+      },
+    });
+    renderPage();
+
+    await screen.findByText('Ahmed Ali');
+    fireEvent.click(screen.getByRole('button', { name: 'Unsettled balance' }));
+    expect(
+      screen.getByText(
+        "An unsettled room-charge balance — orders and requests billed to the room that haven't been paid or settled yet. Cash orders are already paid and never count here.",
+      ),
+    ).toBeTruthy();
+  });
+
   it('22.4 AC4 — seeds the hasBalance filter checkbox from ?hasBalance=true in the URL', async () => {
     nav.hasBalance = 'true';
     mockApi({ 'view=active': { data: [], total: 0 } });
     renderPage();
 
-    const checkbox = (await screen.findByLabelText('Has balance')) as HTMLInputElement;
+    const checkbox = (await screen.findByRole('checkbox', { name: 'Has balance' })) as HTMLInputElement;
     expect(checkbox.checked).toBe(true);
     await waitFor(() =>
       expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=true')),

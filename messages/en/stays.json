@@ -12,6 +12,7 @@
     "floorAria": "Filter by floor",
     "floorPlaceholder": "Floor",
     "hasBalanceFilter": "Has balance",
+    "balanceLabel": "Unsettled balance",
     "columns": {
       "room": "Room",
       "guest": "Guest",

@@ -382,6 +382,8 @@ export default function RoomsPage() {
           />
           {t('filters.hasBalanceFilter')}
         </label>
+        {/* Task F7 — every filter on this page ships with its guidance. */}
+        <InfoTip label={t('filters.hasBalanceFilter')}>{tG('balance')}</InfoTip>
       </div>
 
       {hasFilters && (
@@ -495,11 +497,16 @@ export default function RoomsPage() {
                         )}
                         {/* Epic 22, 22.4 AC4 — the balance badge; absent unless
                             the hasBalance-aware decoration is present, and never
-                            shown for a `0` balance. */}
+                            shown for a `0` balance. Task F7 — InfoTip follows
+                            the same pattern as the adjacent status/occupancy
+                            badges on this row. */}
                         {room.unsettledTotal !== undefined && room.unsettledTotal > 0 && (
-                          <Badge tone="danger">
-                            {formatCurrency(room.unsettledTotal, hotelCurrency)}
-                          </Badge>
+                          <span className="flex items-center gap-1">
+                            <Badge tone="danger">
+                              {formatCurrency(room.unsettledTotal, hotelCurrency)}
+                            </Badge>
+                            <InfoTip label={t('filters.balanceLabel')}>{tG('balance')}</InfoTip>
+                          </span>
                         )}
                       </span>
                     </td>

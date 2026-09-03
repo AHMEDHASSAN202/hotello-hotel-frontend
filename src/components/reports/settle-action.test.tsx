@@ -55,6 +55,16 @@ describe('SettleAction (22.4 AC3)', () => {
     expect(screen.getByText('EGP 250.00', { exact: false })).toBeTruthy();
   });
 
+  // Task F7 — settling is irreversible, so the confirmation body uses the
+  // shared ConsequenceNote (danger tone), not a plain <p>, matching how the
+  // stay checkout confirmation is styled elsewhere.
+  it('22.4 AC3 (Task F7) — the confirm body renders inside a danger-toned ConsequenceNote', () => {
+    renderAction();
+    fireEvent.click(screen.getByRole('button', { name: en.analytics.balances.settle }));
+    const body = screen.getByText('EGP 250.00', { exact: false });
+    expect(body.className).toMatch(/border-danger/);
+  });
+
   it('confirming calls POST /tenant/stays/{stayId}/settle, then onSettled and closes the modal', async () => {
     const result: StaySettleResponse = { settled: 250, unsettledTotal: 0 };
     apiMock.api.mockResolvedValueOnce(result);

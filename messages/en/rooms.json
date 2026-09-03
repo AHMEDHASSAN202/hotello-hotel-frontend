@@ -26,7 +26,8 @@
       "roomType": "Filter by room type",
       "allRoomTypes": "All room types",
       "floor": "Filter by floor",
-      "hasBalanceFilter": "Has balance"
+      "hasBalanceFilter": "Has balance",
+      "balanceLabel": "Unsettled balance"
     },
     "table": {
       "roomNumber": "Room number",

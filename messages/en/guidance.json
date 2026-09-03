@@ -74,6 +74,7 @@
     "emptyOnboarding": "Add your rooms to activate guest services.",
     "qrStable": "Room QR codes never change or expire — reprint them anytime without affecting how guests reach your services.",
     "qrPrintIntro": "Download print-ready materials: a general poster QR for shared spaces like your lobby, and individual QR cards for each room door.",
+    "balance": "An unsettled room-charge balance — orders and requests billed to the room that haven't been paid or settled yet. Cash orders are already paid and never count here.",
     "types": {
       "intro": "Room types group similar rooms — Standard, Deluxe, Suite — so you can assign one when adding rooms and keep guest-facing details consistent.",
       "nameHelp": "Staff and guests see the room type name in their own language, so fill in both."
@@ -95,7 +96,8 @@
     "nightsColumn": "Nights until the check-out date, counted in your hotel's local time.",
     "codeNote": "Codes are stored securely and can't be viewed after check-in — if a guest forgets theirs, generate a new one.",
     "settingsIntro": "The daily hour when overdue stays end automatically.",
-    "occupancyVacant": "No active stay — this room is free for check-in."
+    "occupancyVacant": "No active stay — this room is free for check-in.",
+    "balance": "An unsettled room-charge balance — orders and requests billed to the room that haven't been paid or settled yet. Cash orders are already paid and never count here."
   },
   "requests": {
     "status": {

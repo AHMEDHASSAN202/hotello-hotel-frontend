@@ -333,7 +333,7 @@ describe('RoomsPage (11.2)', () => {
     await screen.findByText('No rooms yet');
     apiMock.api.mockClear();
 
-    fireEvent.click(screen.getByLabelText('Has balance'));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Has balance' }));
 
     await waitFor(() =>
       expect(apiMock.api).toHaveBeenCalledWith(
@@ -361,6 +361,45 @@ describe('RoomsPage (11.2)', () => {
     expect(screen.getAllByText('EGP 250.00').length).toBe(1);
   });
 
+  // Task F7 — every filter and status badge on this page ships with guidance;
+  // the "has balance" filter and its balance badge were the two exceptions.
+  it('Task F7 — the "Has balance" filter has an InfoTip explaining unsettled room-charge balances', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [] };
+      return mockRoomsResponse();
+    });
+    renderPage();
+    await screen.findByText('No rooms yet');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Has balance' }));
+    expect(
+      screen.getByText(
+        "An unsettled room-charge balance — orders and requests billed to the room that haven't been paid or settled yet. Cash orders are already paid and never count here.",
+      ),
+    ).toBeTruthy();
+  });
+
+  it('Task F7 — the balance badge has an InfoTip, matching the adjacent status/occupancy badges', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [ROOM_TYPE] };
+      return mockRoomsResponse({
+        data: [
+          { id: 'r1', roomNumber: '101', floor: 1, status: 'active', roomType: ROOM_TYPE, unsettledTotal: 250 },
+        ],
+        total: 1,
+      });
+    });
+    renderPage();
+
+    await screen.findByText('101');
+    fireEvent.click(screen.getByRole('button', { name: 'Unsettled balance' }));
+    expect(
+      screen.getByText(
+        "An unsettled room-charge balance — orders and requests billed to the room that haven't been paid or settled yet. Cash orders are already paid and never count here.",
+      ),
+    ).toBeTruthy();
+  });
+
   it('22.4 AC4 — seeds the hasBalance filter checkbox from ?hasBalance=true in the URL', async () => {
     nav.hasBalance = 'true';
     apiMock.api.mockImplementation(async (path: string) => {
@@ -369,7 +408,7 @@ describe('RoomsPage (11.2)', () => {
     });
     renderPage();
 
-    const checkbox = (await screen.findByLabelText('Has balance')) as HTMLInputElement;
+    const checkbox = (await screen.findByRole('checkbox', { name: 'Has balance' })) as HTMLInputElement;
     expect(checkbox.checked).toBe(true);
     await waitFor(() =>
       expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=true')),
