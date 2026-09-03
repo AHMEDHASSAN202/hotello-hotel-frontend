@@ -1,0 +1,44 @@
+{
+  "title": "Analytics",
+  "intro": "Occupancy, service performance, housekeeping, and revenue — everything from last night's shift in one view.",
+  "tabsLabel": "Report tabs",
+  "tabs": {
+    "overview": "Overview"
+  },
+  "overview": {
+    "occupancy": {
+      "heading": "Occupancy & guests",
+      "occupied": "Occupied rooms",
+      "pct": "Occupancy rate",
+      "arrivals": "Arrivals today",
+      "departures": "Departures today",
+      "inHouseGuests": "In-house guests",
+      "byStayType": "By stay type"
+    },
+    "service": {
+      "heading": "Service health",
+      "received": "Requests received",
+      "completed": "Requests completed",
+      "openNow": "Open now",
+      "avgCompletion": "Avg. completion time",
+      "slaBreachRate": "SLA breach rate",
+      "topRequested": "Most requested"
+    },
+    "housekeeping": {
+      "heading": "Housekeeping pulse",
+      "cleanedToday": "Cleaned today",
+      "needingCleaning": "Needing cleaning",
+      "inProgress": "In progress",
+      "dnd": "Do not disturb"
+    },
+    "revenue": {
+      "heading": "Revenue",
+      "dining": "Dining",
+      "events": "Events",
+      "total": "Total revenue",
+      "cash": "Cash",
+      "roomCharge": "Room charge",
+      "unsettled": "Unsettled"
+    }
+  }
+}
