@@ -11,6 +11,7 @@
     "searchAria": "Search stays",
     "floorAria": "Filter by floor",
     "floorPlaceholder": "Floor",
+    "hasBalanceFilter": "Has balance",
     "columns": {
       "room": "Room",
       "guest": "Guest",

@@ -11,6 +11,7 @@
     "searchAria": "بحث في الإقامات",
     "floorAria": "تصفية حسب الطابق",
     "floorPlaceholder": "الطابق",
+    "hasBalanceFilter": "عليها مستحقات",
     "columns": {
       "room": "الغرفة",
       "guest": "الضيف",

@@ -9,7 +9,7 @@ import en from '../../../messages/en';
  */
 
 const tenant = vi.hoisted(() => ({
-  me: { user: { id: 'u1' }, hotel: { defaultLanguage: 'ar' } },
+  me: { user: { id: 'u1' }, hotel: { defaultLanguage: 'ar', currency: 'EGP' } },
   hasPermission: vi.fn(() => true),
   isModuleEnabled: vi.fn(() => false),
   readOnly: false,
@@ -22,8 +22,15 @@ vi.mock('@/components/tenant-provider', () => ({
   useTenant: () => tenant,
 }));
 
+// Task F2d, Part 4 — `hasBalance` seeding from the URL (Task F1b's
+// useSeededFilters); `nav.hasBalance` is set per-test, defaulting to absent.
+const nav = vi.hoisted(() => ({ hasBalance: null as string | null }));
+
 vi.mock('next/navigation', () => ({
   useParams: () => ({ slug: 'sunrise' }),
+  useSearchParams: () => ({
+    get: (key: string) => (key === 'hasBalance' ? nav.hasBalance : null),
+  }),
 }));
 
 const apiMock = vi.hoisted(() => ({
@@ -91,6 +98,7 @@ beforeEach(() => {
   tenant.hasPermission.mockReset();
   tenant.hasPermission.mockReturnValue(true);
   tenant.readOnly = false;
+  nav.hasBalance = null;
   apiMock.api.mockReset();
 });
 
@@ -234,5 +242,63 @@ describe('StaysPage (13.2)', () => {
       checkoutTime: '12:00',
       defaultStayType: 'all_inclusive',
     });
+  });
+
+  it('22.4 AC4 — checking "Has balance" adds hasBalance=1 to the stays request', async () => {
+    mockApi({ 'view=active': { data: [], total: 0 } });
+    renderPage();
+    await screen.findByText('No guests are checked in right now');
+    apiMock.api.mockClear();
+    mockApi({ 'view=active': { data: [], total: 0 } });
+
+    fireEvent.click(screen.getByLabelText('Has balance'));
+
+    await waitFor(() =>
+      expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=1')),
+    );
+  });
+
+  it('22.4 AC4 — the hasBalance filter also applies on the History tab', async () => {
+    mockApi({ 'view=active': { data: [STAY], total: 1 } });
+    renderPage();
+    await screen.findByText('Ahmed Ali');
+
+    fireEvent.click(screen.getByLabelText('Has balance'));
+    fireEvent.click(screen.getByRole('button', { name: 'History' }));
+
+    await waitFor(() =>
+      expect(apiMock.api).toHaveBeenCalledWith(
+        expect.stringMatching(/view=history.*hasBalance=1|hasBalance=1.*view=history/),
+      ),
+    );
+  });
+
+  it('22.4 AC4 — a danger balance badge renders only when unsettledTotal is present AND > 0', async () => {
+    mockApi({
+      'view=active': {
+        data: [
+          { ...STAY, id: 's1', unsettledTotal: 250 },
+          { ...STAY, id: 's2', roomNumber: '102', guestName: 'Mona Said', unsettledTotal: 0 },
+          { ...STAY, id: 's3', roomNumber: '103', guestName: 'Sara Adel' },
+        ],
+        total: 3,
+      },
+    });
+    renderPage();
+
+    await screen.findByText('Ahmed Ali');
+    expect(screen.getAllByText('EGP 250.00').length).toBe(1);
+  });
+
+  it('22.4 AC4 — seeds the hasBalance filter checkbox from ?hasBalance=1 in the URL', async () => {
+    nav.hasBalance = '1';
+    mockApi({ 'view=active': { data: [], total: 0 } });
+    renderPage();
+
+    const checkbox = (await screen.findByLabelText('Has balance')) as HTMLInputElement;
+    expect(checkbox.checked).toBe(true);
+    await waitFor(() =>
+      expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=1')),
+    );
   });
 });

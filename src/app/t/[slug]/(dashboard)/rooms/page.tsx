@@ -33,6 +33,7 @@ import type { Locale } from '@/i18n/config';
 import { useFormatters } from '@/i18n/use-format';
 import { api, apiBlob, ApiError, saveBlob } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
+import { useSeededFilters } from '@/lib/use-seeded-filters';
 import type { Room, RoomsListResponse, RoomStatus, RoomType } from '@/lib/types';
 
 const PAGE_SIZE = 50;
@@ -56,10 +57,18 @@ export default function RoomsPage() {
   const tGStays = useTranslations('guidance.stays');
   const tGc = useTranslations('guidance.common');
   const resolveError = useApiError();
-  const { formatDate } = useFormatters();
+  const { formatDate, formatCurrency } = useFormatters();
   const locale = useLocale() as Locale;
   const params = useParams<{ slug: string }>();
-  const { hasPermission, readOnly } = useTenant();
+  const { hasPermission, readOnly, me } = useTenant();
+  // Epic 22, 22.4 AC4 — same `me?.hotel.currency` pattern as the stay
+  // detail modal and events attendees page; never a bare `formatCurrency()`
+  // no-arg EGP fallback for a hotel-specific amount.
+  const hotelCurrency = me?.hotel.currency ?? 'EGP';
+  // Task F1b — seed the "has balance" filter from a drill-through link
+  // (e.g. the Overview report's unsettled-total stat tile); read once on
+  // mount, same as every other filter's initial useState below.
+  const seededFilters = useSeededFilters(['hasBalance'] as const);
 
   const canRead = hasPermission('rooms.read');
   const canCreate = hasPermission('rooms.create');
@@ -83,6 +92,7 @@ export default function RoomsPage() {
   const [floor, setFloor] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [hasBalanceFilter, setHasBalanceFilter] = useState(seededFilters.hasBalance === '1');
   const [page, setPage] = useState(1);
 
   const [adding, setAdding] = useState(false);
@@ -104,8 +114,9 @@ export default function RoomsPage() {
     if (floor) qs.set('floor', floor);
     if (typeFilter) qs.set('typeId', typeFilter);
     if (statusFilter) qs.set('status', statusFilter);
+    if (hasBalanceFilter) qs.set('hasBalance', '1');
     return qs;
-  }, [query, floor, typeFilter, statusFilter]);
+  }, [query, floor, typeFilter, statusFilter, hasBalanceFilter]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -175,18 +186,20 @@ export default function RoomsPage() {
     );
   }
 
-  const hasFilters = Boolean(query || floor || typeFilter || statusFilter);
+  const hasFilters = Boolean(query || floor || typeFilter || statusFilter || hasBalanceFilter);
   const activeFilterCount =
     (query ? 1 : 0) +
     (floor ? 1 : 0) +
     (typeFilter ? 1 : 0) +
-    (statusFilter ? 1 : 0);
+    (statusFilter ? 1 : 0) +
+    (hasBalanceFilter ? 1 : 0);
   const clearFilters = () => {
     setSearch('');
     setQuery('');
     setFloor('');
     setTypeFilter('');
     setStatusFilter('');
+    setHasBalanceFilter(false);
     setPage(1);
   };
 
@@ -356,6 +369,19 @@ export default function RoomsPage() {
           </option>
           <option value="inactive">{tRooms('status.inactive')}</option>
         </select>
+        {/* Epic 22, 22.4 AC4 — the "has balance" filter; drill-through target
+            from the Overview report's unsettled-total stat tile. */}
+        <label className="flex items-center gap-2 text-sm text-ink">
+          <input
+            type="checkbox"
+            checked={hasBalanceFilter}
+            onChange={(e) => {
+              setHasBalanceFilter(e.target.checked);
+              setPage(1);
+            }}
+          />
+          {t('filters.hasBalanceFilter')}
+        </label>
       </div>
 
       {hasFilters && (
@@ -466,6 +492,14 @@ export default function RoomsPage() {
                                 : tGStays('occupancyVacant')}
                             </InfoTip>
                           </span>
+                        )}
+                        {/* Epic 22, 22.4 AC4 — the balance badge; absent unless
+                            the hasBalance-aware decoration is present, and never
+                            shown for a `0` balance. */}
+                        {room.unsettledTotal !== undefined && room.unsettledTotal > 0 && (
+                          <Badge tone="danger">
+                            {formatCurrency(room.unsettledTotal, hotelCurrency)}
+                          </Badge>
                         )}
                       </span>
                     </td>

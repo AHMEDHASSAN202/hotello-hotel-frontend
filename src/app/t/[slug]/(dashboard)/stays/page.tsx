@@ -19,6 +19,7 @@ import {
 import { useFormatters } from '@/i18n/use-format';
 import { api, ApiError } from '@/lib/api';
 import { useApiError } from '@/lib/errors';
+import { useSeededFilters } from '@/lib/use-seeded-filters';
 import type {
   ActiveStaysResponse,
   Stay,
@@ -35,8 +36,13 @@ export default function StaysPage() {
   const tG = useTranslations('guidance.stays');
   const tGc = useTranslations('guidance.common');
   const resolveError = useApiError();
-  const { formatDate, formatDateTime } = useFormatters();
-  const { hasPermission, readOnly } = useTenant();
+  const { formatDate, formatDateTime, formatCurrency } = useFormatters();
+  const { hasPermission, readOnly, me } = useTenant();
+  // Epic 22, 22.4 AC4 — same `me?.hotel.currency` pattern as the stay detail
+  // modal and the rooms list; never a bare no-arg EGP fallback.
+  const hotelCurrency = me?.hotel.currency ?? 'EGP';
+  // Task F1b — seed the "has balance" filter from a drill-through link.
+  const seededFilters = useSeededFilters(['hasBalance'] as const);
 
   const canRead = hasPermission('stays.read');
   const canCheckin = hasPermission('stays.checkin');
@@ -51,6 +57,7 @@ export default function StaysPage() {
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState('');
   const [floor, setFloor] = useState('');
+  const [hasBalanceFilter, setHasBalanceFilter] = useState(seededFilters.hasBalance === '1');
   const [page, setPage] = useState(1);
 
   const [checkingIn, setCheckingIn] = useState(false);
@@ -63,6 +70,8 @@ export default function StaysPage() {
       const qs = new URLSearchParams({ view: tab });
       if (query) qs.set('search', query);
       if (tab === 'active' && floor) qs.set('floor', floor);
+      // 22.4 AC4 — hasBalance applies to BOTH the active board and history.
+      if (hasBalanceFilter) qs.set('hasBalance', '1');
       if (tab === 'history') {
         qs.set('page', String(page));
         qs.set('pageSize', String(PAGE_SIZE));
@@ -77,7 +86,7 @@ export default function StaysPage() {
     } finally {
       setLoading(false);
     }
-  }, [tab, query, floor, page, resolveError, t]);
+  }, [tab, query, floor, hasBalanceFilter, page, resolveError, t]);
 
   useEffect(() => {
     if (canRead) load();
@@ -93,13 +102,14 @@ export default function StaysPage() {
     );
   }
 
-  const hasFilters = Boolean(query || (tab === 'active' && floor));
+  const hasFilters = Boolean(query || (tab === 'active' && floor) || hasBalanceFilter);
   const activeFilterCount =
-    (query ? 1 : 0) + (tab === 'active' && floor ? 1 : 0);
+    (query ? 1 : 0) + (tab === 'active' && floor ? 1 : 0) + (hasBalanceFilter ? 1 : 0);
   const clearFilters = () => {
     setSearch('');
     setQuery('');
     setFloor('');
+    setHasBalanceFilter(false);
     setPage(1);
   };
   const switchTab = (next: ViewTab) => {
@@ -204,6 +214,19 @@ export default function StaysPage() {
             className="w-28 rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink"
           />
         )}
+        {/* Epic 22, 22.4 AC4 — the "has balance" filter; applies to both the
+            active board and history (unlike floor, which is active-only). */}
+        <label className="flex items-center gap-2 text-sm text-ink">
+          <input
+            type="checkbox"
+            checked={hasBalanceFilter}
+            onChange={(e) => {
+              setHasBalanceFilter(e.target.checked);
+              setPage(1);
+            }}
+          />
+          {t('hasBalanceFilter')}
+        </label>
       </div>
 
       {hasFilters && (
@@ -325,6 +348,11 @@ export default function StaysPage() {
                             <InfoTip label={t(`status.${stay.status}`)}>
                               {tG(`status.${stay.status}`)}
                             </InfoTip>
+                            {stay.unsettledTotal !== undefined && stay.unsettledTotal > 0 && (
+                              <Badge tone="danger">
+                                {formatCurrency(stay.unsettledTotal, hotelCurrency)}
+                              </Badge>
+                            )}
                           </span>
                         </td>
                       </>
@@ -355,6 +383,11 @@ export default function StaysPage() {
                                 `checkoutType.${stay.checkoutType ?? 'manual'}`,
                               )}
                             </InfoTip>
+                            {stay.unsettledTotal !== undefined && stay.unsettledTotal > 0 && (
+                              <Badge tone="danger">
+                                {formatCurrency(stay.unsettledTotal, hotelCurrency)}
+                              </Badge>
+                            )}
                           </span>
                         </td>
                       </>

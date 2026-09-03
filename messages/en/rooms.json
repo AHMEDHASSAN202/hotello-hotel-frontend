@@ -25,7 +25,8 @@
       "allStatuses": "All statuses",
       "roomType": "Filter by room type",
       "allRoomTypes": "All room types",
-      "floor": "Filter by floor"
+      "floor": "Filter by floor",
+      "hasBalanceFilter": "Has balance"
     },
     "table": {
       "roomNumber": "Room number",

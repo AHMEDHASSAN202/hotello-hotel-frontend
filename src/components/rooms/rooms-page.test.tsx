@@ -10,7 +10,7 @@ import en from '../../../messages/en';
  */
 
 const tenant = vi.hoisted(() => ({
-  me: { user: { id: 'u1' } },
+  me: { user: { id: 'u1' }, hotel: { currency: 'EGP' } },
   hasPermission: vi.fn(() => true),
   readOnly: false,
   isHintDismissed: vi.fn(() => true), // hide the first-run HintCard here
@@ -21,8 +21,15 @@ vi.mock('@/components/tenant-provider', () => ({
   useTenant: () => tenant,
 }));
 
+// Task F2d, Part 4 — `hasBalance` seeding from the URL (Task F1b's
+// useSeededFilters); `nav.hasBalance` is set per-test, defaulting to absent.
+const nav = vi.hoisted(() => ({ hasBalance: null as string | null }));
+
 vi.mock('next/navigation', () => ({
   useParams: () => ({ slug: 'sunrise' }),
+  useSearchParams: () => ({
+    get: (key: string) => (key === 'hasBalance' ? nav.hasBalance : null),
+  }),
 }));
 
 const apiMock = vi.hoisted(() => ({
@@ -76,6 +83,7 @@ beforeEach(() => {
   tenant.hasPermission.mockReset();
   tenant.hasPermission.mockReturnValue(true);
   tenant.readOnly = false;
+  nav.hasBalance = null;
   apiMock.api.mockReset();
   apiMock.apiUpload.mockReset();
   apiMock.apiBlob.mockReset();
@@ -314,5 +322,57 @@ describe('RoomsPage (11.2)', () => {
     expect(
       screen.getByRole('button', { name: 'Download template' }).hasAttribute('disabled'),
     ).toBe(true);
+  });
+
+  it('22.4 AC4 — checking "Has balance" adds hasBalance=1 to the rooms request', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [] };
+      return mockRoomsResponse();
+    });
+    renderPage();
+    await screen.findByText('No rooms yet');
+    apiMock.api.mockClear();
+
+    fireEvent.click(screen.getByLabelText('Has balance'));
+
+    await waitFor(() =>
+      expect(apiMock.api).toHaveBeenCalledWith(
+        expect.stringContaining('hasBalance=1'),
+      ),
+    );
+  });
+
+  it('22.4 AC4 — a danger balance badge renders only when unsettledTotal is present AND > 0', async () => {
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [ROOM_TYPE] };
+      return mockRoomsResponse({
+        data: [
+          { id: 'r1', roomNumber: '101', floor: 1, status: 'active', roomType: ROOM_TYPE, unsettledTotal: 250 },
+          { id: 'r2', roomNumber: '102', floor: 1, status: 'active', roomType: ROOM_TYPE, unsettledTotal: 0 },
+          { id: 'r3', roomNumber: '103', floor: 1, status: 'active', roomType: ROOM_TYPE },
+        ],
+        total: 3,
+      });
+    });
+    renderPage();
+
+    await screen.findByText('101');
+    expect(screen.getByText('EGP 250.00')).toBeTruthy();
+    expect(screen.getAllByText('EGP 250.00').length).toBe(1);
+  });
+
+  it('22.4 AC4 — seeds the hasBalance filter checkbox from ?hasBalance=1 in the URL', async () => {
+    nav.hasBalance = '1';
+    apiMock.api.mockImplementation(async (path: string) => {
+      if (path.startsWith('/tenant/room-types')) return { data: [] };
+      return mockRoomsResponse();
+    });
+    renderPage();
+
+    const checkbox = (await screen.findByLabelText('Has balance')) as HTMLInputElement;
+    expect(checkbox.checked).toBe(true);
+    await waitFor(() =>
+      expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=1')),
+    );
   });
 });

@@ -25,7 +25,8 @@
       "allStatuses": "كل الحالات",
       "roomType": "تصفية حسب نوع الغرفة",
       "allRoomTypes": "كل أنواع الغرف",
-      "floor": "تصفية حسب الطابق"
+      "floor": "تصفية حسب الطابق",
+      "hasBalanceFilter": "عليها مستحقات"
     },
     "table": {
       "roomNumber": "رقم الغرفة",
