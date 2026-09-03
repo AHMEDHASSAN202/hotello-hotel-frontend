@@ -53,7 +53,7 @@ describe('OverviewContent (Story 22.1)', () => {
     renderContent(true);
     const link = screen.getByText('EGP 3,120.00').closest('a');
     expect(link).not.toBeNull();
-    expect(link!.getAttribute('href')).toBe('/t/sunrise/stays?hasBalance=1');
+    expect(link!.getAttribute('href')).toBe('/t/sunrise/stays?hasBalance=true');
   });
 
   it('a MetricWithDelta with no deltaPct renders the stat tile without a delta chip next to it', () => {

@@ -244,7 +244,7 @@ describe('StaysPage (13.2)', () => {
     });
   });
 
-  it('22.4 AC4 — checking "Has balance" adds hasBalance=1 to the stays request', async () => {
+  it('22.4 AC4 — checking "Has balance" adds hasBalance=true to the stays request', async () => {
     mockApi({ 'view=active': { data: [], total: 0 } });
     renderPage();
     await screen.findByText('No guests are checked in right now');
@@ -254,7 +254,7 @@ describe('StaysPage (13.2)', () => {
     fireEvent.click(screen.getByLabelText('Has balance'));
 
     await waitFor(() =>
-      expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=1')),
+      expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=true')),
     );
   });
 
@@ -268,7 +268,7 @@ describe('StaysPage (13.2)', () => {
 
     await waitFor(() =>
       expect(apiMock.api).toHaveBeenCalledWith(
-        expect.stringMatching(/view=history.*hasBalance=1|hasBalance=1.*view=history/),
+        expect.stringMatching(/view=history.*hasBalance=true|hasBalance=true.*view=history/),
       ),
     );
   });
@@ -290,15 +290,15 @@ describe('StaysPage (13.2)', () => {
     expect(screen.getAllByText('EGP 250.00').length).toBe(1);
   });
 
-  it('22.4 AC4 — seeds the hasBalance filter checkbox from ?hasBalance=1 in the URL', async () => {
-    nav.hasBalance = '1';
+  it('22.4 AC4 — seeds the hasBalance filter checkbox from ?hasBalance=true in the URL', async () => {
+    nav.hasBalance = 'true';
     mockApi({ 'view=active': { data: [], total: 0 } });
     renderPage();
 
     const checkbox = (await screen.findByLabelText('Has balance')) as HTMLInputElement;
     expect(checkbox.checked).toBe(true);
     await waitFor(() =>
-      expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=1')),
+      expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=true')),
     );
   });
 });

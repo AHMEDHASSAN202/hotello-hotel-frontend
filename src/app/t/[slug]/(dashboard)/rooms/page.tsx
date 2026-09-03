@@ -92,7 +92,7 @@ export default function RoomsPage() {
   const [floor, setFloor] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [hasBalanceFilter, setHasBalanceFilter] = useState(seededFilters.hasBalance === '1');
+  const [hasBalanceFilter, setHasBalanceFilter] = useState(seededFilters.hasBalance === 'true');
   const [page, setPage] = useState(1);
 
   const [adding, setAdding] = useState(false);
@@ -114,7 +114,7 @@ export default function RoomsPage() {
     if (floor) qs.set('floor', floor);
     if (typeFilter) qs.set('typeId', typeFilter);
     if (statusFilter) qs.set('status', statusFilter);
-    if (hasBalanceFilter) qs.set('hasBalance', '1');
+    if (hasBalanceFilter) qs.set('hasBalance', 'true');
     return qs;
   }, [query, floor, typeFilter, statusFilter, hasBalanceFilter]);
 

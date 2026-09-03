@@ -57,7 +57,7 @@ export default function StaysPage() {
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState('');
   const [floor, setFloor] = useState('');
-  const [hasBalanceFilter, setHasBalanceFilter] = useState(seededFilters.hasBalance === '1');
+  const [hasBalanceFilter, setHasBalanceFilter] = useState(seededFilters.hasBalance === 'true');
   const [page, setPage] = useState(1);
 
   const [checkingIn, setCheckingIn] = useState(false);
@@ -71,7 +71,7 @@ export default function StaysPage() {
       if (query) qs.set('search', query);
       if (tab === 'active' && floor) qs.set('floor', floor);
       // 22.4 AC4 — hasBalance applies to BOTH the active board and history.
-      if (hasBalanceFilter) qs.set('hasBalance', '1');
+      if (hasBalanceFilter) qs.set('hasBalance', 'true');
       if (tab === 'history') {
         qs.set('page', String(page));
         qs.set('pageSize', String(PAGE_SIZE));

@@ -9,7 +9,7 @@ export function requestsReportLink(slug: string, params: { categoryId?: string; 
 
 export function staysReportLink(slug: string, params: { hasBalance?: boolean; from?: string; to?: string }): string {
   const qs = new URLSearchParams();
-  if (params.hasBalance) qs.set('hasBalance', '1');
+  if (params.hasBalance) qs.set('hasBalance', 'true');
   if (params.from) qs.set('from', params.from);
   if (params.to) qs.set('to', params.to);
   const query = qs.toString();
@@ -18,7 +18,7 @@ export function staysReportLink(slug: string, params: { hasBalance?: boolean; fr
 
 export function roomsReportLink(slug: string, params: { hasBalance?: boolean }): string {
   const qs = new URLSearchParams();
-  if (params.hasBalance) qs.set('hasBalance', '1');
+  if (params.hasBalance) qs.set('hasBalance', 'true');
   const query = qs.toString();
   return `/t/${slug}/rooms${query ? `?${query}` : ''}`;
 }

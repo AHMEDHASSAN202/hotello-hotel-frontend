@@ -17,7 +17,7 @@ describe('requestsReportLink', () => {
 describe('staysReportLink', () => {
   it('with all params', () => {
     expect(staysReportLink('sunrise', { hasBalance: true, from: '2026-01-01', to: '2026-01-31' })).toBe(
-      '/t/sunrise/stays?hasBalance=1&from=2026-01-01&to=2026-01-31',
+      '/t/sunrise/stays?hasBalance=true&from=2026-01-01&to=2026-01-31',
     );
   });
 
@@ -32,7 +32,7 @@ describe('staysReportLink', () => {
 
 describe('roomsReportLink', () => {
   it('with all params', () => {
-    expect(roomsReportLink('sunrise', { hasBalance: true })).toBe('/t/sunrise/rooms?hasBalance=1');
+    expect(roomsReportLink('sunrise', { hasBalance: true })).toBe('/t/sunrise/rooms?hasBalance=true');
   });
 
   it('with no params — bare path, no ?', () => {

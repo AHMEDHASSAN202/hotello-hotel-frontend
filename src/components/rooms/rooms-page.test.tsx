@@ -324,7 +324,7 @@ describe('RoomsPage (11.2)', () => {
     ).toBe(true);
   });
 
-  it('22.4 AC4 — checking "Has balance" adds hasBalance=1 to the rooms request', async () => {
+  it('22.4 AC4 — checking "Has balance" adds hasBalance=true to the rooms request', async () => {
     apiMock.api.mockImplementation(async (path: string) => {
       if (path.startsWith('/tenant/room-types')) return { data: [] };
       return mockRoomsResponse();
@@ -337,7 +337,7 @@ describe('RoomsPage (11.2)', () => {
 
     await waitFor(() =>
       expect(apiMock.api).toHaveBeenCalledWith(
-        expect.stringContaining('hasBalance=1'),
+        expect.stringContaining('hasBalance=true'),
       ),
     );
   });
@@ -361,8 +361,8 @@ describe('RoomsPage (11.2)', () => {
     expect(screen.getAllByText('EGP 250.00').length).toBe(1);
   });
 
-  it('22.4 AC4 — seeds the hasBalance filter checkbox from ?hasBalance=1 in the URL', async () => {
-    nav.hasBalance = '1';
+  it('22.4 AC4 — seeds the hasBalance filter checkbox from ?hasBalance=true in the URL', async () => {
+    nav.hasBalance = 'true';
     apiMock.api.mockImplementation(async (path: string) => {
       if (path.startsWith('/tenant/room-types')) return { data: [] };
       return mockRoomsResponse();
@@ -372,7 +372,7 @@ describe('RoomsPage (11.2)', () => {
     const checkbox = (await screen.findByLabelText('Has balance')) as HTMLInputElement;
     expect(checkbox.checked).toBe(true);
     await waitFor(() =>
-      expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=1')),
+      expect(apiMock.api).toHaveBeenCalledWith(expect.stringContaining('hasBalance=true')),
     );
   });
 });
