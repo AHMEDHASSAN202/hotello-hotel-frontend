@@ -81,7 +81,16 @@ const NAV_ITEMS: NavItem[] = [
     permission: 'branding.manage',
     upsell: true,
   },
-  { segment: 'analytics', labelKey: 'analytics', icon: BarChart3, module: 'analytics' },
+  // Epic 22 — the Overview report; upsell module (locked hotels see a
+  // static sample instead of disappearing, same pattern as branding).
+  {
+    segment: 'analytics',
+    labelKey: 'analytics',
+    icon: BarChart3,
+    module: 'analytics',
+    permission: 'reports.read',
+    upsell: true,
+  },
   // Epic 15 — the live guest-requests board; badge shows the open count.
   {
     segment: 'requests',

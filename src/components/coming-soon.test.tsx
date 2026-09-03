@@ -13,7 +13,6 @@ vi.mock('next/navigation', () => ({
 }));
 
 import TransportationPage from '../app/t/[slug]/(dashboard)/transportation/page';
-import AnalyticsPage from '../app/t/[slug]/(dashboard)/analytics/page';
 
 function renderPage(Page: () => JSX.Element) {
   return render(
@@ -34,9 +33,8 @@ describe('coming-soon module routes', () => {
     expect(back.getAttribute('href')).toBe('/t/sunrise');
   });
 
-  it('the analytics route renders its own module title', () => {
-    renderPage(AnalyticsPage);
-    expect(screen.getByRole('heading', { name: 'Analytics' })).toBeTruthy();
-    expect(screen.getByText('Coming soon')).toBeTruthy();
-  });
+  // Analytics used to be covered here too, but Task F2a shipped its real
+  // page (Story 22.1) and flipped `MODULE_PAGES.analytics.built` to true —
+  // `modules.test.ts` now asserts analytics does NOT render ComingSoon, so
+  // an analytics-specific case here would just duplicate/contradict that.
 });

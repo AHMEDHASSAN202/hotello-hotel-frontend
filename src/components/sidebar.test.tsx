@@ -92,12 +92,14 @@ describe('sidebar module gating', () => {
   it('a module missing from the plan stays hidden, built or not — except upsell modules, which flip to visible-with-badge (18.3)', () => {
     renderSidebar(['fnb']);
     expect(screen.queryByText('Transportation')).toBeNull();
-    expect(screen.queryByText('Analytics')).toBeNull();
     expect(screen.queryByText('Requests')).toBeNull();
-    // Branding is an upsell module (18.3): it stays visible with an Upgrade
-    // badge instead of disappearing, even though it's not in this plan.
-    expect(screen.getByText('Guest App Branding')).toBeTruthy();
-    expect(screen.getByTestId('nav-upgrade-badge')).toBeTruthy();
+    // Branding and Analytics are both upsell modules (18.3, then 22.6): they
+    // stay visible with an Upgrade badge instead of disappearing, even
+    // though neither is in this plan.
+    const branding = screen.getByText('Guest App Branding').closest('a');
+    const analytics = screen.getByText('Analytics').closest('a');
+    expect(branding?.querySelector('[data-testid="nav-upgrade-badge"]')).toBeTruthy();
+    expect(analytics?.querySelector('[data-testid="nav-upgrade-badge"]')).toBeTruthy();
   });
 
   it('every unbuilt module in the plan gets its own Soon chip', () => {
