@@ -73,6 +73,8 @@
     "infoLink": "Link a Hotel Info entry (optional)",
     "infoLinkNone": "No link",
     "priority": "Mark as important (مهم)",
+    "sendPush": "Send a push notification to phones 🔔",
+    "quietHoursHint": "This will arrive after quiet hours end ({start}–{end}) — priority notices skip this",
     "timingTitle": "Timing",
     "modeNow": "Send now",
     "modeSchedule": "Schedule for later",

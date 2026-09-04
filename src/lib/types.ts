@@ -102,6 +102,8 @@ export interface TenantMeHotel {
   timezone: string;
   /** ISO currency code — the kitchen board formats totals with it (Epic 16). */
   currency: string;
+  /** 23.3 — hotel-local 'HH:MM' window guests shouldn't be pushed to. */
+  pushQuietHours: { start: string; end: string };
 }
 
 export interface SubscriptionState {
@@ -814,6 +816,8 @@ export interface TenantAnnouncement {
   bodies: RequestTranslationMap;
   infoEntryId: string | null;
   priority: boolean;
+  /** 23.3 AC1 — composer push toggle; carried through send/schedule/scheduler. */
+  sendPush: boolean;
   audience: AudienceFilter;
   status: AnnouncementStatus;
   /** Hotel-local 'YYYY-MM-DD HH:MM' strings (never UTC). */
@@ -827,7 +831,12 @@ export interface TenantAnnouncement {
   /** Resolved when the audience targets one specific stay. */
   audienceStay: { guestName: string; roomNumber: string } | null;
   /** "قرأه 34 من 62" — reads / currently-matching audience, live-computed. */
-  stats: { reads: number; audienceNow: number };
+  stats: {
+    reads: number;
+    audienceNow: number;
+    /** 23.3 — dispatch outcome; omitted for rows with no push dispatches. */
+    push?: { sent: number; failed: number };
+  };
   /** null = manually composed; set = auto-created by an event publish/cancel (Epic 21). */
   source: AnnouncementSource | null;
 }

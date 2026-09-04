@@ -33,12 +33,55 @@ import type {
   TenantAnnouncement,
 } from '@/lib/types';
 
+/** 23.3 — 'HH:MM' → minutes since midnight, for pure quiet-hours math. */
+function minutesOf(hhmm: string): number {
+  const [h, m] = hhmm.split(':').map(Number);
+  return h * 60 + m;
+}
+
+/**
+ * Is `time` inside the hotel's quiet-hours window `[start, end)`? Handles
+ * the midnight-crossing case (e.g. 22:00–08:00, `start > end`) with pure
+ * minute math — no Date arithmetic. The boundary is inclusive at `start`,
+ * exclusive at `end`: a send landing exactly at `end` counts as "quiet
+ * hours are already over", matching how the window is described to staff
+ * ("ends at 08:00").
+ */
+function isInQuietHours(time: string, start: string, end: string): boolean {
+  const t = minutesOf(time);
+  const s = minutesOf(start);
+  const e = minutesOf(end);
+  if (s === e) return false;
+  return s < e ? t >= s && t < e : t >= s || t < e;
+}
+
+/** Current hotel-local 'HH:MM', for the send-now quiet-hours check. */
+function currentHotelTime(timezone: string): string {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: timezone,
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date());
+  const hour = parts.find((p) => p.type === 'hour')?.value ?? '00';
+  const minute = parts.find((p) => p.type === 'minute')?.value ?? '00';
+  return `${hour}:${minute}`;
+}
+
 /**
  * Epic 19, Story 19.1/19.2 — the compose page: 7-language content, optional
  * Hotel Info link, priority flag (with the "use sparingly" nudge, spec note
  * 7), the audience builder with its live count, and send-now/schedule
  * timing. `?id=` opens draft/scheduled announcements for editing (live ones
  * are never editable — 19.2 AC3).
+ *
+ * 23.3 AC1/AC4 — a `sendPush` toggle decides whether the announcement also
+ * wakes guests' locked phones. It defaults to following `priority` until the
+ * operator explicitly touches it (the `sendPushTouched` dirty flag below) so
+ * an operator who deliberately unticks push never gets it silently
+ * re-enabled by a later priority toggle. AC4's quiet-hours hint warns when
+ * the effective send moment falls inside `me.hotel.pushQuietHours` and the
+ * notice isn't priority (priority pushes skip quiet hours entirely).
  */
 export default function ComposeAnnouncementPage() {
   const t = useTranslations('announcements');
@@ -48,7 +91,7 @@ export default function ComposeAnnouncementPage() {
   const params = useParams<{ slug: string }>();
   const search = useSearchParams();
   const editId = search.get('id');
-  const { hasPermission, readOnly } = useTenant();
+  const { hasPermission, readOnly, me } = useTenant();
   const resolveError = useApiError();
   const canManage = hasPermission('announcements.manage');
   const base = `/t/${params.slug}/announcements`;
@@ -57,6 +100,8 @@ export default function ComposeAnnouncementPage() {
   const [audience, setAudience] = useState<AudienceFilter>({});
   const [stayLabel, setStayLabel] = useState<string | null>(null);
   const [priority, setPriority] = useState(false);
+  const [sendPush, setSendPush] = useState(false);
+  const [sendPushTouched, setSendPushTouched] = useState(false);
   const [infoEntryId, setInfoEntryId] = useState('');
   const [schedule, setSchedule] = useState<ScheduleValue>(EMPTY_SCHEDULE);
   const [loadingEdit, setLoadingEdit] = useState(Boolean(editId));
@@ -90,6 +135,12 @@ export default function ComposeAnnouncementPage() {
       .catch(() => setLivePriorityExists(false));
   }, [editId]);
 
+  // 23.3 AC1 — sendPush defaults to following priority until the operator
+  // explicitly touches the toggle (see the class doc comment above).
+  useEffect(() => {
+    if (!sendPushTouched) setSendPush(priority);
+  }, [priority, sendPushTouched]);
+
   // Edit mode — only draft/scheduled land here; anything else goes back.
   useEffect(() => {
     if (!editId) return;
@@ -107,6 +158,10 @@ export default function ComposeAnnouncementPage() {
           a.audienceStay ? `${a.audienceStay.guestName} — ${a.audienceStay.roomNumber}` : null,
         );
         setPriority(a.priority);
+        // The stored value is already the operator's explicit choice — mark
+        // it touched so the priority-follow effect above never overrides it.
+        setSendPush(a.sendPush);
+        setSendPushTouched(true);
         setInfoEntryId(a.infoEntryId ?? '');
         const publish = stampToParts(a.publishAtLocal);
         const until = stampToParts(a.activeUntilLocal);
@@ -139,6 +194,7 @@ export default function ComposeAnnouncementPage() {
         ...contentToPayload(values),
         infoEntryId: infoEntryId || (editId ? null : undefined),
         priority,
+        sendPush,
         audience,
         ...timing,
         // Edits must explicitly clear a removed active-until window.
@@ -163,7 +219,18 @@ export default function ComposeAnnouncementPage() {
       setError(resolveError(err));
       setSubmitting(false);
     }
-  }, [values, infoEntryId, priority, audience, schedule, editId, base, router, resolveError]);
+  }, [
+    values,
+    infoEntryId,
+    priority,
+    sendPush,
+    audience,
+    schedule,
+    editId,
+    base,
+    router,
+    resolveError,
+  ]);
 
   function onSubmitClick() {
     // Spec note 7 — soft nudge before stacking a second live priority notice.
@@ -195,6 +262,25 @@ export default function ComposeAnnouncementPage() {
     : schedule.mode === 'schedule'
       ? t('compose.submitSchedule')
       : t('compose.submitSend');
+
+  // 23.3 AC4 — the quiet-hours hint. Priority notices skip quiet hours
+  // entirely, so it only applies to a non-priority push. `mode: 'schedule'`
+  // uses the naked hotel-local publishTime as-is (house rule: never
+  // `toISOString()` it); `mode: 'now'` computes the current hotel-local
+  // clock via Intl with the hotel's IANA timezone.
+  const quietHours = me?.hotel.pushQuietHours;
+  const effectiveSendTime =
+    schedule.mode === 'schedule'
+      ? schedule.publishTime
+      : me?.hotel.timezone
+        ? currentHotelTime(me.hotel.timezone)
+        : '';
+  const showQuietHoursHint =
+    sendPush &&
+    !priority &&
+    Boolean(quietHours) &&
+    Boolean(effectiveSendTime) &&
+    isInQuietHours(effectiveSendTime, quietHours!.start, quietHours!.end);
 
   return (
     <div className="max-w-3xl">
@@ -264,6 +350,30 @@ export default function ComposeAnnouncementPage() {
                 {t('compose.priority')}
                 <InfoTip label={t('compose.priority')}>{g('priority')}</InfoTip>
               </label>
+
+              <div>
+                <label className="flex items-center gap-2 pb-2 text-sm font-medium text-ink">
+                  <input
+                    type="checkbox"
+                    disabled={readOnly || submitting}
+                    checked={sendPush}
+                    onChange={(e) => {
+                      setSendPush(e.target.checked);
+                      setSendPushTouched(true);
+                    }}
+                  />
+                  {t('compose.sendPush')}
+                  <InfoTip label={t('compose.sendPush')}>{g('sendPush')}</InfoTip>
+                </label>
+                {showQuietHoursHint ? (
+                  <p className="mt-1 text-xs text-ink-soft">
+                    {t('compose.quietHoursHint', {
+                      start: quietHours!.start,
+                      end: quietHours!.end,
+                    })}
+                  </p>
+                ) : null}
+              </div>
             </div>
           </section>
 
