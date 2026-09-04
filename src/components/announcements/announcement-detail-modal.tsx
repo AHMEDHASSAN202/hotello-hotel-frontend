@@ -67,13 +67,21 @@ export function AnnouncementDetailModal({
    * 23.3 AC5 — a third stats cell for device-delivery counts. The backend
    * OMITS `stats.push` entirely (never zero-fills it) for rows that don't
    * qualify (push off, or nothing dispatched yet) — so presence of the key
-   * is the "has stats" signal, not `sendPush` alone. Not-yet-dispatched
-   * `sendPush` rows (draft/scheduled) get a "planned" line instead; every
-   * other combination (push off, or a stray sendPush row with no stats and
-   * no draft/scheduled status) renders nothing.
+   * is the "has stats" signal, not `sendPush` alone. Four mutually
+   * exclusive, exhaustive render states over (sendPush, status, stats.push):
+   *  - stats present            → delivered count (+ failures if any)
+   *  - draft/scheduled + push   → "planned" copy (nothing dispatched yet)
+   *  - live/retracted/expired
+   *    + push + no stats        → delivered count pinned at 0 — the normal
+   *                                case for a hotel with zero subscribed
+   *                                devices; toggle-ON must stay visible
+   *                                (spec 23.3 AC1) even with nothing sent
+   *  - sendPush off             → nothing
    */
   const pushStats = a.stats.push;
   const pushPlanned = !pushStats && a.sendPush && (a.status === 'draft' || a.status === 'scheduled');
+  const pushZeroDevices =
+    !pushStats && a.sendPush && (a.status === 'live' || a.status === 'retracted' || a.status === 'expired');
 
   return (
     <Modal open onClose={onClose} title={t('detail.languages')} wide>
@@ -149,7 +157,7 @@ export function AnnouncementDetailModal({
             {t('stats.readBy', { reads: a.stats.reads, audience: a.stats.audienceNow })}
           </dd>
         </div>
-        {pushStats || pushPlanned ? (
+        {pushStats || pushPlanned || pushZeroDevices ? (
           <div>
             <dt className="flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-ink-soft">
               {t('detail.pushStats')}
@@ -166,8 +174,10 @@ export function AnnouncementDetailModal({
                     </span>
                   ) : null}
                 </>
-              ) : (
+              ) : pushPlanned ? (
                 t('detail.pushPlanned')
+              ) : (
+                t('stats.pushDelivered', { sent: 0 })
               )}
             </dd>
           </div>

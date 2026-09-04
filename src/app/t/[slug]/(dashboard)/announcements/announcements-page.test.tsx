@@ -177,18 +177,36 @@ describe('AnnouncementsPage', () => {
     expect(screen.queryByText(en.announcements.detail.pushPlanned)).toBeNull();
   });
 
-  it('Task 15 (23.3 AC5) — sendPush on but live with no stats.push (edge case) renders nothing', async () => {
+  it('Task 15 (23.3 AC5) — sendPush on but live with no stats.push shows a zero-devices delivered line (spec 23.3 AC1: toggle state must stay visible)', async () => {
     stubApi([
       makeAnnouncement({
         sendPush: true,
         status: 'live',
+        // Backend omits stats.push entirely when nothing dispatched — the
+        // normal case for a hotel with zero subscribed devices.
         stats: { reads: 34, audienceNow: 62 },
       }),
     ]);
     renderPage();
     fireEvent.click(await screen.findByText('Pool closed tomorrow'));
-    expect(screen.queryByText(en.announcements.detail.pushStats)).toBeNull();
+    expect(screen.getByText(en.announcements.detail.pushStats)).toBeTruthy();
+    expect(screen.getByText('Reached 0 devices')).toBeTruthy();
     expect(screen.queryByText(en.announcements.detail.pushPlanned)).toBeNull();
+    expect(screen.queryByText(/failed/i)).toBeNull();
+  });
+
+  it('Task 15 (23.3 AC5) — sendPush on + retracted/expired with no stats.push also shows the zero-devices line', async () => {
+    stubApi([
+      makeAnnouncement({
+        sendPush: true,
+        status: 'retracted',
+        stats: { reads: 34, audienceNow: 62 },
+      }),
+    ]);
+    renderPage();
+    fireEvent.click(await screen.findByText('Pool closed tomorrow'));
+    expect(screen.getByText(en.announcements.detail.pushStats)).toBeTruthy();
+    expect(screen.getByText('Reached 0 devices')).toBeTruthy();
   });
 
   it('scheduled rows show hotel-local schedule time and cancel action', async () => {
