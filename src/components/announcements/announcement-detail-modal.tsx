@@ -63,6 +63,18 @@ export function AnnouncementDetailModal({
   const title = a.titles[lang];
   const body = a.bodies[lang];
 
+  /**
+   * 23.3 AC5 — a third stats cell for device-delivery counts. The backend
+   * OMITS `stats.push` entirely (never zero-fills it) for rows that don't
+   * qualify (push off, or nothing dispatched yet) — so presence of the key
+   * is the "has stats" signal, not `sendPush` alone. Not-yet-dispatched
+   * `sendPush` rows (draft/scheduled) get a "planned" line instead; every
+   * other combination (push off, or a stray sendPush row with no stats and
+   * no draft/scheduled status) renders nothing.
+   */
+  const pushStats = a.stats.push;
+  const pushPlanned = !pushStats && a.sendPush && (a.status === 'draft' || a.status === 'scheduled');
+
   return (
     <Modal open onClose={onClose} title={t('detail.languages')} wide>
       <div className="flex flex-wrap items-center gap-2">
@@ -137,6 +149,29 @@ export function AnnouncementDetailModal({
             {t('stats.readBy', { reads: a.stats.reads, audience: a.stats.audienceNow })}
           </dd>
         </div>
+        {pushStats || pushPlanned ? (
+          <div>
+            <dt className="flex items-center gap-1 text-xs font-medium uppercase tracking-wide text-ink-soft">
+              {t('detail.pushStats')}
+              <InfoTip label={t('detail.pushStats')}>{g('pushStats')}</InfoTip>
+            </dt>
+            <dd className="mt-1 text-sm text-ink">
+              {pushStats ? (
+                <>
+                  {t('stats.pushDelivered', { sent: pushStats.sent })}
+                  {pushStats.failed > 0 ? (
+                    <span className="text-danger">
+                      {' '}
+                      {t('stats.pushFailures', { failed: pushStats.failed })}
+                    </span>
+                  ) : null}
+                </>
+              ) : (
+                t('detail.pushPlanned')
+              )}
+            </dd>
+          </div>
+        ) : null}
       </dl>
 
       <div className="mt-5">

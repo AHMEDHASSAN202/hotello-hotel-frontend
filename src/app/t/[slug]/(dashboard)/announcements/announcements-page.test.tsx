@@ -42,6 +42,7 @@ const makeAnnouncement = (o: Partial<TenantAnnouncement> = {}): TenantAnnounceme
   bodies: { en: 'Maintenance 9-12', ar: 'صيانة' },
   infoEntryId: null,
   priority: false,
+  sendPush: false,
   audience: { stayTypes: ['all_inclusive'], floors: [2, 3] },
   status: 'live',
   publishAtLocal: null,
@@ -120,6 +121,74 @@ describe('AnnouncementsPage', () => {
     expect(screen.getByText('Бассейн закрыт')).toBeTruthy();
     expect(screen.getByText(en.announcements.detail.timeline)).toBeTruthy();
     expect(screen.getAllByText('Read by 34 of 62').length).toBeGreaterThan(0);
+  });
+
+  it('Task 15 (23.3 AC5) — push stats cell shows device count, no failures suffix when failed is 0', async () => {
+    stubApi([
+      makeAnnouncement({
+        sendPush: true,
+        stats: { reads: 34, audienceNow: 62, push: { sent: 41, failed: 0 } },
+      }),
+    ]);
+    renderPage();
+    fireEvent.click(await screen.findByText('Pool closed tomorrow'));
+    expect(screen.getByText(en.announcements.detail.pushStats)).toBeTruthy();
+    expect(screen.getByText('Reached 41 devices')).toBeTruthy();
+    expect(screen.queryByText(/failed/i)).toBeNull();
+  });
+
+  it('Task 15 (23.3 AC5) — push stats cell shows a text-danger failures suffix when failed > 0', async () => {
+    stubApi([
+      makeAnnouncement({
+        sendPush: true,
+        stats: { reads: 34, audienceNow: 62, push: { sent: 38, failed: 3 } },
+      }),
+    ]);
+    renderPage();
+    fireEvent.click(await screen.findByText('Pool closed tomorrow'));
+    expect(screen.getByText('Reached 38 devices')).toBeTruthy();
+    const failures = screen.getByText('3 failed');
+    expect(failures).toBeTruthy();
+    expect(failures.className).toContain('text-danger');
+  });
+
+  it('Task 15 (23.3 AC5) — sendPush on + draft/scheduled with no stats.push yet shows "planned" copy', async () => {
+    stubApi([
+      makeAnnouncement({
+        id: 'ann-planned',
+        status: 'scheduled',
+        publishedAt: null,
+        publishAtLocal: '2030-01-01 09:00',
+        sendPush: true,
+        // Backend omits stats.push entirely until dispatch — no zero-filled stub.
+        stats: { reads: 0, audienceNow: 0 },
+      }),
+    ]);
+    renderPage();
+    fireEvent.click(await screen.findByText('Pool closed tomorrow'));
+    expect(screen.getByText(en.announcements.detail.pushPlanned)).toBeTruthy();
+  });
+
+  it('Task 15 (23.3 AC5) — sendPush off renders no push-related content in the detail', async () => {
+    stubApi([makeAnnouncement({ sendPush: false, stats: { reads: 34, audienceNow: 62 } })]);
+    renderPage();
+    fireEvent.click(await screen.findByText('Pool closed tomorrow'));
+    expect(screen.queryByText(en.announcements.detail.pushStats)).toBeNull();
+    expect(screen.queryByText(en.announcements.detail.pushPlanned)).toBeNull();
+  });
+
+  it('Task 15 (23.3 AC5) — sendPush on but live with no stats.push (edge case) renders nothing', async () => {
+    stubApi([
+      makeAnnouncement({
+        sendPush: true,
+        status: 'live',
+        stats: { reads: 34, audienceNow: 62 },
+      }),
+    ]);
+    renderPage();
+    fireEvent.click(await screen.findByText('Pool closed tomorrow'));
+    expect(screen.queryByText(en.announcements.detail.pushStats)).toBeNull();
+    expect(screen.queryByText(en.announcements.detail.pushPlanned)).toBeNull();
   });
 
   it('scheduled rows show hotel-local schedule time and cancel action', async () => {

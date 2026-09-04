@@ -32,7 +32,9 @@
     "expired": "Expired"
   },
   "stats": {
-    "readBy": "Read by {reads} of {audience}"
+    "readBy": "Read by {reads} of {audience}",
+    "pushDelivered": "{sent, plural, one {Reached # device} other {Reached # devices}}",
+    "pushFailures": "{failed, plural, one {# failed} other {# failed}}"
   },
   "audience": {
     "label": "Audience",
@@ -103,6 +105,8 @@
     "audience": "Audience",
     "timeline": "Timeline",
     "readStats": "Read stats",
+    "pushStats": "Push stats",
+    "pushPlanned": "Push notification planned — device counts appear once it's sent.",
     "created": "Created",
     "scheduled": "Scheduled",
     "published": "Published",

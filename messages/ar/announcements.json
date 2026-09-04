@@ -32,7 +32,9 @@
     "expired": "منتهي"
   },
   "stats": {
-    "readBy": "قرأه {reads} من {audience}"
+    "readBy": "قرأه {reads} من {audience}",
+    "pushDelivered": "{sent, plural, zero {لم يصل إلى أي جهاز} one {وصل إلى جهاز واحد} two {وصل إلى جهازين} few {وصل إلى # أجهزة} many {وصل إلى # جهازًا} other {وصل إلى # جهاز}}",
+    "pushFailures": "{failed, plural, zero {بلا فشل} one {وفشل الوصول إلى جهاز واحد} two {وفشل الوصول إلى جهازين} few {وفشل الوصول إلى # أجهزة} many {وفشل الوصول إلى # جهازًا} other {وفشل الوصول إلى # جهاز}}"
   },
   "audience": {
     "label": "الجمهور",
@@ -103,6 +105,8 @@
     "audience": "الجمهور",
     "timeline": "الخط الزمني",
     "readStats": "إحصاءات القراءة",
+    "pushStats": "إحصاءات الإشعار",
+    "pushPlanned": "إشعار الدفع مجدول — يظهر عدد الأجهزة بعد الإرسال.",
     "created": "أُنشئ",
     "scheduled": "جُدول",
     "published": "نُشر",

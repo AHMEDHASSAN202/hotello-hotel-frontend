@@ -146,6 +146,7 @@
     "priority": "Use sparingly. Important notices pin to the top of the guest inbox and surface on their home screen — too many and guests stop noticing.",
     "sendPush": "Push wakes a guest's phone even when it's locked — reserve it for things worth the interruption. Important notices push by default; untick this for a routine update that can wait in the in-app inbox.",
     "readStats": "Reads over guests currently matching the audience — the denominator moves as guests check in and out.",
+    "pushStats": "A device count, not a guest count — one guest can carry more than one registered device (a family sharing a booking, a guest's phone and tablet), so this can run higher than the audience.",
     "editLocked": "Live announcements can't be edited — guests may have read the original. Retract it and send a new one instead.",
     "activeUntil": "After this time the notice leaves guest inboxes automatically — expired operational notices are just noise.",
     "infoLink": "Guests see a tappable chip that opens the linked Hotel Info entry.",
