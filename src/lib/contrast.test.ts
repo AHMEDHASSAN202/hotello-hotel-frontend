@@ -1,4 +1,4 @@
-// Mirrors hotello-backend/src/modules/branding/contrast.util.spec.ts —
+// Mirrors gxp-backend/src/modules/branding/contrast.util.spec.ts —
 // identical test vectors keep the two implementations in lockstep.
 
 import { describe, expect, it } from 'vitest';

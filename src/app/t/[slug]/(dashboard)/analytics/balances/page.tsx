@@ -36,7 +36,7 @@ export default function AnalyticsBalancesPage() {
   const canSettle = hasPermission('stays.checkout');
 
   const [view, setView] = useState<View>('outstanding');
-  const [period, setPeriod] = usePeriodSelection(`hotello:${slug}:reports-period`);
+  const [period, setPeriod] = usePeriodSelection(`gxp:${slug}:reports-period`);
 
   const [outstanding, setOutstanding] = useState<BalancesReport | null>(null);
   const [outstandingLoading, setOutstandingLoading] = useState(true);

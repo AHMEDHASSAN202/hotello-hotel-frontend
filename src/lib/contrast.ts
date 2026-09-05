@@ -1,4 +1,4 @@
-// Mirrors hotello-backend/src/modules/branding/contrast.util.ts —
+// Mirrors gxp-backend/src/modules/branding/contrast.util.ts —
 // keep implementations in sync to ensure Guest App accent validation matches hotel dashboard.
 
 /**

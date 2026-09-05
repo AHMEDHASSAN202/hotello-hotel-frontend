@@ -5,7 +5,7 @@ import { dirFor, type Locale } from '@/i18n/config';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Hotello — Hotel Dashboard',
+  title: 'GXP — Hotel Dashboard',
   description: 'Guest Experience Platform — hotel dashboard',
 };
 

@@ -1,1 +1,1 @@
-# hotello-hotel-frontend
+# gxp-hotel-frontend

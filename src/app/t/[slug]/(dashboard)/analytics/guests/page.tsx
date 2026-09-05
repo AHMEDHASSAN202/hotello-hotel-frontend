@@ -16,7 +16,7 @@ export default function AnalyticsGuestsPage() {
   const { slug } = useParams<{ slug: string }>();
   const t = useTranslations('reports');
   const resolveError = useApiError();
-  const [period, setPeriod] = usePeriodSelection(`hotello:${slug}:reports-period`);
+  const [period, setPeriod] = usePeriodSelection(`gxp:${slug}:reports-period`);
   const [report, setReport] = useState<GuestsReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

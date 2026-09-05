@@ -18,7 +18,7 @@ describe('guest design tokens (18.1 AC2, spec note 3 — deliberate duplication 
 
   // Sync test: reads the sibling guest repo when present (local workspace),
   // self-skips in CI where the sibling is not checked out.
-  const guestRoot = path.resolve(__dirname, '../../../../hotello-guest-frontend');
+  const guestRoot = path.resolve(__dirname, '../../../../gxp-guest-frontend');
   const itLocal = existsSync(guestRoot) ? it : it.skip;
 
   itLocal('token values match the guest app tailwind config', () => {

@@ -13,7 +13,7 @@ const DEFAULT: PeriodSelection = { preset: 'last7' };
 /**
  * Story 22.1 AC1 — "the selection persists per user for the session."
  * `storageKey` should be unique per hotel+page (e.g.
- * `hotello:${slug}:reports-period` — one shared key across every report tab
+ * `gxp:${slug}:reports-period` — one shared key across every report tab
  * so switching tabs keeps the same period, matching "my morning check-in"
  * framing) so multiple open tabs/hotels don't collide.
  */

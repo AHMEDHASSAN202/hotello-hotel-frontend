@@ -2,7 +2,7 @@ import { GXP_NAVY, relativeLuminance } from '@/lib/contrast';
 
 /**
  * Guest app design tokens — DELIBERATE DUPLICATION of
- * hotello-guest-frontend/tailwind.config.ts + src/app/globals.css
+ * gxp-guest-frontend/tailwind.config.ts + src/app/globals.css
  * (Epic 18 spec note 3, recorded decision). guest-tokens.test.ts reads the
  * sibling repo from disk and fails on drift; update BOTH sides together.
  */

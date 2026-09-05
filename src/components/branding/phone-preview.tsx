@@ -9,7 +9,7 @@ import { GUEST_TOKENS, previewAccentVars } from './guest-tokens';
 /**
  * Static phone-frame mock of the guest home (18.1 AC2). Built from the real
  * guest tokens (guest-tokens.ts) so the preview is honest — layout and type
- * scale mirror hotello-guest-frontend/src/components/home-screen.tsx.
+ * scale mirror gxp-guest-frontend/src/components/home-screen.tsx.
  * Not an iframe, no data fetching: pure render of the three knobs.
  */
 const STRINGS = {

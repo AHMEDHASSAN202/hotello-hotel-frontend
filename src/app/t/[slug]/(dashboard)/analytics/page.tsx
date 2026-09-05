@@ -17,7 +17,7 @@ export default function AnalyticsOverviewPage() {
   const { hasPermission } = useTenant();
   const canReadRevenue = hasPermission('reports.revenue');
   const resolveError = useApiError();
-  const [period, setPeriod] = usePeriodSelection(`hotello:${slug}:reports-period`);
+  const [period, setPeriod] = usePeriodSelection(`gxp:${slug}:reports-period`);
   const [report, setReport] = useState<OverviewReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -10,7 +10,7 @@ export default async function TenantNotFound() {
     <main className="flex min-h-screen items-center justify-center bg-ink-deep p-8 text-center">
       <div className="max-w-md">
         <p className="text-xs font-semibold uppercase tracking-widest text-gold">
-          Hotello · GXP
+          GXP
         </p>
         <h1 className="mt-3 font-display text-2xl font-semibold text-white">
           {t('notFoundTitle')}

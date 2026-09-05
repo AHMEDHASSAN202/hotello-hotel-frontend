@@ -23,7 +23,7 @@ export default function AnalyticsTotalsPage() {
   const { slug } = useParams<{ slug: string }>();
   const t = useTranslations('analytics');
   const resolveError = useApiError();
-  const [period, setPeriod] = usePeriodSelection(`hotello:${slug}:reports-period`);
+  const [period, setPeriod] = usePeriodSelection(`gxp:${slug}:reports-period`);
   const [report, setReport] = useState<TotalsReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

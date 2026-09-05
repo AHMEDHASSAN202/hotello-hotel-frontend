@@ -46,7 +46,7 @@ The hotel-facing dashboard (Next.js) — **this is the product our paying client
 
 ## Specs
 
-Feature specs live in the backend repo (`hotello-backend`) under `/specs`. Before
+Feature specs live in the backend repo (`gxp-backend`) under `/specs`. Before
 planning or implementing any feature, read its epic file fully — it is the source of
 truth. Durable decisions made during Q&A go back into the epic file.
 
