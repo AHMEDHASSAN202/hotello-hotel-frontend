@@ -60,9 +60,13 @@ type NavItem = {
   upsell?: boolean;
 };
 
+/** Every NAV_ITEMS entry must set `section` (compile error otherwise) — the
+ * standalone PROFILE_ITEM below is the only NavItem allowed to omit it. */
+type SectionedNavItem = NavItem & { section: SectionKey };
+
 const SECTIONS: SectionKey[] = ['dailyOperations', 'guestEngagement', 'business', 'setup'];
 
-const NAV_ITEMS: NavItem[] = [
+const NAV_ITEMS: SectionedNavItem[] = [
   { segment: '', labelKey: 'overview', icon: LayoutDashboard, section: 'dailyOperations' },
   // Epic 15 — the live guest-requests board; badge shows the open count.
   {
@@ -376,7 +380,7 @@ export function Sidebar() {
             <section key={sectionKey} className="space-y-1">
               {!collapsed && (
                 <h2
-                  className={`px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-white/35 ${
+                  className={`px-3 pb-1 text-[10px] font-semibold uppercase tracking-wider text-white/55 ${
                     sectionIndex === 0 ? '' : 'pt-3'
                   }`}
                 >

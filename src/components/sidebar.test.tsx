@@ -241,4 +241,12 @@ describe('guest-polish-v1 item C8 — sidebar grouped sections', () => {
     });
     expect(screen.getByText(en.shell.nav.profile).closest('a')).not.toBeNull();
   });
+
+  it('an empty section renders no heading at all (only Daily operations survives on the ungated Overview item)', () => {
+    tenant.isModuleEnabled = () => true;
+    tenant.hasPermission = () => false;
+    renderSidebar();
+    const labels = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
+    expect(labels).toEqual(['Daily operations']);
+  });
 });
