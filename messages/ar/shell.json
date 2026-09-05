@@ -18,7 +18,13 @@
     "settings": "الإعدادات",
     "profile": "ملفي الشخصي",
     "soon": "قريبًا",
-    "upgrade": "ترقية"
+    "upgrade": "ترقية",
+    "sections": {
+      "dailyOperations": "العمليات اليومية",
+      "guestEngagement": "تفاعل النزلاء",
+      "business": "الأعمال",
+      "setup": "الإعداد"
+    }
   },
   "comingSoon": {
     "eyebrow": "قريبًا",

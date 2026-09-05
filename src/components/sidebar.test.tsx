@@ -199,3 +199,46 @@ describe('Epic 18 — upsell vs permission distinction (18.3 AC1/AC3)', () => {
     expect(screen.queryByText(en.shell.nav.fnb)).toBeNull();
   });
 });
+
+describe('guest-polish-v1 item C8 — sidebar grouped sections', () => {
+  it('renders section labels in the specified order', () => {
+    renderSidebar([
+      'requests',
+      'fnb',
+      'housekeeping',
+      'transportation',
+      'announcements',
+      'events',
+      'hotel_info',
+      'guest_app_branding',
+      'analytics',
+    ]);
+    const labels = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
+    expect(labels).toEqual(['Daily operations', 'Guest engagement', 'Business', 'Setup']);
+  });
+
+  it('places Transportation (SOON) at the end of Daily operations', () => {
+    renderSidebar(['requests', 'fnb', 'housekeeping', 'transportation']);
+    const section = screen.getByText('Daily operations').closest('section');
+    const entries = section!.querySelectorAll('a, [aria-disabled="true"]');
+    expect(entries[entries.length - 1]?.textContent).toContain('Transportation');
+  });
+
+  it('places Guest App Branding (UPGRADE) at the end of Guest engagement', () => {
+    // guest_app_branding intentionally left out of enabledModules — branding
+    // is an upsell module, so it still renders as a link with an Upgrade badge.
+    renderSidebar(['announcements', 'events', 'hotel_info']);
+    const section = screen.getByText('Guest engagement').closest('section');
+    const links = section!.querySelectorAll('a');
+    expect(links[links.length - 1]?.textContent).toContain('Guest App Branding');
+  });
+
+  it('keeps My profile out of the numbered sections, in the bottom block', () => {
+    renderSidebar(['requests']);
+    const sectionEls = screen.getAllByRole('heading', { level: 2 }).map((h) => h.closest('section'));
+    sectionEls.forEach((section) => {
+      expect(section?.textContent).not.toContain(en.shell.nav.profile);
+    });
+    expect(screen.getByText(en.shell.nav.profile).closest('a')).not.toBeNull();
+  });
+});

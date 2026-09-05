@@ -18,7 +18,13 @@
     "settings": "Settings",
     "profile": "My profile",
     "soon": "Soon",
-    "upgrade": "Upgrade"
+    "upgrade": "Upgrade",
+    "sections": {
+      "dailyOperations": "Daily operations",
+      "guestEngagement": "Guest engagement",
+      "business": "Business",
+      "setup": "Setup"
+    }
   },
   "comingSoon": {
     "eyebrow": "Coming soon",
